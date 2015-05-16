@@ -1,0 +1,47 @@
+Entwurf Go-Projekt mit neuronalen Netzen
+
+Ziel: Implementation eines neuronales Netzes, das mit Hilfe eines genetischen Algorithmus unsupervised learning betreibt und hoffentlich/vielleicht/bestimmt gut Go spielen lernt.
+
+Bisherige Ideen zur Lösung:
+-Eine Anzahl n an neuronalen Netzen wird genutzt. Die Anzahl der Inputneuronen hängt dabei von der Spielfeldgröße ab, die Anzahl der "hidden layers" und "neurons per hidden layer" sind dynamisch und zwei Outputneuronen, die die x- bzw. y-Achsenposition deszu setzenden Steins ausgeben.
+
+-Pro Generation spielen alle Netze einmal gegen alle anderen. Die Fitness wird pro Sieg erhöht (also Fitness = Anzahl Siege). Mit der Fitness steigt auch die Wahrscheinlichkeit dass die Gene (also die Kantengewichte der Synapsen) an die nächste Generation weitervererbt werden. Dabei werden ggf. außerdem noch Crossover und Mutation von Eigenschaften durchgeführt.
+
+-Ein Netz kann so visualisiert werden: Hohe Kantengewichte werden heller, kleine (also negative) werden dunkler. Dargestellt werden die Punkte in "Tabellen" zwischen je zwei Synapsen. Diese müssen dann mit auffälligen Farben getrennt werden. Beispiel:
+
+1  0,5    3 + + +
+-4   2  0,1 + + + nächster Bereich
+0  0,4   -1 + + +
++   +    +
++   +    +
+nächster Bereich
+
+-Getestet werden kann durch Spielen gegen das Netz
+
+-Parallelisierung:
+	-pro Node zwei Netze, die gegeneinander spielen
+	-Ressourcen auf der Node gleichmäßig verteilt
+	-Skalare für die die jeweils nächste Ebene können mit omp parallel berechnet werden
+
+
+
+Wichtige Probleme(- Problem, + Lösungsvorschlag):
+
+	-wie werden die Regeln implementiert?
+		+Nach jedem Zug testen ob er gültig ist, wenn nicht Fitnessminus?
+	-wann ist ein Spiel zu Ende? Eigentlich wenn es keine gültigen Züge mehr gibt, aber
+	 wie bestimmt man das?
+		+Wenn beide keine gültigen Züge mehr machen irgendwann abbrechen?
+	-wie geht man mit Freiheiten von Gruppen um?
+		+Jede Gruppe wird mit Freiheiten in einem Datentyp gespeichert
+		+Die Freiheiten werden immer neu berechnet (ziemlich ineffizient)
+	-wie viele Inputparameter außer dem Brett wird es geben?
+		+keine
+		+ein bis zwei, die eine grobe Einordnung in gut oder schlecht erlauben
+		+viele (welche auch immer genau)
+	-wie implementieren wir die Netze?
+		+Armins Code als Grundlage nehmen (klingt schlau)
+		+API suchen, die sich trotzdem parallelisieren lassen
+		+alles neu schreiben
+	-auf welcher Größe fangen wir an?
+		+5 läge schön in der Mitte ;D
