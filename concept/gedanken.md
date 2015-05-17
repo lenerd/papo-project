@@ -21,8 +21,10 @@
 
 Möglichkeiten
 
-1. vorhandene Implementierungen (z.B. GNU Go) verwenden
+1. vorhandene Implementierungen (z.B. [GNU Go]) verwenden
 2. eigene schreiben (ggf. an obiges angelehnt)
+
+[GNU Go]: https://www.gnu.org/software/gnugo/
 
 Vorschläge:
 
@@ -48,9 +50,10 @@ Fragen:
 Implementation:
 
 * eigene
-* Benutzung von Frameworks (z.B. OpenNN)
+* Benutzung von Frameworks (z.B. [OpenNN])
     * möglicherweise komplex, mehr Funktionalität als notwendig 
 
+[OpenNN]: http://www.intelnics.com/opennn/
 
 ## Genetische Algorithmen
 
