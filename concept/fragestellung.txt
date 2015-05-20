@@ -1,0 +1,1 @@
+Wird ein neuronales Netz Go besser spielen als ein Leihe?
