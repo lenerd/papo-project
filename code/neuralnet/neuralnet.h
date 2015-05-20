@@ -11,14 +11,18 @@ float random_value_0m(float max);
 float random_value_mm(float min, float max);
 
 struct neuralnet{
+	int edges_count;
+
 	int input_count;
 	int hidden_layer_count;
 	int neurons_per_hidden_layer;
 	int output_count;
 
-	float** input_edges;
-	float*** edges;
-	float** output_edges;
+	float* edges;
+
+	float* input_edges;
+	float* edges;
+	float* output_edges;
 };
 
 struct neuralnet* allocate_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count);

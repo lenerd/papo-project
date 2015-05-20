@@ -19,78 +19,40 @@ struct neuralnet* allocate_neural_net(int input_count, int hidden_layer_count, i
 	
 	struct neuralnet* n = malloc(sizeof(struct neuralnet));
 
-	n->inputCount = inputCount;
-	n->hiddenLayerCount = hiddenLayerCount;
-	n->neuronsPerHiddenLayer = neuronsPerHiddenLayer;
-	n->outputCount = outputCount;
+	n->input_count = input_count;
+	n->hidden_layer_count = hidden_layer_count;
+	n->neurons_per_hidden_layer = neurons_per_hidden_layer;
+	n->output_count = output_count;
 
-	n->inputEdges = (float**)malloc(sizeof(float*) * inputCount);
-	for (int i = 0; i < inputCount; i++){
-		n->inputEdges[i] = (float*)malloc(sizeof(float) * neuronsPerHiddenLayer);
-	}
+	n->edges_count = (input_count + 1) * neurons_per_hidden_layer + 
+		(neurons_per_hidden_layer + 1) * neurons_per_hidden_layer * (hidden_layer_count - 1) + 
+		(neurons_per_hidden_layer + 1) * output_count;
 
-	n->edges = (float***)malloc(sizeof(float**) * neuronsPerHiddenLayer);
-	for (int i = 0; i < neuronsPerHiddenLayer; i++){
-		n->edges[i] = (float**)malloc(sizeof(float*) * neuronsPerHiddenLayer);
-		for (int j = 0; j < neuronsPerHiddenLayer; j++){
-			n->edges[i][j] = (float*)malloc(sizeof(float) * (hiddenLayerCount - 1));
-		}
-	}
-
-	n->outputEdges = (float**)malloc(sizeof(float*) * neuronsPerHiddenLayer);
-	for (int i = 0; i < neuronsPerHiddenLayer; i++){
-		n->outputEdges[i] = (float*)malloc(sizeof(float) * outputCount);
-	}
+	n->edges = (float*)malloc(sizeof(float) *(n->edges_count));
 
 	return n;
+
 }
 void initialize_neural_net(struct neuralnet* net){
 	
-	for (int i = 0; i < net->inputCount; i++){
-		for (int j = 0; j < net->neuronsPerHiddenLayer; j++){
-			net->inputEdges[i][j] = inverseSigmoid(randomValue01());
-		}
+	for (int i = 0; i < net->edges_count; i++){
+		net->edges[i] = inverse_sigmoid(random_value_01());
 	}
 
-	for (int i = 0; i < net->neuronsPerHiddenLayer; i++){
-		for (int j = 0; j < net->neuronsPerHiddenLayer; j++){
-			for (int k = 0; k < net->hiddenLayerCount - 1; k++){
-				net->edges[i][j][k] = inverseSigmoid(randomValueMM(-1.0f, 1.0f));
-			}			
-		}
-	}
-
-	for (int i = 0; i < net->neuronsPerHiddenLayer; i++){
-		for (int j = 0; j < net->outputCount; j++){
-			net->outputEdges[i][j] = inverseSigmoid(randomValueMM(-1.0f, 1.0f));
-		}
-	}
 }
 struct neuralnet* create_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
-	struct neuralnet* net = allocateNeuralNet(inputCount, hiddenLayerCount, neuronsPerHiddenLayer, outputCount);
+	
+	struct neuralnet* net = allocateNeuralNet(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initializeNeuralNet(net);
 	return net;
+
 }
 
 void deallocate_neural_net(struct neuralnet* net){
 
-	for (int i = 0; i < net->inputCount; i++){
-		free(net->inputEdges[i]);
-	}
-	free(net->inputEdges);
-
-	for (int i = 0; i < net->neuronsPerHiddenLayer; i++){
-		for (int j = 0; j < net->neuronsPerHiddenLayer; j++){
-			free(net->edges[i][j]);
-		}
-		free(net->edges[i]);
-	}
 	free(net->edges);
-
-	for (int i = 0; i < net->neuronsPerHiddenLayer; i++){
-		free(net->outputEdges[i]);
-	}
-	free(net->outputEdges);
+	free(net);
+	
 }
 void destroy_neural_net(struct neuralnet* net){
 	deallocateNeuralNet(net);
