@@ -7,15 +7,15 @@
 //Math and Random
 #define E 2.7182818284
 
-float sigmoid(float x) { return 1.0f / (1.0f + (float)pow(E, -x)); }
-float inverseSigmoid(float x) { return (float)(-log(1.0f / x - 1.0f)); }
+float sigmoid(float x)		   { return 1.0f / (1.0f + (float)pow(E, -x)); } //Mathematical sigmoid function for the intensity of firing neurons
+float inverse_sigmoid(float x) { return (float)(-log(1.0f / x - 1.0f)); }	 //Inverse of the sigmoid function for initial edge weights of the neuralnet (x has to be between 0 and 1)
 
-float randomValue01()					  { return (float)rand() / RAND_MAX; }			    //Random Value from 0.0 to 1.0.
-float randomValue0M(float max)			  { return max * rand() / RAND_MAX; }				//Random Value from 0.0 to max.
-float randomValueMM(float min, float max) { return min + (max - min) * rand() / RAND_MAX; } //Random Value from min to max.
+float random_value_01()					    { return (float)rand() / RAND_MAX; }			  //Random Value from 0.0 to 1.0.
+float random_value_0m(float max)			{ return max * rand() / RAND_MAX; }				  //Random Value from 0.0 to max.
+float random_value_mm(float min, float max) { return min + (max - min) * rand() / RAND_MAX; } //Random Value from min to max.
 
 //Neural Network
-struct neuralnet* allocateNeuralNet(int inputCount, int hiddenLayerCount, int neuronsPerHiddenLayer, int outputCount){
+struct neuralnet* allocate_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
 	
 	struct neuralnet* n = malloc(sizeof(struct neuralnet));
 
@@ -44,7 +44,7 @@ struct neuralnet* allocateNeuralNet(int inputCount, int hiddenLayerCount, int ne
 
 	return n;
 }
-void initializeNeuralNet(struct neuralnet* net){
+void initialize_neural_net(struct neuralnet* net){
 	
 	for (int i = 0; i < net->inputCount; i++){
 		for (int j = 0; j < net->neuronsPerHiddenLayer; j++){
@@ -66,13 +66,13 @@ void initializeNeuralNet(struct neuralnet* net){
 		}
 	}
 }
-struct neuralnet* createNeuralNet(int inputCount, int hiddenLayerCount, int neuronsPerHiddenLayer, int outputCount){
+struct neuralnet* create_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
 	struct neuralnet* net = allocateNeuralNet(inputCount, hiddenLayerCount, neuronsPerHiddenLayer, outputCount);
 	initializeNeuralNet(net);
 	return net;
 }
 
-void deallocateNeuralNet(struct neuralnet* net){
+void deallocate_neural_net(struct neuralnet* net){
 
 	for (int i = 0; i < net->inputCount; i++){
 		free(net->inputEdges[i]);
@@ -92,7 +92,7 @@ void deallocateNeuralNet(struct neuralnet* net){
 	}
 	free(net->outputEdges);
 }
-void destroyNeuralNet(struct neuralnet* net){
+void destroy_neural_net(struct neuralnet* net){
 	deallocateNeuralNet(net);
 }
 
