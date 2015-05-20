@@ -1,1 +1,1 @@
-Wird ein neuronales Netz Go besser spielen als ein Leihe?
+Wird unser neuronales Netz besser Go spielen als ein Laie?
