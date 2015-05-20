@@ -1,0 +1,120 @@
+\documentclass[compress]{beamer}
+
+\usetheme{Hamburg}
+
+\usepackage[utf8]{inputenc}
+%\usepackage{units}
+
+\title{Projektvorstellung - Kann unser neuronales Netz besser Go spielen als wir?}
+\author{Lennart Braun, Armin Schaare, Theresa Eimer}
+\institute{Praktikum Parallele Programmierung \\ Arbeitsbereich Wissenschaftliches Rechnen\\Fachbereich Informatik\\Fakultät für Mathematik, Informatik und Naturwissenschaften\\Universität Hamburg}
+\date{2015-06-03}
+
+\begin{document}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}
+	\frametitle{Gliederung (Agenda)}
+
+	\tableofcontents
+\end{frame}
+
+\section{Go}
+
+\begin{frame}
+	\frametitle{Go - Das Spiel}
+
+	\begin{itemize}
+		\item Asiatisches Brettspiel
+		\item Wird auf Brettern mit 19x19 Knoten gespielt
+		\item Ziel: gleichzeitig Gebiet einkreisen und gegnerische Steine schlagen
+		\item Spielende: wenn beide Spieler passen
+	\end{itemize}
+
+	\begin{figure}
+		\begin{center}
+			\includegraphics[width=0.75\textwidth]{logo.jpg}
+		\end{center}
+		\caption{Beispiel eines Bretts}
+		\label{fig:logo}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Go - Die Umsetzung}
+	
+	\begin{itemize}
+		\item Gespielt wird auf kleineren Brettern (bis 9x9)
+		\item Repräsentation als Datentyp mit dem Brett als Array, einem Array zum Speichern von Gruppen und dem als nächstes ziehenden Spieler
+		\item Das Spiel endet, wenn es keine gültigen Züge mehr gibt
+		\item Das Spielbrett prüft Züge und verhindert Regelverstöße
+		\item Ungültige Spielzüge werden auf den nächstbesten erlaubten Zug gesetzt
+	\end{itemize}		
+	
+\end{frame}
+
+\section{Das Netz}
+
+\begin{frame}[fragile]
+	\frametitle{Das Netz}
+
+	\begin{itemize}
+		\item Neuronales Netz mit...
+
+		\begin{itemize}
+			\item ...n+1 Input-Neuronen für n Knoten auf dem Spielfeld, plus der Differenz schwarzer und weißer Steine
+			\item ...beliebig vielen hidden layers
+			\item ...2 Output-Neuronen für die x- bzw. y-Koordinate des nächsten Zuges
+		\end{itemize}
+
+		\item Ein Neuron gibt sein Signal weiter, wenn das aufsummierte Signal der Neuronen aus der Schicht davor einen Threshhold übersteigen
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Was das Netz kann}
+	
+	\begin{itemize}
+		\item Das Eingangssignal für ein Neuron 	
+	\end{itemize}
+	
+\end{frame}
+
+\section{Der genetische Algorithmus}
+\subsection*{}
+
+\begin{frame}
+	\frametitle{Zusammenfassung}
+
+	\begin{itemize}
+		\item Zusammenfassung 1
+
+		\begin{itemize}
+			\item Unterpunkt 1
+			\item Unterpunkt 2
+		\end{itemize}
+
+		\item Zusammenfassung 2
+
+		\begin{itemize}
+			\item Unterpunkt 1
+			\item Unterpunkt 2
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\section{Zeitplan}
+\subsection*{}
+
+\begin{frame}
+	\frametitle{Literatur}
+
+	\nocite*
+	\bibliographystyle{alpha}
+	\bibliography{literatur}
+\end{frame}
+
+\end{document}

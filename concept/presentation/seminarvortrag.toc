@@ -1,0 +1,5 @@
+\beamer@endinputifotherversion {3.33pt}
+\beamer@sectionintoc {1}{Go}{3}{0}{1}
+\beamer@sectionintoc {2}{Das Netz}{5}{0}{2}
+\beamer@sectionintoc {3}{Der genetische Algorithmus}{6}{0}{3}
+\beamer@sectionintoc {4}{Zeitplan}{7}{0}{4}
