@@ -42,8 +42,8 @@ void initialize_neural_net(struct neuralnet* net){
 }
 struct neuralnet* create_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
 	
-	struct neuralnet* net = allocateNeuralNet(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
-	initializeNeuralNet(net);
+	struct neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+	initialize_neural_net(net);
 	return net;
 
 }
@@ -55,14 +55,14 @@ void deallocate_neural_net(struct neuralnet* net){
 	
 }
 void destroy_neural_net(struct neuralnet* net){
-	deallocateNeuralNet(net);
+	deallocate_neural_net(net);
 }
 
 //Testing and Debugging
-int main(int argc, char** argv){
+int main(void){
 	srand((unsigned int)time(NULL));
 
-	printf("%f", inverseSigmoid(0.0000000000000000000000000000000000002f));
+	printf("%f", inverse_sigmoid(0.0000000000000000000000000000000000002f));
 	getchar();
 
 	return 0;
