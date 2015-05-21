@@ -5,9 +5,9 @@
 
 \begin{itemize}
 \item ...n+1 Input-Neuronen für n Knoten auf dem Spielfeld, plus der Differenz schwarzer und weißer Steine
-\item ...beliebig vielen hidden layers
+\item ...beliebig vielen hidden layers, die jeweils wieder m Neuronen besitzen
 \item ...2 Output-Neuronen für die x- bzw. y-Koordinate des nächsten Zuges
 \end{itemize}
 
-\item Ein Neuron gibt sein Signal weiter, wenn das aufsummierte Signal der Neuronen aus der Schicht davor einen Threshhold übersteigen
+\item Ein Neuron gibt sein Signal weiter, wenn das aufsummierte Signal der Neuronen aus der Schicht davor einen festgelegten Wert übersteigt
 \end{itemize}

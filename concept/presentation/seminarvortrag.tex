@@ -5,10 +5,10 @@
 \usepackage[utf8]{inputenc}
 %\usepackage{units}
 
-\title{Projektvorstellung - Kann unser neuronales Netz besser Go spielen als wir?}
+\title{NeuGenGo \\ Kann ein neuronales Netz besser Go spielen als wir?}
 \author{Lennart Braun, Armin Schaare, Theresa Eimer}
-\institute{Praktikum Parallele Programmierung \\ Arbeitsbereich Wissenschaftliches Rechnen\\Fachbereich Informatik\\Fakultät für Mathematik, Informatik und Naturwissenschaften\\Universität Hamburg}
-\date{2015-06-03}
+\institute{Praktikum Parallele Programmierung \\Fachbereich Informatik\\Universität Hamburg}
+\date{03.06.2015}
 
 \begin{document}
 
@@ -20,6 +20,19 @@
 	\frametitle{Gliederung (Agenda)}
 
 	\tableofcontents
+\end{frame}
+
+\section{Ziele}
+
+\begin{frame}
+	\frametitle{Ziele}
+	
+	\begin{itemize}
+		\item Ein gut spielendes Netz als Ergebnis
+		\item Spiele und Netze visualisierbar machen
+		\item Einen guten Vererbungsmechanismus finden
+	\end{itemize}
+	
 \end{frame}
 
 \section{Go}
@@ -36,10 +49,13 @@
 
 	\begin{figure}
 		\begin{center}
-			\includegraphics[width=0.75\textwidth]{logo.jpg}
+			\includegraphics[scale=0.15]{board.png}
 		\end{center}
 		\caption{Beispiel eines Bretts}
-		\label{fig:logo}
+		\begin{footnotesize}		 
+		Quelle: http://www.13thmonkey.org/Artdraw/images/kifu2.png
+		\end{footnotesize}
+		\label{fig:Brett}
 	\end{figure}
 \end{frame}
 
@@ -66,11 +82,11 @@
 
 		\begin{itemize}
 			\item ...n+1 Input-Neuronen für n Knoten auf dem Spielfeld, plus der Differenz schwarzer und weißer Steine
-			\item ...beliebig vielen hidden layers
+			\item ...beliebig vielen hidden layers, die jeweils wieder m Neuronen besitzen
 			\item ...2 Output-Neuronen für die x- bzw. y-Koordinate des nächsten Zuges
 		\end{itemize}
 
-		\item Ein Neuron gibt sein Signal weiter, wenn das aufsummierte Signal der Neuronen aus der Schicht davor einen Threshhold übersteigen
+		\item Ein Neuron gibt sein Signal weiter, wenn das aufsummierte Signal der Neuronen aus der Schicht davor einen festgelegten Wert übersteigt
 	\end{itemize}
 \end{frame}
 
@@ -78,43 +94,42 @@
 	\frametitle{Was das Netz kann}
 	
 	\begin{itemize}
-		\item Das Eingangssignal für ein Neuron 	
+		\item Die Eingangssignale für die nächste Schicht an Neuronen berechnen
+		\item Die Signale zu einer gültigen Ausgabe auswerten
+		\item Den Aufbau des Netzes ausgeben
 	\end{itemize}
+	
+	\begin{figure}
+		\begin{center}
+			\includegraphics[scale=0.25]{net.png}
+		\end{center}
+		\caption{Beispielnetz}
+		\begin{footnotesize}
+		Quelle: http://www.texample.net/media/tikz/examples/PNG/neural-network.png
+		\end{footnotesize}
+		\label{fig:Netz}
+	\end{figure}
 	
 \end{frame}
 
 \section{Der genetische Algorithmus}
-\subsection*{}
-
 \begin{frame}
-	\frametitle{Zusammenfassung}
+	\frametitle{Der genetische Algorithmus}
 
 	\begin{itemize}
-		\item Zusammenfassung 1
+		\item Je mehr Spiele ein Netz gewinnt, desto wahrscheinlicher überleben dessen Eigenschaften
+		\item Verschiedene Möglichkeiten die Vererbung zu gestalten:
 
 		\begin{itemize}
-			\item Unterpunkt 1
-			\item Unterpunkt 2
+			\item Variable Lebensdauer von Netzen
+			\item Verschiedene Mutationswahrscheinlichkeiten
+			\item Crossovers
 		\end{itemize}
-
-		\item Zusammenfassung 2
-
-		\begin{itemize}
-			\item Unterpunkt 1
-			\item Unterpunkt 2
-		\end{itemize}
+		
+		\item Finden der besten Kombination durch Ausprobieren
 	\end{itemize}
 \end{frame}
 
-\section{Zeitplan}
-\subsection*{}
-
-\begin{frame}
-	\frametitle{Literatur}
-
-	\nocite*
-	\bibliographystyle{alpha}
-	\bibliography{literatur}
-\end{frame}
+%\section{Zeitplan}
 
 \end{document}
