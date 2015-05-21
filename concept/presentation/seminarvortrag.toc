@@ -1,5 +1,0 @@
-\beamer@endinputifotherversion {3.33pt}
-\beamer@sectionintoc {1}{Ziele}{3}{0}{1}
-\beamer@sectionintoc {2}{Go}{4}{0}{2}
-\beamer@sectionintoc {3}{Das Netz}{6}{0}{3}
-\beamer@sectionintoc {4}{Der genetische Algorithmus}{8}{0}{4}
