@@ -18,8 +18,6 @@ struct neuralnet{
 	int neurons_per_hidden_layer;
 	int output_count;
 
-	float* edges;
-
 	float* input_edges;
 	float* edges;
 	float* output_edges;

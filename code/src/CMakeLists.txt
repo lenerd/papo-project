@@ -3,7 +3,7 @@ set (MAIN_SOURCE main.c)
 
 # other source files
 set (PROJECT_SOURCES
-    # neuralnet/neuralnet.c
+    neuralnet/neuralnet.c
     example/example.c
 )
 
