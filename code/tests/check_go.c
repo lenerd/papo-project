@@ -20,10 +20,28 @@ START_TEST (test_board_init)
     ck_assert(board != NULL);
     ck_assert(board->buffer != NULL);
     ck_assert(board->grid != NULL);
+
     /* correct size */
     ck_assert(board->size == 5);
+
     /* black begins */
     ck_assert(board->turn == c_black);
+
+    /* no stones are captured */
+    ck_assert(board->black_captured == 0);
+    ck_assert(board->white_captured == 0);
+
+    /* check grid pointer */
+    ck_assert(board->grid[0][0] == ps_empty);
+    ck_assert(board->grid[-1][0] == ps_illegal);
+    ck_assert(board->grid[0][-1] == ps_illegal);
+    ck_assert(board->grid[-1][-1] == ps_illegal);
+    ck_assert(board->grid[board->size - 1][0] == ps_empty);
+    ck_assert(board->grid[0][board->size - 1] == ps_empty);
+    ck_assert(board->grid[board->size - 1][board->size - 1] == ps_empty);
+    ck_assert(board->grid[board->size][0] == ps_illegal);
+    ck_assert(board->grid[0][board->size] == ps_illegal);
+    ck_assert(board->grid[board->size][board->size] == ps_illegal);
 }
 END_TEST
 

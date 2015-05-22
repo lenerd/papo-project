@@ -29,7 +29,7 @@ typedef enum
     ps_empty = 0,
     ps_black = 1,
     ps_white = 2,
-    ps_illegal = -1,
+    ps_illegal = 4,
 } pos_state_t;
 
 /**
@@ -38,13 +38,17 @@ typedef enum
 typedef struct
 {
     /** \brief Buffer for actual board. */
-    pos_state_t* buffer;
+    uint8_t* buffer;
     /** \brief 2D interface */
-    pos_state_t** grid;
+    uint8_t** grid;
     /** \brief Size of the board. */
     uint8_t size;
     /** \brief Specifies next player to place a stone. */
     color_t turn;
+    /** \brief Number of captured black stones. */
+    uint16_t black_captured;
+    /** \brief Number of captured white stones. */
+    uint16_t white_captured;
 } board_t;
 
 
