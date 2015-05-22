@@ -4,6 +4,7 @@ set (MAIN_SOURCE main.c)
 # other source files
 set (PROJECT_SOURCES
     neuralnet/neuralnet.c
+    go/board.c
     example/example.c
 )
 
