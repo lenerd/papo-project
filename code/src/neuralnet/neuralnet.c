@@ -184,11 +184,14 @@ int main(int argc, char** argv){
 		1.3f, 2.3f, 3.3f,
 	
 		1.0f, 2.0f, 3.0f,
-		1.1f, 2.1f, 3.1f};
+		1.1f, 2.1f, 3.1f,
+		1.2f, 2.2f, 3.2f,
+		1.3f, 2.3f, 3.3f,
+		1.4f, 2.4f, 3.4f};
 
 	//3 input, 3 hidden layer, 2 neurons per hidden layer, 5 output.
 
-	struct neuralnet* n = create_neural_net_random(3, 3, 2, 2, edges);
+	struct neuralnet* n = create_neural_net_random(3, 3, 2, 5, edges);
 
 	print_neural_net(n);
 
