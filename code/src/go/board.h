@@ -93,4 +93,10 @@ void board_place (board_t* board, uint8_t x, uint8_t y);
  */
 void board_pass (board_t* board);
 
+/**
+ * \brief The number of liberties of a (group of) stone(s).
+ * \pre board->grid[x][y] == ps_black || board->grid[x][y] == ps_white
+ */
+uint16_t board_num_liberties (const board_t* board, uint8_t x, uint8_t y);
+
 #endif /* BOARD_H */

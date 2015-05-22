@@ -64,6 +64,22 @@ START_TEST (test_board_placement)
 }
 END_TEST
 
+START_TEST (test_board_liberties)
+{
+    board_place(board, 0, 0);
+    ck_assert(board_num_liberties(board, 0, 0) == 2);
+    board_place(board, 1, 0);
+    ck_assert(board_num_liberties(board, 0, 0) == 1);
+    ck_assert(board_num_liberties(board, 1, 0) == 2);
+    board_place(board, 0, 1);
+    ck_assert(board_num_liberties(board, 0, 0) == 2);
+    ck_assert(board_num_liberties(board, 1, 0) == 2);
+    board_place(board, 1, 1);
+    ck_assert(board_num_liberties(board, 0, 0) == 1);
+    ck_assert(board_num_liberties(board, 1, 0) == 3);
+}
+END_TEST
+
 START_TEST (test_board_capture)
 {
     board_place(board, 0, 0);
@@ -85,6 +101,7 @@ Suite* board_suite (void)
     tcase_add_checked_fixture(tc_board, setup, teardown);
     tcase_add_test(tc_board, test_board_init);
     tcase_add_test(tc_board, test_board_placement);
+    tcase_add_test(tc_board, test_board_liberties);
     tcase_add_test(tc_board, test_board_capture);
     suite_add_tcase(s, tc_board);
 
