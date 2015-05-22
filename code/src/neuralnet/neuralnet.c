@@ -4,8 +4,8 @@
 #include <math.h>
 #include "neuralnet.h"
 
-float sigmoid(float x)		   { return 1.0f / (1.0f + (float)pow(E, -x)); }
-float inverse_sigmoid(float x) { return (float)(-log(1.0f / x - 1.0f)); }
+float sigmoid(float x)		    { return 1.0f / (1.0f + (float)pow(E, -x)); }
+float inverse_sigmoid(float x)  { return (float)(-log(1.0f / x - 1.0f)); }
 float centered_sigmoid(float x) { return 2.0f * (sigmoid(x) - 0.5f); }
 
 float random_value_01()					    { return (float)rand() / RAND_MAX; }
@@ -207,11 +207,22 @@ int main(int argc, char** argv){
 
 	print_neural_net(n2);
 
-	float n2_in[] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f };
+	float n2_in[] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 	float n2_out[2];
 
 	calculate_output(n2, n2_in, n2_out);
 	printf("Input: %f, %f, %f, %f, %f, %f\nOutput: %f, %f\n\n", n2_in[0], n2_in[1], n2_in[2], n2_in[3], n2_in[4], n2_in[5], n2_out[0], n2_out[1]);
+
+	//1 input, 1 hidden layer, 1 neurons per hidden layer, 1 output.
+	struct neuralnet* n3 = create_neural_net_random(1, 1, 1, 1);
+
+	print_neural_net(n3);
+
+	float n3_in[] = { 0.0f };
+	float n3_out[1];
+
+	calculate_output(n3, n3_in, n3_out);
+	printf("Input: %f\nOutput: %f\n\n", n3_in[0], n3_out[0]);
 
 	getchar();
 
