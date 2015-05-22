@@ -190,10 +190,13 @@ int main(int argc, char** argv){
 		1.4f, 2.4f, 3.4f};
 
 	//3 input, 3 hidden layer, 2 neurons per hidden layer, 5 output.
+	struct neuralnet* n1 = create_neural_net_buffer(3, 3, 2, 5, edges);
 
-	struct neuralnet* n = create_neural_net_random(3, 3, 2, 5, edges);
+	//6 input, 4 hidden layer, 10 neurons per hidden layer, 2 output.
+	struct neuralnet* n2 = create_neural_net_random(6, 4, 10, 2);
 
-	print_neural_net(n);
+	print_neural_net(n1);
+	print_neural_net(n2);
 
 	getchar();
 

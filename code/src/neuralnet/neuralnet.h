@@ -33,10 +33,15 @@ struct neuralnet* create_neural_net_buffer(int input_count, int hidden_layer_cou
 struct neuralnet* create_neural_net_data(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, char* filepath);
 
 void deallocate_neural_net(struct neuralnet* net);
+
+//Use this to get rid of a neural net.
 void destroy_neural_net(struct neuralnet* net);
 
-void calculate_output(struct neuralnet* net, float* input, float* output); //Calculates the output of the neural net based on input.
+//Calculates the output of the neural net based on input.
+void calculate_output(struct neuralnet* net, float* input, float* output);
 
-void print_neural_net(struct neuralnet* net); //Print the edge weights to console
+//Print the edge weights to console. TH stands for threashold, EWs are the edge weights. 
+//Each row stands for one receiving neuron with it's TH and receiving edge weights.
+void print_neural_net(struct neuralnet* net);
 
 #endif
