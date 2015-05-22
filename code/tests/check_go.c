@@ -18,6 +18,10 @@ START_TEST (test_board_init)
 {
     /* no null pointer */
     ck_assert(board != NULL);
+    ck_assert(board->buffer != NULL);
+    ck_assert(board->grid != NULL);
+    /* correct size */
+    ck_assert(board->size == 5);
     /* black begins */
     ck_assert(board->turn == c_black);
 }
@@ -26,25 +30,28 @@ END_TEST
 START_TEST (test_board_placement)
 {
     ck_assert(board->turn == c_black);
+    ck_assert(!board_legal_placement(board, 5, 0, c_black));
+    ck_assert(!board_legal_placement(board, 6, 0, c_black));
+    ck_assert(!board_legal_placement(board, 6, 6, c_black));
     ck_assert(board_legal_placement(board, 0, 0, c_black));
     ck_assert(!board_legal_placement(board, 0, 0, c_white));
-    board_place(board, 0, 0, c_black);
+    board_place(board, 0, 0);
     ck_assert(board->turn == c_white);
     ck_assert(!board_legal_placement(board, 0, 0, c_black));
     ck_assert(!board_legal_placement(board, 0, 0, c_white));
     ck_assert(!board_legal_placement(board, 1, 0, c_black));
     ck_assert(board_legal_placement(board, 1, 0, c_white));
-    board_place(board, 1, 0, c_white);
+    board_place(board, 1, 0);
     ck_assert(board->turn == c_black);
 }
 END_TEST
 
 START_TEST (test_board_capture)
 {
-    board_place(board, 0, 0, c_black);
-    board_place(board, 1, 0, c_white);
-    board_place(board, 2, 0, c_black);
-    board_place(board, 0, 1, c_white);
+    board_place(board, 0, 0);
+    board_place(board, 1, 0);
+    board_place(board, 2, 0);
+    board_place(board, 0, 1);
     ck_assert(board_position_state(board, 0, 0) == ps_empty);
 }
 END_TEST
@@ -57,8 +64,10 @@ Suite* board_suite (void)
 
     tc_board = tcase_create("Board");
 
+    tcase_add_checked_fixture(tc_board, setup, teardown);
     tcase_add_test(tc_board, test_board_init);
     tcase_add_test(tc_board, test_board_placement);
+    tcase_add_test(tc_board, test_board_capture);
     suite_add_tcase(s, tc_board);
 
     return s;

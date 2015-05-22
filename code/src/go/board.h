@@ -38,7 +38,11 @@ typedef enum
 typedef struct
 {
     /** \brief Buffer for actual board. */
-    pos_state_t* grid;
+    pos_state_t* buffer;
+    /** \brief 2D interface */
+    pos_state_t** grid;
+    /** \brief Size of the board. */
+    uint8_t size;
     /** \brief Specifies next player to place a stone. */
     color_t turn;
 } board_t;
@@ -76,13 +80,13 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y, color_t 
  * \post turn != color
  * \post board_legal_placement(board, x, y, color) == false
  */
-void board_place (board_t* board, uint8_t x, uint8_t y, color_t color);
+void board_place (board_t* board, uint8_t x, uint8_t y);
 
 /**
  * \brief Don't place a stone and change turn.
  * \pre board != NULL
  * \post turn != color
  */
-void board_pass (board_t* board, color_t color);
+void board_pass (board_t* board);
 
 #endif /* BOARD_H */
