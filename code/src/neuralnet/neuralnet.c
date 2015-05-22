@@ -4,7 +4,7 @@
 #include <math.h>
 #include "neuralnet.h"
 
-float sigmoid(float x)		   { return 1.0f / (1.0f + (float)pow(E, -x)); }
+float sigmoid(float x)		   { return 1.0f / (1.0f + (float)pow(M_E, -x)); }
 float inverse_sigmoid(float x) { return (float)(-log(1.0f / x - 1.0f)); }
 float centered_sigmoid(float x) { return 2.0f * (sigmoid(x) - 0.5f); }
 
