@@ -79,7 +79,7 @@ void destroy_neural_net(struct neuralnet* net){
 	deallocate_neural_net(net);
 }
 
-void calculate_output(struct neuralnet* net, float* input, float* output){ //Tons of parallel optimization possibilities.
+void calculate_output(const struct neuralnet* net, float* input, float* output){ //Tons of parallel optimization possibilities.
 	
 	float* old_current = (float*)malloc(sizeof(float) * net->neurons_per_hidden_layer);
 	float* current = (float*)malloc(sizeof(float) * net->neurons_per_hidden_layer);
@@ -99,7 +99,9 @@ void calculate_output(struct neuralnet* net, float* input, float* output){ //Ton
 
 	//Hidden layer intern calculation
 	for (int i = 0; i < net->hidden_layer_count - 1; i++){
+		int c = old_current;
 		old_current = current;
+		current = c;
 		for (int j = 0; j < net->neurons_per_hidden_layer; j++){
 			sum = -net->edges[index]; //Bias (threshhold simulated as edge)
 			index++;
@@ -124,7 +126,7 @@ void calculate_output(struct neuralnet* net, float* input, float* output){ //Ton
 	free(current);
 }
 
-void print_neural_net(struct neuralnet* net){
+void print_neural_net(const struct neuralnet* net){
 
 	int index = 0;
 
@@ -192,11 +194,24 @@ int main(int argc, char** argv){
 	//3 input, 3 hidden layer, 2 neurons per hidden layer, 5 output.
 	struct neuralnet* n1 = create_neural_net_buffer(3, 3, 2, 5, edges);
 
+	print_neural_net(n1);
+	
+	float n1_in[] = { 1.0f, 2.0f, 3.0f };
+	float n1_out[5];
+
+	calculate_output(n1, n1_in, n1_out);
+	printf("Input: %f, %f, %f\nOutput: %f, %f, %f, %f, %f\n\n", n1_in[0], n1_in[1], n1_in[2], n1_out[0], n1_out[1], n1_out[2], n1_out[3], n1_out[4]);
+
 	//6 input, 4 hidden layer, 10 neurons per hidden layer, 2 output.
 	struct neuralnet* n2 = create_neural_net_random(6, 4, 10, 2);
 
-	print_neural_net(n1);
 	print_neural_net(n2);
+
+	float n2_in[] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f };
+	float n2_out[2];
+
+	calculate_output(n2, n2_in, n2_out);
+	printf("Input: %f, %f, %f, %f, %f, %f\nOutput: %f, %f\n\n", n2_in[0], n2_in[1], n2_in[2], n2_in[3], n2_in[4], n2_in[5], n2_out[0], n2_out[1]);
 
 	getchar();
 

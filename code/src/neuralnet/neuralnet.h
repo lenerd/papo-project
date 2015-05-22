@@ -38,10 +38,10 @@ void deallocate_neural_net(struct neuralnet* net);
 void destroy_neural_net(struct neuralnet* net);
 
 //Calculates the output of the neural net based on input.
-void calculate_output(struct neuralnet* net, float* input, float* output);
+void calculate_output(const struct neuralnet* net, float* input, float* output);
 
 //Print the edge weights to console. TH stands for threashold, EWs are the edge weights. 
 //Each row stands for one receiving neuron with it's TH and receiving edge weights.
-void print_neural_net(struct neuralnet* net);
+void print_neural_net(const struct neuralnet* net);
 
 #endif
