@@ -4,14 +4,9 @@
 #include <math.h>
 #include "neuralnet.h"
 
-<<<<<<< HEAD
-float sigmoid(float x)		   { return 1.0f / (1.0f + (float)pow(E, -x)); }
+float sigmoid(float x)		   { return 1.0f / (1.0f + (float)exp(x)); }
 float inverse_sigmoid(float x) { return (float)(-log(1.0f / x - 1.0f)); }
 
-=======
-float sigmoid(float x)		   { return 1.0f / (1.0f + (float)pow(M_E, -x)); }
-float inverse_sigmoid(float x) { return (float)(-log(1.0f / x - 1.0f)); }
->>>>>>> origin/master
 float centered_sigmoid(float x) { return 2.0f * (sigmoid(x) - 0.5f); }
 
 float random_value_01()					    { return (float)rand() / RAND_MAX; }
