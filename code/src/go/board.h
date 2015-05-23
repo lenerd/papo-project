@@ -75,7 +75,8 @@ pos_state_t board_position_state (board_t* board, uint8_t x, uint8_t y);
  * \brief Checks if a placement is legal.
  * \pre board != NULL
  */
-bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y, color_t color);
+bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
+                            color_t color);
 
 /**
  * \brief Places a stone on given position.
