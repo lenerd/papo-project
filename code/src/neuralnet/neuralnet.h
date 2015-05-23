@@ -39,7 +39,7 @@ void destroy_neural_net(struct neuralnet* net);
 void calculate_output(const struct neuralnet* net, float* input, float* output);
 
 //Print the edge weights to console. TH stands for threashold, EWs are the edge weights. 
-//Each row stands for one receiving neuron with it's TH and receiving edge weights.
+//Each row stands for one receiving neuron with it's TH and receiving EWs.
 void print_neural_net(const struct neuralnet* net);
 
 #endif /* NEURALNET_H */

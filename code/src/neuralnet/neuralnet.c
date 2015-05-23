@@ -24,7 +24,7 @@ struct neuralnet* allocate_neural_net(int input_count, int hidden_layer_count, i
 
 	n->edges_count = (input_count + 1) * neurons_per_hidden_layer + 
 		(neurons_per_hidden_layer + 1) * neurons_per_hidden_layer * (hidden_layer_count - 1) + 
-		(neurons_per_hidden_layer + 1) * output_count;
+		neurons_per_hidden_layer * output_count;
 
 	n->edges = (float*)malloc(sizeof(float) *(n->edges_count));
 
@@ -115,12 +115,10 @@ void calculate_output(const struct neuralnet* net, float* input, float* output){
 
 	//Hidden layer to output layer
 	for (int i = 0; i < net->output_count; i++){
-		sum = -net->edges[index]; //Bias (threshhold simulated as edge)
-		index++;
 		for (int j = 0; j < net->neurons_per_hidden_layer; j++, index++){
 			sum += net->edges[index] * current[j];
 		}
-		output[i] = sum > 0.0f ? centered_sigmoid(sum) : 0.0f;
+		output[i] = sum;
 	}
 
 	free(old_current);
@@ -162,8 +160,7 @@ void print_neural_net(const struct neuralnet* net){
 	printf("\n\n\tHidden layer to output layer:\n");
 	for (int i = 0; i < net->output_count; i++){
 		//Threashold and incoming edge weights of i-th neuron
-		printf("\n\t\tTH: %+.2f EWs:", net->edges[index]);
-		index++;
+		printf("\n\t\tEWs:");
 		for (int j = 0; j < net->neurons_per_hidden_layer; j++, index++){
 			printf(" %+.2f", net->edges[index]);
 		}
@@ -176,43 +173,35 @@ void print_neural_net(const struct neuralnet* net){
 int main(int argc, char** argv){
 	srand((unsigned int)time(NULL));
 
-	float edges[] = {	
-		1.0f, 2.0f, 3.0f, 4.0f,
-		1.1f, 2.1f, 3.1f, 4.1f,
 	
-		1.0f, 2.0f, 3.0f,
-		1.1f, 2.1f, 3.1f,
 
-		1.2f, 2.2f, 3.2f,
-		1.3f, 2.3f, 3.3f,
-	
-		1.0f, 2.0f, 3.0f,
-		1.1f, 2.1f, 3.1f,
-		1.2f, 2.2f, 3.2f,
-		1.3f, 2.3f, 3.3f,
-		1.4f, 2.4f, 3.4f};
-
-	//3 input, 3 hidden layer, 2 neurons per hidden layer, 5 output.
-	struct neuralnet* n1 = create_neural_net_buffer(3, 3, 2, 5, edges);
+	//1 input, 1 hidden layer, 1 neurons per hidden layer, 1 output.
+	struct neuralnet* n1 = allocate_neural_net(1, 1, 1, 1);
+	float* edges = (float*)malloc(sizeof(float) * n1->edges_count);
+	edges[0] = 0.0f; 
+	edges[1] = 1.0f; 
+	edges[2] = 1.0f;
+	initialize_neural_net_buffer(n1, edges);
+	free(edges);
 
 	print_neural_net(n1);
 	
-	float n1_in[] = { 1.0f, 2.0f, 3.0f };
-	float n1_out[5];
+	float n1_in[] = { 1.0f };
+	float n1_out[1];
 
 	calculate_output(n1, n1_in, n1_out);
-	printf("Input: %f, %f, %f\nOutput: %f, %f, %f, %f, %f\n\n", n1_in[0], n1_in[1], n1_in[2], n1_out[0], n1_out[1], n1_out[2], n1_out[3], n1_out[4]);
+	printf("Input: %f\nOutput: %f\n\n", n1_in[0], n1_out[0]);
 
-	//6 input, 4 hidden layer, 10 neurons per hidden layer, 2 output.
-	struct neuralnet* n2 = create_neural_net_random(6, 4, 10, 2);
+	//3 input, 4 hidden layer, 6 neurons per hidden layer, 2 output.
+	struct neuralnet* n2 = create_neural_net_random(3, 4, 6, 2);
 
 	print_neural_net(n2);
 
-	float n2_in[] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+	float n2_in[] = { 0.0f, 0.0f, 0.0f };
 	float n2_out[2];
 
 	calculate_output(n2, n2_in, n2_out);
-	printf("Input: %f, %f, %f, %f, %f, %f\nOutput: %f, %f\n\n", n2_in[0], n2_in[1], n2_in[2], n2_in[3], n2_in[4], n2_in[5], n2_out[0], n2_out[1]);
+	printf("Input: %f, %f, %f\nOutput: %f, %f\n\n", n2_in[0], n2_in[1], n2_in[2], n2_out[0], n2_out[1]);
 
 	//1 input, 1 hidden layer, 1 neurons per hidden layer, 1 output.
 	struct neuralnet* n3 = create_neural_net_random(1, 1, 1, 1);
