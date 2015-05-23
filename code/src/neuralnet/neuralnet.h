@@ -1,7 +1,7 @@
 #ifndef NEURALNET_H
 #define NEURALNET_H
 
-#include <stdlib.h>
+#define E 2.7182818284f
 
 float sigmoid(float x);							//Mathematical sigmoid function for the intensity of firing neurons. Output values are between 0.0 and 1.0, exclusive. Cuts the y-Axis at 0.5.
 float inverse_sigmoid(float x);					//Inverse of the sigmoid function for initial edge weights of the neuralnet (x has to be between 0.0 and 1.0, exclusive)

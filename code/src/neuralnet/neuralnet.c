@@ -4,13 +4,9 @@
 #include <math.h>
 #include "neuralnet.h"
 
-<<<<<<< HEAD
-float sigmoid(float x)		    { return 1.0f / (1.0f + (float)pow(E, -x)); }
-float inverse_sigmoid(float x)  { return (float)(-log(1.0f / x - 1.0f)); }
-=======
-float sigmoid(float x)		   { return 1.0f / (1.0f + (float)pow(M_E, -x)); }
+float sigmoid(float x)		   { return 1.0f / (1.0f + (float)pow(E, -x)); }
 float inverse_sigmoid(float x) { return (float)(-log(1.0f / x - 1.0f)); }
->>>>>>> origin/master
+
 float centered_sigmoid(float x) { return 2.0f * (sigmoid(x) - 0.5f); }
 
 float random_value_01()					    { return (float)rand() / RAND_MAX; }
@@ -104,9 +100,9 @@ void calculate_output(const struct neuralnet* net, float* input, float* output){
 
 	//Hidden layer intern calculation
 	for (int i = 0; i < net->hidden_layer_count - 1; i++){
-		int c = old_current;
+		int c = (int)old_current;
 		old_current = current;
-		current = c;
+		current = (float*)c;
 		for (int j = 0; j < net->neurons_per_hidden_layer; j++){
 			sum = -net->edges[index]; //Bias (threshhold simulated as edge)
 			index++;
