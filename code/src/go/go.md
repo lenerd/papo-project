@@ -14,6 +14,7 @@ Go Board
 * check for invalid moves
 * complete history
 * end of game
+* score calculation
 
 
 ### Todo
@@ -21,6 +22,7 @@ Go Board
 * groups
 * complete history
 * end of game
+* score calculation
 
 
 SGF Implementation
