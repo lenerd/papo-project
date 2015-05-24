@@ -1,14 +1,16 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <stdbool.h>
-#include <stdint.h>
-
 /**
  * \file
- * \brief
+ * \brief Contains everything required for a go board.
  * \author Lennart Braun <3braun@informatik.uni-hamburg.de>
+ * \ingroup go
  */
+
+
+#include <stdbool.h>
+#include <stdint.h>
 
 
 /**
