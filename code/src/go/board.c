@@ -100,7 +100,8 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
         return false;
     if (board->grid[x][y] != ps_empty)
         return false;
-    /* TODO: check for suicide */
+    if (board_num_liberties (board, x, y) == 0)
+	return false;
     return true;
 }
 
@@ -117,6 +118,99 @@ void board_pass (board_t* board)
 }
 
 uint16_t board_num_liberties (const board_t* board, uint8_t x, uint8_t y)
+{		
+	uint16_t liberties = 0;		
+	
+	pos_state_t state = board_position_state(board, x, y);
+	int** group = get_group(board, x, y, state);
+
+	for(int i = 1; i <= group[0][0]; i++)
+	{
+		uint8_t a = group[i][0];
+		uint8_t b = group[i][1];
+		uint8_t left = a-1;
+		uint8_t right = a+1;
+		uint8_t top = b-1;
+		uint8_t bottom = b+1;
+							
+		if(board_position_state(board, left, b) != state && board_position_state(board, left, b) != ps_black)
+			liberties += 1;
+		if(board_position_state(board, right, b) != state && board_position_state(board, right, b) != ps_black)
+			liberties += 1;
+		if(board_position_state(board, a, top) != state && board_position_state(board, a, top) != ps_black)
+			liberties += 1;
+		if(board_position_state(board, a, bottom) != state && board_position_state(board, a, bottom) != ps_black)
+			liberties += 1;
+	}			
+}
+
+int** get_group(const board_t* board, uint8_t x, uint8_t y, pos_state_t state)
 {
-    return 0;
+	int size = 1;
+	int** group;
+	group[1][0]=x;
+	group[1][1]=y;
+	int current = 1;
+	int index = 2;
+
+	while(group[current][0] != 0)
+	{
+		uint8_t a = group[current][0];
+		uint8_t b = group[current][1];
+		uint8_t left = a-1;
+		uint8_t right = a+1;
+		uint8_t top = b-1;
+		uint8_t bottom = b+1;
+		
+		while(board_position_state(board, left, b)==state)
+		{
+				if(board_position_state(board, left, b)!= ps_marked)
+				{
+					group[index][0]=left;
+					group[index][1]=b;	
+					board->grid[left][b]=ps_marked;
+					++index;
+					++size;
+				}
+		}
+		while(board_position_state(board, right, b)==state)
+		{
+				if(board_position_state(board, right, b)!= ps_marked)
+				{
+					group[index][0]=right;
+					group[index][1]=b;	
+					board->grid[right][b]=ps_marked;
+					++index;
+					++size;
+				}
+		
+		}
+		while(board_position_state(board, a, top)==state)
+		{
+				if(board_position_state(board, a, top)!= ps_marked)
+				{
+					group[index][0]=a;
+					group[index][1]=top;	
+					board->grid[a][top]=ps_marked;
+					++index;
+					++size;
+				}
+			
+		}
+		while(board_position_state(board, a, bottom)==state)
+		{
+				if(board_position_state(board, a, bottom)!= ps_marked)
+				{
+					group[index][0]=a;
+					group[index][1]=bottom;	
+					board->grid[a][bottom]=ps_marked;
+					++index;
+					++size;
+				}
+		
+		}
+		
+		++current;				 
+	}		
+	group[0][0]=size;
 }

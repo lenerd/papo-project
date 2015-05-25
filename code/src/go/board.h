@@ -32,6 +32,7 @@ typedef enum
     ps_black = 1,
     ps_white = 2,
     ps_illegal = 4,
+	ps_marked = 5,
 } pos_state_t;
 
 /**

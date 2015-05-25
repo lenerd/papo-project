@@ -19,7 +19,8 @@ Go Board
 
 ### Todo
 
-* groups
+* test and improve group finding system
+* capturing
 * complete history
 * end of game
 * score calculation
@@ -32,7 +33,9 @@ SGF Implementation
 
 ### Todo
 
-* everything
+* test methods
+* see if setup is alright
+* test if games actually work
 
 
 GTP Implementation
