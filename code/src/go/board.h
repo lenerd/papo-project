@@ -5,6 +5,7 @@
  * \file
  * \brief Contains everything required for a go board.
  * \author Lennart Braun <3braun@informatik.uni-hamburg.de>
+ * \author Theresa Eimer <3eimer@informatik.uni-hamburg.de>
  * \ingroup go
  */
 
