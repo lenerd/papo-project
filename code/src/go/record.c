@@ -10,35 +10,36 @@
 /**
 * \brief creates a .sgf file and deals with the setup
 */
-FILE create_file(int rank){
-	FILE record = fopen("/rank.sgf", "a");
+FILE* create_file(int rank){
+	FILE* record = fopen("/rank.sgf", "a");
 	
-	\\ Programm
+	// Programm
 	fprintf(record, "AP[nugengo:?] \n");
 	
-	\\ Game Type
+	// Game Type
 	fprintf(record, "GM[1] \n");
 
-	\\ Board size
+	// Board size
 	fprintf(record, "SZ[9] \n");
 	
-	fclose(record);	
+	// fclose(record);	
+    return record;
 }
 
 /**
 * \brief Writes moves into the created file (only use for legal moves without passing!)
 */
 
-void write_move(FILE record, int player, uint8_t x, uint8_t y){
+void write_move(FILE* record, int player, uint8_t x, uint8_t y){
 	
-	fopen(record, "a");
+	// fopen(record, "a");
 	char i = x + 97;
 	char j = y + 97;
 	
 	if(player == 1){
-		printf(record, "B["ij"]\n");
+		fprintf(record, "B[%c%c]\n", i, j);
 	}
 	else{
-		printf(record, "W["ij"]\n");
+		fprintf(record, "W[%c%c]\n", i, j);
 	}
 }

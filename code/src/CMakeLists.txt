@@ -5,6 +5,7 @@ set (MAIN_SOURCE main.c)
 set (PROJECT_SOURCES
     neuralnet/neuralnet.c
     go/board.c
+    go/record.c
     example/example.c
 )
 
