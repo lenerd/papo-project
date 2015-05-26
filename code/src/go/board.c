@@ -100,7 +100,7 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
         return false;
     if (board->grid[x][y] != ps_empty)
         return false;
-    if (board_num_liberties (get_group[x][y], (pos_state_t) color) == 0)
+    if (board_num_liberties (board, get_group(board, x, y), (pos_state_t) color) == 0)
 	return false;
     return true;
 }
@@ -117,7 +117,7 @@ void board_pass (board_t* board)
     board->turn = (board->turn == c_black) ? c_white : c_black;
 }
 
-uint16_t board_num_liberties (int** group, pos_state_t state)
+uint16_t board_num_liberties (board_t* board, int** group, pos_state_t state)
 {		
 	uint16_t liberties = 0;		
 	
@@ -130,18 +130,18 @@ uint16_t board_num_liberties (int** group, pos_state_t state)
 		uint8_t top = b-1;
 		uint8_t bottom = b+1;
 							
-		if(board_position_state(board, left, b) != state && board_position_state(board, left, b) != ps_black)
+		if(board_position_state(board, left, b) != ps_white && board_position_state(board, left, b) != ps_black)
 			liberties += 1;
-		if(board_position_state(board, right, b) != state && board_position_state(board, right, b) != ps_black)
+		if(board_position_state(board, right, b) != ps_white && board_position_state(board, right, b) != ps_black)
 			liberties += 1;
-		if(board_position_state(board, a, top) != state && board_position_state(board, a, top) != ps_black)
+		if(board_position_state(board, a, top) != ps_white && board_position_state(board, a, top) != ps_black)
 			liberties += 1;
-		if(board_position_state(board, a, bottom) != state && board_position_state(board, a, bottom) != ps_black)
+		if(board_position_state(board, a, bottom) != ps_white && board_position_state(board, a, bottom) != ps_black)
 			liberties += 1;
 	}			
 }
 
-int** get_group(const board_t* board, uint8_t x, uint8_t y)
+int** get_group(board_t* board, uint8_t x, uint8_t y)
 {
 	pos_state_t state= board_position_state(board, x, y);
 	int size = 1;
@@ -222,10 +222,10 @@ int** get_group(const board_t* board, uint8_t x, uint8_t y)
 	}
 }
 
-void capture(const board_t* board, uint8_t x, uint8_t y)
+void capture(board_t* board, uint8_t x, uint8_t y)
 {
 	pos_state_t state= board_position_state(board, x, y);
-	int ***neighbours[4];
+	int ***neighbours;
 	int stones_captured = 0;
 	uint8_t left = x-1;
 	uint8_t right = x+1;
@@ -235,14 +235,14 @@ void capture(const board_t* board, uint8_t x, uint8_t y)
 	neighbours[0]=get_group(board, left, y);
 	neighbours[1]=get_group(board, right, y);
 	neighbours[2]=get_group(board, x, top);
-	neighbours[3]=get_goup(board, x, bottom);
+	neighbours[3]=get_group(board, x, bottom);
 	
 	for(int i = 0; i<4; i++)
 	{
-		if(board_num_liberties(neighbours[i], state)==0)
+		if(board_num_liberties(board, neighbours[i], state)==0)
 		{
 			
-			for(int j = 1; j <= neighbors[i][0][0]; j++)
+			for(int j = 1; j <= neighbours[i][0][0]; j++)
 			{
 				board->grid[neighbours[i][j][0]][neighbours[i][j][1]] = ps_empty;
 				++stones_captured;
