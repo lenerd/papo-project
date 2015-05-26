@@ -172,6 +172,7 @@ int** get_group(const board_t* board, uint8_t x, uint8_t y, pos_state_t state)
 					++index;
 					++size;
 				}
+			left-=1;
 		}
 		while(board_position_state(board, right, b)==state)
 		{
@@ -184,6 +185,7 @@ int** get_group(const board_t* board, uint8_t x, uint8_t y, pos_state_t state)
 					++size;
 				}
 		
+			right+=1;
 		}
 		while(board_position_state(board, a, top)==state)
 		{
@@ -195,7 +197,8 @@ int** get_group(const board_t* board, uint8_t x, uint8_t y, pos_state_t state)
 					++index;
 					++size;
 				}
-			
+			top-=1;			
+
 		}
 		while(board_position_state(board, a, bottom)==state)
 		{
@@ -207,10 +210,16 @@ int** get_group(const board_t* board, uint8_t x, uint8_t y, pos_state_t state)
 					++index;
 					++size;
 				}
-		
+				
+			bottom+=1;
 		}
 		
 		++current;				 
 	}		
 	group[0][0]=size;
+	
+	for(int j=1; j<=size; j++)
+	{
+		board->grid[group[j][0]][group[j][1]]=state;
+	}
 }

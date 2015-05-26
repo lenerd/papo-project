@@ -104,7 +104,7 @@ void board_pass (board_t* board);
 uint16_t board_num_liberties (const board_t* board, uint8_t x, uint8_t y);
 
 /**
- * \brief Does something.
+ * \brief Finds the group the selected stone belongs to and returns its positions.
  */
 int** get_group(const board_t* board, uint8_t x, uint8_t y, pos_state_t state);
 
