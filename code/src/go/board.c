@@ -100,7 +100,7 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
         return false;
     if (board->grid[x][y] != ps_empty)
         return false;
-    if (board_num_liberties (board, x, y) == 0)
+    if (board_num_liberties (get_group[x][y], (pos_state_t) color) == 0)
 	return false;
     return true;
 }
@@ -108,7 +108,7 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
 void board_place (board_t* board, uint8_t x, uint8_t y)
 {
     board->grid[x][y] = (pos_state_t) board->turn;
-    /* TODO: capture */
+    capture(board, x, y);
     board->turn = (board->turn == c_black) ? c_white : c_black;
 }
 
@@ -117,13 +117,10 @@ void board_pass (board_t* board)
     board->turn = (board->turn == c_black) ? c_white : c_black;
 }
 
-uint16_t board_num_liberties (const board_t* board, uint8_t x, uint8_t y)
+uint16_t board_num_liberties (int** group, pos_state_t state)
 {		
 	uint16_t liberties = 0;		
 	
-	pos_state_t state = board_position_state(board, x, y);
-	int** group = get_group(board, x, y, state);
-
 	for(int i = 1; i <= group[0][0]; i++)
 	{
 		uint8_t a = group[i][0];
@@ -144,8 +141,9 @@ uint16_t board_num_liberties (const board_t* board, uint8_t x, uint8_t y)
 	}			
 }
 
-int** get_group(const board_t* board, uint8_t x, uint8_t y, pos_state_t state)
+int** get_group(const board_t* board, uint8_t x, uint8_t y)
 {
+	pos_state_t state= board_position_state(board, x, y);
 	int size = 1;
 	int** group;
 	group[1][0]=x;
@@ -222,4 +220,38 @@ int** get_group(const board_t* board, uint8_t x, uint8_t y, pos_state_t state)
 	{
 		board->grid[group[j][0]][group[j][1]]=state;
 	}
+}
+
+void capture(const board_t* board, uint8_t x, uint8_t y)
+{
+	pos_state_t state= board_position_state(board, x, y);
+	int ***neighbours[4];
+	int stones_captured = 0;
+	uint8_t left = x-1;
+	uint8_t right = x+1;
+	uint8_t top = y-1;
+	uint8_t bottom = y+1;
+
+	neighbours[0]=get_group(board, left, y);
+	neighbours[1]=get_group(board, right, y);
+	neighbours[2]=get_group(board, x, top);
+	neighbours[3]=get_goup(board, x, bottom);
+	
+	for(int i = 0; i<4; i++)
+	{
+		if(board_num_liberties(neighbours[i], state)==0)
+		{
+			
+			for(int j = 1; j <= neighbors[i][0][0]; j++)
+			{
+				board->grid[neighbours[i][j][0]][neighbours[i][j][1]] = ps_empty;
+				++stones_captured;
+			}
+		}
+	}
+	
+	if(state = ps_white)
+		board->white_captured+=stones_captured;
+	else
+		board->black_captured+=stones_captured;
 }
