@@ -20,10 +20,10 @@ Go Board
 ### Todo
 
 * test and improve group finding system
-* capturing
-* complete history
+* see if capturing works
 * end of game
-* score calculation
+* test calculation
+* find better approximation(?) for illegal moves
 
 
 SGF Implementation

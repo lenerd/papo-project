@@ -326,3 +326,35 @@ uint8_t score_black(board_t* board, int *groups_black)
 	
 	return score;
 }
+
+void approximate_move(board_t* board, uint8_t x, uint8_t y, uint8_t size)
+{
+	int **spots;
+	uint8_t index = 0;
+	uint8_t target = x*y;
+	color_t color = board->turn;
+		
+	for(int i = 0; i<size; i++)
+	{
+		for(int j = 0; j<size; j++)
+		{
+			if(board_position_state(board, i, j)==ps_empty && board_legal_placement(board, i, j, color))
+			{
+				spots[index][0]=i*j;
+				spots[index][1]=i;
+				spots[index][2]=j;	
+			}
+		}
+	}
+	
+	uint8_t closest = 0;
+	for(int a = 0; a <=index; a++)
+	{
+		if((target - spots[a][0]) < (target - spots[closest][0]))
+		{
+			closest = a;
+		} 
+	}
+	
+	board_place(board, spots[closest][1], spots[closest][2]);		
+}
