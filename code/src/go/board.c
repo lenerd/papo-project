@@ -327,11 +327,10 @@ uint8_t score_black(board_t* board, int *groups_black)
 	return score;
 }
 
-void approximate_move(board_t* board, uint8_t x, uint8_t y, uint8_t size)
+int approximate_move(board_t* board, uint8_t x, uint8_t y, uint8_t size)
 {
 	int **spots;
 	uint8_t index = 0;
-	uint8_t target = x*y;
 	color_t color = board->turn;
 		
 	for(int i = 0; i<size; i++)
@@ -340,21 +339,27 @@ void approximate_move(board_t* board, uint8_t x, uint8_t y, uint8_t size)
 		{
 			if(board_position_state(board, i, j)==ps_empty && board_legal_placement(board, i, j, color))
 			{
-				spots[index][0]=i*j;
-				spots[index][1]=i;
-				spots[index][2]=j;	
+				spots[index][0]=i;
+				spots[index][1]=j;	
 			}
 		}
 	}
 	
-	uint8_t closest = 0;
-	for(int a = 0; a <=index; a++)
+	if(index == 0)
+		return -1;
+	else
 	{
-		if((target - spots[a][0]) < (target - spots[closest][0]))
+		uint8_t closest = 0;
+		for(int a = 0; a <=index; a++)
 		{
-			closest = a;
-		} 
-	}
+			if((spots[a][0] < spots[closest][0] && (x - spots[a][0] + y - spots[a][1]) <= (x - spots[closest][0] + y - spots[closest][1])) ||
+			  (spots[a][1] < spots[closest][1] && (x - spots[a][0] + y - spots[a][1]) <= (x - spots[closest][0] + y - spots[closest][1])))
+			{
+				closest = a;
+			} 
+		}	
 	
-	board_place(board, spots[closest][1], spots[closest][2]);		
+		board_place(board, spots[closest][1], spots[closest][2]);
+		return 1;
+	}		
 }

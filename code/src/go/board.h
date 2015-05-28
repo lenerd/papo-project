@@ -130,9 +130,9 @@ uint8_t score_white(board_t* board, int *groups_white);
 uint8_t score_black(board_t* board, int *groups_black);
 
 /**
-* \brief Finds a move relatively close to the given position
+* \brief Finds a move relatively close to the given position; returns -1 if there is none.
 */
-void approximate_move(board_t* board, uint8_t x, uint8_t y, uint8_t size);
+int approximate_move(board_t* board, uint8_t x, uint8_t y, uint8_t size);
 
 
 #endif /* BOARD_H */

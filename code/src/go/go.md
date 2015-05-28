@@ -19,11 +19,7 @@ Go Board
 
 ### Todo
 
-* test and improve group finding system
-* see if capturing works
-* end of game
-* test calculation
-* find better approximation(?) for illegal moves
+* test everything and maybe improve the functions a bit 
 
 
 SGF Implementation
@@ -45,4 +41,5 @@ GTP Implementation
 
 ### Todo
 
-* everything
+* See if it works
+* Decide wether to add implementation for human players (and how to do it)
