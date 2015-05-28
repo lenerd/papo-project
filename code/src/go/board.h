@@ -114,5 +114,20 @@ int** get_group(board_t* board, uint8_t x, uint8_t y);
 */
 void capture(board_t* board, uint8_t x, uint8_t y);
 
+/**
+* \brief Returns the final score from black's perspective including komi.
+*/
+int score(board_t* board, uint8_t size, uint8_t komi);
+
+/**
+* \brief Computes score for white.
+*/
+uint8_t score_white(board_t* board, int *groups_white);
+
+/**
+* \brief Computes score for black.
+*/
+uint8_t score_black(board_t* board, int *groups_black);
+
 
 #endif /* BOARD_H */

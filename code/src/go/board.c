@@ -255,3 +255,74 @@ void capture(board_t* board, uint8_t x, uint8_t y)
 	else
 		board->black_captured+=stones_captured;
 }
+
+int score(board_t* board, uint8_t size, uint8_t komi)
+{
+	int final_score;
+	int *groups_white;
+	int *groups_black;
+	int size_white;
+	int size_black;
+	uint8_t ind_white = 1;
+	uint8_t ind_black = 1;
+
+	for(int i = 0; i < size; i++)
+	{
+		for(int j = 0; j < size; j++)
+		{
+			if(board_position_state(board, i, j)==ps_empty)
+			{
+				int **group = get_group(board, i, j);	
+				pos_state_t state;
+
+				if(i > 0)
+				{
+					int a = i-1;
+					state = board_position_state(board, a, j);
+				}
+				else
+				{
+					int a = i+1;
+					state = board_position_state(board, a, j);
+				}
+				
+				if(state = ps_white)
+				{
+					groups_white[ind_white]=group[0][0];
+					++size_white;
+				}
+				else
+				{
+					groups_black[ind_black]=group[0][0];
+					++size_white;
+				}
+			}
+		}
+	}
+
+	final_score = (int) score_black(board, groups_black) - (int) score_white(board, groups_white) - komi;
+}
+
+uint8_t score_white(board_t* board, int *groups_white)
+{
+	uint8_t score=board->white_captured;
+
+	for(int i = 0; i <= groups_white[0]; i++)
+	{
+		score+=(int) groups_white[i];
+	}
+		
+	return score;
+}
+
+uint8_t score_black(board_t* board, int *groups_black)
+{
+	uint8_t score=board->black_captured;
+	
+	for(int i = 0; i <= groups_black[0]; i++)
+	{
+		score+=(int) groups_black[i];
+	}
+	
+	return score;
+}
