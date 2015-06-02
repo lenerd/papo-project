@@ -4,8 +4,11 @@
 
 \usepackage[utf8]{inputenc}
 %\usepackage{units}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
-\title{NeuGenGo \\ Kann ein neuronales Netz besser Go spielen als wir?}
+\title{NeuGenGo}
+\subtitle{Kann unser neuronales Netz besser Go spielen als wir?}
 \author{Lennart Braun, Armin Schaare, Theresa Eimer}
 \institute{Praktikum Parallele Programmierung \\Fachbereich Informatik\\Universität Hamburg}
 \date{03.06.2015}
@@ -131,5 +134,66 @@
 \end{frame}
 
 %\section{Zeitplan}
+
+\section{Lösungsansatz}
+\begin{frame}
+    \frametitle{Lösungsansatz}
+
+    Sequentieller Algorithmus
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State Generiere ein zufällige Menge $N_0$ an neuronalen Netzwerken
+            \For {Runde $i = 0$ bis $\ldots$}
+                \For {$n, m \in N_i$}
+                    \State lass die Netze $n, m$ gegeneinander spielen
+                    \State und zähle die Anzahl der Siege
+                \EndFor
+                \State generiere die Menge $N_{i+1}$ mit Hilfe eines genetischen
+                Algorithmus abhängig von $N_i$ und den Ergebnissen der Spiele
+            \EndFor
+        \end{algorithmic}
+    \end{algorithm}
+\end{frame}
+\begin{frame}
+    \frametitle{I/O und Visualisierung}
+
+    I/O
+    \begin{itemize}
+        \item Smart Game Format
+            \begin{itemize}
+                \item Speichern und Analyse von Partien
+            \end{itemize}
+        \item Go Text Protocol
+            \begin{itemize}
+                \item Kommunikation mit anderer Software
+            \end{itemize}
+        \item Dumps der neuronalen Netze
+    \end{itemize}
+    
+    \hfill \\
+    Visualisierung
+    \begin{itemize}
+        \item Abspielen von im SGF gespeicherten Partien
+    \end{itemize}
+
+\end{frame}
+
+\section{Parallelisierungsschema}
+\begin{frame}
+    \frametitle{Parallelisierungsschema}
+
+    Hybride Parallelisierung
+    \begin{itemize}
+        \item verteilter Speicher
+            \begin{itemize}
+                \item mehrere Partien auf verschiedenen Knoten
+            \end{itemize}
+        \item gemeinsamer Speicher
+            \begin{itemize}
+                \item parallele Berechnung der Ausgaben der neuronalen Netze
+                \item ggf. Parallelisierung innerhalb des Go Moduls
+            \end{itemize}
+    \end{itemize}
+\end{frame}
 
 \end{document}
