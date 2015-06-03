@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include "math_ext.h"
+#include "math_extend/math_ext.h"
 
 seed_set = 0;
 

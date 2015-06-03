@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "math_ext.h"
-#include "genetic_algorithm.h"
+#include "math_extend/math_ext.h"
+#include "genetic/genetic_algorithm.h"
 
 mutation_crossover_ratio = 0.3f;
 gene_mutation_chance = 0.001f;

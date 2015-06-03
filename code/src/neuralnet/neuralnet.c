@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "neuralnet.h"
-#include "math_ext.h"
+#include "neuralnet/neuralnet.h"
+#include "math_extend/math_ext.h"
 
 int edge_count(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
 	return (input_count + 1) * neurons_per_hidden_layer +
