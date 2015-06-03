@@ -11,20 +11,30 @@
 #include <stdio.h>
 
 /**
-* \brief Defines possible player inputs.
+* \brief Data type for result: two nets and their changes of fitness.
 */
 
-typedef enum
-{
-	p_net = 1,
-	p_human = 2,
-}player_t;
+struct result{
+	
+	neuralnet* black;
+	int score_black;
+
+	neuralnet* white;
+	int score_white;
+
+}
 
 /**
-* \brief Sets up and plays a game; Returns the winner.
+* \brief Sets up and plays a game with two nets.
 */
 
-color_t play(uint8_t board_size, player_t black, player_t white, uint8_t komi);
+struct result play_nets(uint8_t board_size, neuralnet* black, neuralnet* white, uint8_t komi);
+
+/**
+* Let's a human play against a net.
+*/
+
+struct result play_human_vs_net(uint8_t board_size, neuralnet* net, colot_t human_player, uint8_t komi);
 
 /**
 * \brief Executes a move and returns feedback if it worked.
