@@ -9,9 +9,9 @@ int edge_count(int input_count, int hidden_layer_count, int neurons_per_hidden_l
 		neurons_per_hidden_layer * output_count;
 }
 
-struct neuralnet* allocate_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
+neuralnet* allocate_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
 	
-	struct neuralnet* n = (struct neuralnet*)malloc(sizeof(struct neuralnet));
+	neuralnet* n = (neuralnet*)malloc(sizeof(neuralnet));
 
 	n->input_count = input_count;
 	n->hidden_layer_count = hidden_layer_count;
@@ -26,58 +26,58 @@ struct neuralnet* allocate_neural_net(int input_count, int hidden_layer_count, i
 
 }
 
-void initialize_neural_net_random(struct neuralnet* net){
+void initialize_neural_net_random(neuralnet* net){
 	
 	for (int i = 0; i < net->edges_count; i++){
 		net->edges[i] = inverse_sigmoid(random_value_01());
 	}
 
 }
-void initialize_neural_net_buffer(struct neuralnet* net, float* edges){
+void initialize_neural_net_buffer(neuralnet* net, float* edges){
 
 	for (int i = 0; i < net->edges_count; i++){
 		net->edges[i] = edges[i];
 	}
 
 }
-void initialize_neural_net_data(struct neuralnet* net, char* filepath){
+void initialize_neural_net_data(neuralnet* net, char* filepath){
 	//TODO: implement
 }
 
-struct neuralnet* create_neural_net_random(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
+neuralnet* create_neural_net_random(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
 	
-	struct neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+	neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_random(net);
 	return net;
 
 }
-struct neuralnet* create_neural_net_buffer(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, float* edges){
+neuralnet* create_neural_net_buffer(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, float* edges){
 
-	struct neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+	neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_buffer(net, edges);
 	return net;
 
 }
-struct neuralnet* create_neural_net_data(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, char* filepath){
+neuralnet* create_neural_net_data(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, char* filepath){
 
-	struct neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+	neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_data(net, filepath);
 	return net;
 
 }
 
-void deallocate_neural_net(struct neuralnet* net){
+void deallocate_neural_net(neuralnet* net){
 
 	free(net->edges);
 	free(net);
 	
 }
 
-void destroy_neural_net(struct neuralnet* net){
+void destroy_neural_net(neuralnet* net){
 	deallocate_neural_net(net);
 }
 
-void calculate_output(const struct neuralnet* net, float* input, float* output){ //Tons of parallel optimization possibilities.
+void calculate_output(const neuralnet* net, float* input, float* output){ //Tons of parallel optimization possibilities.
 	
 	float* old_current = (float*)malloc(sizeof(float) * net->neurons_per_hidden_layer);
 	float* current = (float*)malloc(sizeof(float) * net->neurons_per_hidden_layer);
@@ -122,7 +122,7 @@ void calculate_output(const struct neuralnet* net, float* input, float* output){
 	free(current);
 }
 
-void print_neural_net(const struct neuralnet* net){
+void print_neural_net(const neuralnet* net){
 
 	int index = 0;
 
