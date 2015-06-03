@@ -1,27 +1,28 @@
 #include "board.h"
 #include "record.h"
 #include "game_controller.h"
-#include "neuralnet.h"
+#include "neuralnet/neuralnet.h"
 #include <stdio.h>
 
-struct result play_nets(uint8_t board_size, neuralnet* black, neuralnet* white, uint8_t komi)
+struct result play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet* white, uint8_t komi)
 {
 	board_t* board = board_create(board_size);
 	bool game_over = false;
+    int8_t passed;
 
 	while(game_over == false)
 	{
-		if(board->turn == black_c)
+		if(board->turn == c_black)
 		{
 			int *move[2];		
 			
 			calculate_output(black, board, move);	
 
-			if(execute_move(board, board_size, move[0], move[1], white) == -1)
+			if(execute_move(board, board_size, move[0], move[1], c_white) == -1)
 				game_over = true;
-			else if(execute_move(board, board_size, move[0], move[1], white) == 1)
+			else if(execute_move(board, board_size, move[0], move[1], c_white) == 1)
 				passed = 1;
-			else if(execute_move(board, board_size, move[0], move[1], white) == 0)
+			else if(execute_move(board, board_size, move[0], move[1], c_white) == 0)
 				passed = 0;
 		}
 		else
@@ -30,11 +31,11 @@ struct result play_nets(uint8_t board_size, neuralnet* black, neuralnet* white, 
 
 			calculate_output(white, (float) board, move);
 			
-			if(execute_move(board, board_size, move[0], move[1], white) == -1)
+			if(execute_move(board, board_size, move[0], move[1], c_white) == -1)
 				game_over = true;
-			else if(execute_move(board, board_size, move[0], move[1], white) == 1)
+			else if(execute_move(board, board_size, move[0], move[1], c_white) == 1)
 				passed = 1;
-			else if(execute_move(board, board_size, move[0], move[1], white) == 0)
+			else if(execute_move(board, board_size, move[0], move[1], c_white) == 0)
 				passed = 0;
 		}
 		
@@ -43,10 +44,11 @@ struct result play_nets(uint8_t board_size, neuralnet* black, neuralnet* white, 
 	}
 }
 
-struct result play_human_vs_net(uint8_t board_size, neuralnet* net, color_t human_player, uint8_t komi)
+struct result play_human_vs_net(uint8_t board_size, struct neuralnet* net, color_t human_player, uint8_t komi)
 {	
 	board_t* board = board_create(board_size);
 	bool game_over = false;
+    uint8_t passed;
 
 	while(game_over == false)
 	{

@@ -3,9 +3,12 @@ set (MAIN_SOURCE main.c)
 
 # other source files
 set (PROJECT_SOURCES
-    neuralnet/neuralnet.c
+    genetic/genetic_algorithm.c
     go/board.c
+    go/game_controller.c
     go/record.c
+    math_extend/math_ext.c
+    neuralnet/neuralnet.c
     example/example.c
 )
 
