@@ -4,11 +4,12 @@
 #include "neuralnet/neuralnet.h"
 #include <stdio.h>
 
-struct result play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet* white, uint8_t komi)
+result_t play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet* white, uint8_t komi, FILE* record)
 {
 	board_t* board = board_create(board_size);
 	bool game_over = false;
-    int8_t passed;
+        int8_t passed  = 0;
+	struct result_t final = result_init(black, white);
 
 	while(game_over == false)
 	{
@@ -23,7 +24,10 @@ struct result play_nets(uint8_t board_size, struct neuralnet* black, struct neur
 			else if(execute_move(board, board_size, move[0], move[1], c_white) == 1)
 				passed = 1;
 			else if(execute_move(board, board_size, move[0], move[1], c_white) == 0)
+			{
 				passed = 0;
+				write_move(record, 1, move[0], move[1]);
+			}
 		}
 		else
 		{
@@ -36,19 +40,30 @@ struct result play_nets(uint8_t board_size, struct neuralnet* black, struct neur
 			else if(execute_move(board, board_size, move[0], move[1], c_white) == 1)
 				passed = 1;
 			else if(execute_move(board, board_size, move[0], move[1], c_white) == 0)
+			{				
 				passed = 0;
+				write_move(record, 2, move[0], move[1]);
+			}
 		}
 		
 		if(passed > 1)
 			game_over = true;
 	}
+	
+	int score = board->score(board, board_size, komi);
+	final->score_black = score;
+	final->score_white = - score;
+
+	return final;
+	
+	
 }
 
-struct result play_human_vs_net(uint8_t board_size, struct neuralnet* net, color_t human_player, uint8_t komi)
+int play_human_vs_net(uint8_t board_size, struct neuralnet* net, color_t human_player, uint8_t komi, FILE* record)
 {	
 	board_t* board = board_create(board_size);
 	bool game_over = false;
-    uint8_t passed;
+	uint8_t passed;
 
 	while(game_over == false)
 	{
@@ -84,12 +99,9 @@ struct result play_human_vs_net(uint8_t board_size, struct neuralnet* net, color
 			game_over = true;
 	}
 	
-	int score = score(board, board_size, komi);
-
-	if(result > 0)
-		return c_black;
-	else
-		return c_white;	
+	int score = board->score(board, board_size, komi);
+	
+	return score;	
 }
 
 
@@ -112,4 +124,13 @@ int execute_move(board_t* board, uint8_t board_size, uint8_t x, uint8_t y, color
 	}
 
 	return 2;
+}
+
+result_t result_init(struct neuralnet* black, struct neuralnet* white)
+{
+	result->black = black;
+	result->white = white;
+	
+	result->score_black = 0;
+	result->score_white = 0;	
 }

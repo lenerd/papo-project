@@ -13,12 +13,12 @@
 /**
 * \brief Creates a .sgf file to record the game in 
 */
-FILE* create_file(int);
+FILE* create_file(int rank);
 
 /**
 * \brief writes a move to the .sgf
 */
-void write_move(FILE*, int, uint8_t, uint8_t);
+void write_move(FILE* record, int player, uint8_t x, uint8_t y);
 
 #endif /* RECORD_H */
 
