@@ -67,16 +67,16 @@ END_TEST
 START_TEST (test_board_liberties)
 {
     board_place(board, 0, 0);
-    ck_assert(board_num_liberties(board, 0, 0) == 2);
+    ck_assert(board_num_liberties(board, get_group(board, 0, 0)) == 2);
     board_place(board, 1, 0);
-    ck_assert(board_num_liberties(board, 0, 0) == 1);
-    ck_assert(board_num_liberties(board, 1, 0) == 2);
+    ck_assert(board_num_liberties(board, get_group(board, 0, 0)) == 1);
+    ck_assert(board_num_liberties(board, get_group(board, 1, 0)) == 2);
     board_place(board, 0, 1);
-    ck_assert(board_num_liberties(board, 0, 0) == 2);
-    ck_assert(board_num_liberties(board, 1, 0) == 2);
+    ck_assert(board_num_liberties(board, get_group(board, 0, 0)) == 2);
+    ck_assert(board_num_liberties(board, get_group(board, 1, 0)) == 2);
     board_place(board, 1, 1);
-    ck_assert(board_num_liberties(board, 0, 0) == 1);
-    ck_assert(board_num_liberties(board, 1, 0) == 3);
+    ck_assert(board_num_liberties(board, get_group(board, 0, 0)) == 1);
+    ck_assert(board_num_liberties(board, get_group(board, 1, 0)) == 3);
 }
 END_TEST
 

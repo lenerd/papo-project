@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "board.h"
-// #include "neuralnet/neuralnet.h"
+#include "neuralnet/neuralnet.h"
 
 /**
 * \brief Data type for result: two nets and their changes of fitness.
@@ -19,10 +19,10 @@
 typedef struct
 {
 	
-	struct neuralnet* black;
+	neuralnet_t* black;
 	int score_black;
 
-	struct neuralnet* white;
+	neuralnet_t* white;
 	int score_white;
 
 } result_t;
@@ -31,22 +31,22 @@ typedef struct
 * \brief Sets up and plays a game with two nets.
 */
 
-result_t play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet* white, uint8_t komi, FILE* recordt);
+result_t play_nets(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* recordt);
 
 /**
 * Let's a human play against a net.
 */
 
-int play_human_vs_net(uint8_t board_size, struct neuralnet* net, color_t human_player, uint8_t komi, FILE* record);
+int play_human_vs_net(uint8_t board_size, neuralnet_t* net, color_t human_player, uint8_t komi, FILE* record);
 
 /**
 * \brief Executes a move and returns feedback if it worked.
 */
-int execute_move(board_t* board, uint8_t board_size, uint8_t x, uint8_t y, color_t color);
+int execute_move(board_t* board, uint8_t x, uint8_t y, color_t color);
 
 /**
 * \brief Initializes the result datatype.
 */
-result_t result_init(struct neuralnet* black, struct neuralnet* white);
+result_t result_init(neuralnet_t* black, neuralnet_t* white);
 
 #endif /* GAME_CONTROLLER_H */

@@ -33,7 +33,7 @@ typedef enum
     ps_black = 1,
     ps_white = 2,
     ps_illegal = 4,
-	ps_marked = 5,
+	ps_marked = 8,
 } pos_state_t;
 
 /**
@@ -73,7 +73,7 @@ void board_destroy (board_t* board);
  * \brief Return the state of specified position on the board.
  * \pre board != NULL
  */
-pos_state_t board_position_state (board_t* board, uint8_t x, uint8_t y);
+pos_state_t board_position_state (const board_t* board, uint8_t x, uint8_t y);
 
 /**
  * \brief Checks if a placement is legal.
@@ -102,12 +102,12 @@ void board_pass (board_t* board);
  * \brief The number of liberties of a (group of) stone(s).
  * \pre board->grid[x][y] == ps_black || board->grid[x][y] == ps_white
  */
-uint16_t board_num_liberties (board_t* board, int** group, pos_state_t state);
+uint16_t board_num_liberties (const board_t* board, int** group);
 
 /**
  * \brief Finds the group the selected stone belongs to and returns its positions.
  */
-int** get_group(board_t* board, uint8_t x, uint8_t y);
+int** get_group(const board_t* board, uint8_t x, uint8_t y);
 
 /**
 * \brief Checks if the groups next to a stone are to be captured and updates the board accordingly.
@@ -117,22 +117,22 @@ void capture(board_t* board, uint8_t x, uint8_t y);
 /**
 * \brief Returns the final score from black's perspective including komi.
 */
-int score(board_t* board, uint8_t size, uint8_t komi);
+int score(const board_t* board, uint8_t size, uint8_t komi);
 
 /**
 * \brief Computes score for white.
 */
-uint8_t score_white(board_t* board, int *groups_white);
+uint8_t score_white(const board_t* board, int *groups_white);
 
 /**
 * \brief Computes score for black.
 */
-uint8_t score_black(board_t* board, int *groups_black);
+uint8_t score_black(const board_t* board, int *groups_black);
 
 /**
 * \brief Finds a move relatively close to the given position; returns -1 if there is none.
 */
-int approximate_move(board_t* board, uint8_t x, uint8_t y, uint8_t size);
+int approximate_move(board_t* board, uint8_t x, uint8_t y);
 
 
 #endif /* BOARD_H */

@@ -89,7 +89,7 @@ void board_destroy (board_t* board)
     free (board);
 }
 
-pos_state_t board_position_state (board_t* board, uint8_t x, uint8_t y)
+pos_state_t board_position_state (const board_t* board, uint8_t x, uint8_t y)
 {
     return board->grid[x][y];
 }
@@ -103,7 +103,7 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
         return false;
     if (board->grid[x][y] != ps_empty)
         return false;
-    if (board_num_liberties (board, get_group(board, x, y), (pos_state_t) color) == 0)
+    if (board_num_liberties (board, get_group(board, x, y)) == 0)
         return false;
     return true;
 }
@@ -120,31 +120,34 @@ void board_pass (board_t* board)
     board->turn = (board->turn == c_black) ? c_white : c_black;
 }
 
-uint16_t board_num_liberties (board_t* board, int** group, pos_state_t state)
+uint16_t board_num_liberties (const board_t* board, int** group)
 {		
 	uint16_t liberties = 0;		
+    uint8_t a, b, left, right, top, bottom;
 	
 	for(int i = 1; i <= group[0][0]; i++)
 	{
-		uint8_t a = group[i][0];
-		uint8_t b = group[i][1];
-		uint8_t left = a-1;
-		uint8_t right = a+1;
-		uint8_t top = b-1;
-		uint8_t bottom = b+1;
+		a = group[i][0];
+		b = group[i][1];
+		left = a-1;
+		right = a+1;
+		top = b-1;
+		bottom = b+1;
 							
-		if(board_position_state(board, left, b) != ps_white && board_position_state(board, left, b) != ps_black)
+		if(board_position_state(board, left, b) == ps_empty)
 			liberties += 1;
-		if(board_position_state(board, right, b) != ps_white && board_position_state(board, right, b) != ps_black)
+		if(board_position_state(board, right, b) == ps_empty)
 			liberties += 1;
-		if(board_position_state(board, a, top) != ps_white && board_position_state(board, a, top) != ps_black)
+		if(board_position_state(board, a, top) == ps_empty)
 			liberties += 1;
-		if(board_position_state(board, a, bottom) != ps_white && board_position_state(board, a, bottom) != ps_black)
+		if(board_position_state(board, a, bottom) == ps_empty)
 			liberties += 1;
 	}			
+
+    return liberties;
 }
 
-int** get_group(board_t* board, uint8_t x, uint8_t y)
+int** get_group(const board_t* board, uint8_t x, uint8_t y)
 {
 	pos_state_t state = board_position_state(board, x, y);
 	int size = 1;
@@ -244,10 +247,10 @@ void capture(board_t* board, uint8_t x, uint8_t y)
 	
 	for(int i = 0; i<4; i++)
 	{
-		if(board_num_liberties(board, neighbours[i], state)==0)
+		if(board_num_liberties (board, neighbours[i]) == 0)
 		{
 			
-			for(int j = 1; j <= neighbours[i][0][0]; j++)
+			for(int j = 1; j <= neighbours[i][0][0]; ++j)
 			{
 				board->grid[neighbours[i][j][0]][neighbours[i][j][1]] = ps_empty;
 				++stones_captured;
@@ -255,13 +258,13 @@ void capture(board_t* board, uint8_t x, uint8_t y)
 		}
 	}
 	
-	if(state = ps_white)
+	if(state == ps_white)
 		board->white_captured+=stones_captured;
 	else
 		board->black_captured+=stones_captured;
 }
 
-int score(board_t* board, uint8_t size, uint8_t komi)
+int score(const board_t* board, uint8_t size, uint8_t komi)
 {
 	int final_score;
 	int *groups_white;
@@ -291,7 +294,7 @@ int score(board_t* board, uint8_t size, uint8_t komi)
 					state = board_position_state(board, a, j);
 				}
 				
-				if(state = ps_white)
+				if(state == ps_white)
 				{
 					groups_white[ind_white]=group[0][0];
 					++size_white;
@@ -308,7 +311,7 @@ int score(board_t* board, uint8_t size, uint8_t komi)
 	final_score = (int) score_black(board, groups_black) - (int) score_white(board, groups_white) - komi;
 }
 
-uint8_t score_white(board_t* board, int *groups_white)
+uint8_t score_white(const board_t* board, int *groups_white)
 {
 	uint8_t score=board->white_captured;
 
@@ -320,7 +323,7 @@ uint8_t score_white(board_t* board, int *groups_white)
 	return score;
 }
 
-uint8_t score_black(board_t* board, int *groups_black)
+uint8_t score_black(const board_t* board, int *groups_black)
 {
 	uint8_t score=board->black_captured;
 	
@@ -332,15 +335,15 @@ uint8_t score_black(board_t* board, int *groups_black)
 	return score;
 }
 
-int approximate_move(board_t* board, uint8_t x, uint8_t y, uint8_t size)
+int approximate_move (board_t* board, uint8_t x, uint8_t y)
 {
-	int **spots;
+	int **spots; // FIXME: uninitialized pointer
 	uint8_t index = 0;
 	color_t color = board->turn;
 		
-	for(int i = 0; i<size; i++)
+	for(int i = 0; i < board->size; ++i)
 	{
-		for(int j = 0; j<size; j++)
+		for(int j = 0; j < board->size; ++j)
 		{
 			if(board_position_state(board, i, j)==ps_empty && board_legal_placement(board, i, j, color))
 			{

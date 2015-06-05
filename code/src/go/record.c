@@ -41,8 +41,8 @@ FILE* create_file(int rank)
 void write_move(FILE* record, int player, uint8_t x, uint8_t y){
 	
 	// fopen(record, "a");
-	char i = x + 97;
-	char j = y + 97;
+	char i = (char) ('a' + x);
+	char j = (char) ('a' + y);
 	
 	if(player == 1){
 		fprintf(record, "B[%c%c]\n", i, j);
