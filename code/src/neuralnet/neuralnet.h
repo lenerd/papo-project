@@ -8,21 +8,25 @@
 * \ingroup go
 */
 
+
+#include <stdint.h>
+
+
 /**
 * \brief Represents a neural network.
 */
 typedef struct
 {
 	/** \brief Total count of all edges.*/
-	int edges_count;
+	uint32_t edges_count;
 	/** \brief Count of input neurons.*/
-	int input_count;
+	uint32_t input_count;
 	/** \brief Count of hidden layers.*/
-	int hidden_layer_count;
+	uint32_t hidden_layer_count;
 	/** \brief Count of neurons each hidden layer has.*/
-	int neurons_per_hidden_layer;
+	uint32_t neurons_per_hidden_layer;
 	/** \brief Count of output neurons.*/
-	int output_count;
+	uint32_t output_count;
 
 	/** \brief Weights of all edges.*/
 	float* edges;
@@ -35,7 +39,7 @@ typedef struct
 * \pre neurons_per_hidden_layer > 0
 * \pre output_count > 0
 */
-int edge_count(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count);
+uint32_t edge_count(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count);
 
 /**
 * \brief Allocates and returns the start adress of a neuralnet.
@@ -44,7 +48,7 @@ int edge_count(int input_count, int hidden_layer_count, int neurons_per_hidden_l
 * \pre neurons_per_hidden_layer > 0
 * \pre output_count > 0
 */
-neuralnet_t* allocate_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count);
+neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count);
 
 /**
 * \brief Initializes a given neuralnet with random edge-weights.
@@ -73,7 +77,7 @@ void initialize_neural_net_data(neuralnet_t* net, char* filepath);
 * \pre neurons_per_hidden_layer > 0
 * \pre output_count > 0
 */
-neuralnet_t* create_neural_net_random(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count);
+neuralnet_t* create_neural_net_random(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count);
 
 /**
 * \brief Creates and returns a neuralnet with given edge-weights in form of an float array, given its preferences. This essentially does nothing but allocates and initializes a new neural net.
@@ -83,7 +87,7 @@ neuralnet_t* create_neural_net_random(int input_count, int hidden_layer_count, i
 * \pre output_count > 0
 * \pre edges != NULL
 */
-neuralnet_t* create_neural_net_buffer(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, float* edges);
+neuralnet_t* create_neural_net_buffer(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, float* edges);
 
 /**
 * \brief Creates and returns a neuralnet with given edge-weights in form of a data, given its preferences. This essentially does nothing but allocates and initializes a new neural net.
@@ -93,7 +97,7 @@ neuralnet_t* create_neural_net_buffer(int input_count, int hidden_layer_count, i
 * \pre output_count > 0
 * \pre filepath != NULL
 */
-neuralnet_t* create_neural_net_data(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, char* filepath);
+neuralnet_t* create_neural_net_data(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, char* filepath);
 
 /**
 * \brief Deallocates (frees) the memory a given neuralnet used.

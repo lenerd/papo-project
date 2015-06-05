@@ -3,13 +3,13 @@
 #include "neuralnet/neuralnet.h"
 #include "math_extend/math_ext.h"
 
-int edge_count(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
+uint32_t edge_count(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count){
 	return (input_count + 1) * neurons_per_hidden_layer +
 		(neurons_per_hidden_layer + 1) * neurons_per_hidden_layer * (hidden_layer_count - 1) +
 		neurons_per_hidden_layer * output_count;
 }
 
-neuralnet_t* allocate_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
+neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count){
 	
 	neuralnet_t* net = NULL;
     net = malloc (sizeof(neuralnet_t));
@@ -42,14 +42,14 @@ neuralnet_t* allocate_neural_net(int input_count, int hidden_layer_count, int ne
 
 void initialize_neural_net_random(neuralnet_t* net){
 	
-	for (int i = 0; i < net->edges_count; i++){
+	for (uint32_t i = 0; i < net->edges_count; i++){
 		net->edges[i] = inverse_sigmoid(random_value_01());
 	}
 
 }
 void initialize_neural_net_buffer(neuralnet_t* net, float* edges){
 
-	for (int i = 0; i < net->edges_count; i++){
+	for (uint32_t i = 0; i < net->edges_count; i++){
 		net->edges[i] = edges[i];
 	}
 
@@ -58,21 +58,21 @@ void initialize_neural_net_data(neuralnet_t* net, char* filepath){
 	//TODO: implement
 }
 
-neuralnet_t* create_neural_net_random(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
+neuralnet_t* create_neural_net_random (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count){
 	
 	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_random(net);
 	return net;
 
 }
-neuralnet_t* create_neural_net_buffer(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, float* edges){
+neuralnet_t* create_neural_net_buffer (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, float* edges){
 
 	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_buffer(net, edges);
 	return net;
 
 }
-neuralnet_t* create_neural_net_data(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, char* filepath){
+neuralnet_t* create_neural_net_data (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, char* filepath){
 
 	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_data(net, filepath);
@@ -117,24 +117,24 @@ void calculate_output(const neuralnet_t* net, float* input, float* output){ //To
 	int index = 0;
 
 	//Input layer to hidden layer calculation
-	for (int i = 0; i < net->neurons_per_hidden_layer; i++){
+	for (uint32_t i = 0; i < net->neurons_per_hidden_layer; i++){
 		sum = -net->edges[index]; //Bias (threshhold simulated as edge)
 		index++;
-		for (int j = 0; j < net->input_count; j++, index++){
+		for (uint32_t j = 0; j < net->input_count; j++, index++){
 			sum += net->edges[index] * input[i];
 		}
 		current[i] = sum > 0.0f ? centered_sigmoid(sum): 0.0f;
 	}
 
 	//Hidden layer intern calculation
-	for (int i = 0; i < net->hidden_layer_count - 1; i++){
-		int c = (int)old_current;
+	for (uint32_t i = 0; i < net->hidden_layer_count - 1; i++){
+		float* tmp = old_current;
 		old_current = current;
-		current = (float*)c;
-		for (int j = 0; j < net->neurons_per_hidden_layer; j++){
+		current = tmp;
+		for (uint32_t j = 0; j < net->neurons_per_hidden_layer; j++){
 			sum = -net->edges[index]; //Bias (threshhold simulated as edge)
 			index++;
-			for (int k = 0; k < net->neurons_per_hidden_layer; k++, index++){
+			for (uint32_t k = 0; k < net->neurons_per_hidden_layer; k++, index++){
 				sum += net->edges[index] * old_current[k];
 			}
 			current[i] = sum > 0.0f ? centered_sigmoid(sum) : 0.0f;
@@ -142,8 +142,8 @@ void calculate_output(const neuralnet_t* net, float* input, float* output){ //To
 	}
 
 	//Hidden layer to output layer
-	for (int i = 0; i < net->output_count; i++){
-		for (int j = 0; j < net->neurons_per_hidden_layer; j++, index++){
+	for (uint32_t i = 0; i < net->output_count; i++){
+		for (uint32_t j = 0; j < net->neurons_per_hidden_layer; j++, index++){
 			sum += net->edges[index] * current[j];
 		}
 		output[i] = sum;
@@ -161,24 +161,24 @@ void print_neural_net(const neuralnet_t* net){
 
 	//Input layer to hidden layer calculation
 	printf("\n\n\tInput layer to hidden layer:\n");
-	for (int i = 0; i < net->neurons_per_hidden_layer; i++){
+	for (uint32_t i = 0; i < net->neurons_per_hidden_layer; i++){
 		//Threashold and incoming edge weights of i-th neuron
 		printf("\n\t\tTH: %+.2f EWs:", net->edges[index]);
 		index++;
-		for (int j = 0; j < net->input_count; j++, index++){
+		for (uint32_t j = 0; j < net->input_count; j++, index++){
 			printf(" %+.2f", net->edges[index]);
 		}
 	}
 
 	//Hidden layer intern calculation
 	printf("\n\n\tHidden layer intern:");
-	for (int i = 0; i < net->hidden_layer_count - 1; i++){
+	for (uint32_t i = 0; i < net->hidden_layer_count - 1; i++){
 		printf("\n");
-		for (int j = 0; j < net->neurons_per_hidden_layer; j++){
+		for (uint32_t j = 0; j < net->neurons_per_hidden_layer; j++){
 			//Threashold and incoming edge weights of j-th neuron
 			printf("\n\t\tTH: %+.2f EWs:", net->edges[index]);
 			index++;
-			for (int k = 0; k < net->neurons_per_hidden_layer; k++, index++){
+			for (uint32_t k = 0; k < net->neurons_per_hidden_layer; k++, index++){
 				printf(" %+.2f", net->edges[index]);
 			}
 		}
@@ -186,10 +186,10 @@ void print_neural_net(const neuralnet_t* net){
 
 	//Hidden layer to output layer
 	printf("\n\n\tHidden layer to output layer:\n");
-	for (int i = 0; i < net->output_count; i++){
+	for (uint32_t i = 0; i < net->output_count; i++){
 		//Threashold and incoming edge weights of i-th neuron
 		printf("\n\t\tEWs:");
-		for (int j = 0; j < net->neurons_per_hidden_layer; j++, index++){
+		for (uint32_t j = 0; j < net->neurons_per_hidden_layer; j++, index++){
 			printf(" %+.2f", net->edges[index]);
 		}
 	}
