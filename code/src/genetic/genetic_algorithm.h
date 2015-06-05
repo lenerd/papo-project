@@ -5,36 +5,38 @@
 * \file
 * \brief Contains everything required for genetic evolution.
 * \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
-* \ingroup go
+* \ingroup genetic
 */
+
+
+#include <stdint.h>
+
 
 /**
-* \brief Represents a genome.
-*/
+ * \brief Represents a genome.
+ */
 typedef struct
 {
-
 	/** \brief Count of genes this genome contains. */
-	int genes_count;
+	uint32_t genes_count;
 	/** \brief Values of all genes. */
 	float* genes;
 	/** \brief How fit this genome is. */
 	float fitness;
-
 } genome_t;
 
 /**
-* \brief Represents a population of genomes.
-*/
+ * \brief Represents a population of genomes.
+ */
 typedef struct
 {
 
 	/** \brief Size of the population. */
-	int size;
+	uint32_t size;
 	/** \brief Array of pointer towards all genomes of this population. */
 	genome_t** individuals;
 	/** \brief The current generation this population is in. */
-	int generation;
+	uint32_t generation;
 	/** \brief Summed up fitnesses of all genomes. */
 	float total_fitness;
 	/** \brief Average fitness of all genomes of this population. */
@@ -52,14 +54,14 @@ float gene_mutation_chance;
 * \pre genes_count > 0
 * \pre genes != NULL
 */
-genome_t* create_genome(int genes_count, float* genes);
+genome_t* create_genome(uint32_t genes_count, float* genes);
 
 /**
 * \brief Creates and returns a population of genomes based on an array of pointers of precreated genomes.
 * \pre population_size > 0
 * \pre genomes != NULL
 */
-population_t* create_population(int population_size, genome_t** genomes);
+population_t* create_population(uint32_t population_size, genome_t** genomes);
 
 /**
 * \brief Creates and returns a mutated version of the given genome.
