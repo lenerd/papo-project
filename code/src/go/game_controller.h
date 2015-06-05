@@ -9,13 +9,15 @@
 */
 
 #include <stdio.h>
+#include "board.h"
 // #include "neuralnet/neuralnet.h"
 
 /**
 * \brief Data type for result: two nets and their changes of fitness.
 */
 
-typedef struct{
+typedef struct
+{
 	
 	struct neuralnet* black;
 	int score_black;
@@ -23,19 +25,19 @@ typedef struct{
 	struct neuralnet* white;
 	int score_white;
 
-}result_t;
+} result_t;
 
 /**
 * \brief Sets up and plays a game with two nets.
 */
 
-struct result_t play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet* white, uint8_t komi, FILE* recordt);
+result_t play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet* white, uint8_t komi, FILE* recordt);
 
 /**
 * Let's a human play against a net.
 */
 
-struct result_t play_human_vs_net(uint8_t board_size, struct neuralnet* net, color_t human_player, uint8_t komi);
+int play_human_vs_net(uint8_t board_size, struct neuralnet* net, color_t human_player, uint8_t komi, FILE* record);
 
 /**
 * \brief Executes a move and returns feedback if it worked.

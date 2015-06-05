@@ -9,7 +9,7 @@ result_t play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet
 	board_t* board = board_create(board_size);
 	bool game_over = false;
         int8_t passed  = 0;
-	struct result_t final = result_init(black, white);
+	result_t final = result_init(black, white);
 
 	while(game_over == false)
 	{
@@ -33,7 +33,10 @@ result_t play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet
 		{
 			int *move[2];
 
-			calculate_output(white, (float) board, move);
+			// calculate_output(white, (float) board, move);
+            // FIXME: function wants a pointer to a float array
+            // (nullpointer for compilibility only
+			calculate_output(white, (float*) NULL, move);
 			
 			if(execute_move(board, board_size, move[0], move[1], c_white) == -1)
 				game_over = true;
@@ -50,9 +53,9 @@ result_t play_nets(uint8_t board_size, struct neuralnet* black, struct neuralnet
 			game_over = true;
 	}
 	
-	int score = board->score(board, board_size, komi);
-	final->score_black = score;
-	final->score_white = - score;
+	int score_val = score(board, board_size, komi);
+	final.score_black = score_val;
+	final.score_white = - score_val;
 
 	return final;
 	
@@ -74,24 +77,27 @@ int play_human_vs_net(uint8_t board_size, struct neuralnet* net, color_t human_p
 			/* TODO: Reading from command line (every round)...  Is that even possible? */
 			
 
-			if(execute_move(board, board_size, move[0], move[1], white) == -1)
+			if(execute_move(board, board_size, move[0], move[1], c_white) == -1)
 				game_over = true;
-			else if(execute_move(board, board_size, move[0], move[1], white) == 1)
+			else if(execute_move(board, board_size, move[0], move[1], c_white) == 1)
 				passed = 1;
-			else if(execute_move(board, board_size, move[0], move[1], white) == 0)
+			else if(execute_move(board, board_size, move[0], move[1], c_white) == 0)
 				passed = 0;
 		}
 		else
 		{
 			int *move[2];
 
-			calculate_output(net, (float) board, move);
+			// calculate_output(net, (float) board, move);
+            // FIXME: function wants a pointer to a float array
+            // (nullpointer for compilibility only
+			calculate_output(net, (float*) NULL, move);
 			
-			if(execute_move(board, board_size, move[0], move[1], white) == -1)
+			if(execute_move(board, board_size, move[0], move[1], c_white) == -1)
 				game_over = true;
-			else if(execute_move(board, board_size, move[0], move[1], white) == 1)
+			else if(execute_move(board, board_size, move[0], move[1], c_white) == 1)
 				passed = 1;
-			else if(execute_move(board, board_size, move[0], move[1], white) == 0)
+			else if(execute_move(board, board_size, move[0], move[1], c_white) == 0)
 				passed = 0;
 		}
 		
@@ -99,9 +105,7 @@ int play_human_vs_net(uint8_t board_size, struct neuralnet* net, color_t human_p
 			game_over = true;
 	}
 	
-	int score = board->score(board, board_size, komi);
-	
-	return score;	
+	return score(board, board_size, komi);
 }
 
 
@@ -128,9 +132,11 @@ int execute_move(board_t* board, uint8_t board_size, uint8_t x, uint8_t y, color
 
 result_t result_init(struct neuralnet* black, struct neuralnet* white)
 {
-	result->black = black;
-	result->white = white;
+    result_t result;
+	result.black = black;
+	result.white = white;
 	
-	result->score_black = 0;
-	result->score_white = 0;	
+	result.score_black = 0;
+	result.score_white = 0;	
+    return result;
 }
