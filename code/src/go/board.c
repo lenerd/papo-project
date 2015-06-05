@@ -101,7 +101,7 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
     if (board->grid[x][y] != ps_empty)
         return false;
     if (board_num_liberties (board, get_group(board, x, y), (pos_state_t) color) == 0)
-	return false;
+        return false;
     return true;
 }
 
@@ -143,9 +143,9 @@ uint16_t board_num_liberties (board_t* board, int** group, pos_state_t state)
 
 int** get_group(board_t* board, uint8_t x, uint8_t y)
 {
-	pos_state_t state= board_position_state(board, x, y);
+	pos_state_t state = board_position_state(board, x, y);
 	int size = 1;
-	int** group;
+	int** group; // FIXME: uninitialised pointer
 	group[1][0]=x;
 	group[1][1]=y;
 	int current = 1;
@@ -220,12 +220,14 @@ int** get_group(board_t* board, uint8_t x, uint8_t y)
 	{
 		board->grid[group[j][0]][group[j][1]]=state;
 	}
+
+    // FIXME: return value
 }
 
 void capture(board_t* board, uint8_t x, uint8_t y)
 {
 	pos_state_t state= board_position_state(board, x, y);
-	int ***neighbours;
+	int ***neighbours; // FIXME: uninitialised pointer
 	int stones_captured = 0;
 	uint8_t left = x-1;
 	uint8_t right = x+1;
