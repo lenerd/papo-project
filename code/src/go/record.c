@@ -1,5 +1,6 @@
 #include "record.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
 * \file
@@ -10,8 +11,15 @@
 /**
 * \brief creates a .sgf file and deals with the setup
 */
-FILE* create_file(int rank){
+FILE* create_file(int rank)
+{
 	FILE* record = fopen("/rank.sgf", "a");
+    if (record == NULL)
+    {
+        fprintf (stderr, "fopen() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
 	
 	// Programm
 	fprintf(record, "AP[nugengo:?] \n");

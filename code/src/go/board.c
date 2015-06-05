@@ -33,25 +33,28 @@ board_t* board_create (uint8_t size)
     board = malloc (sizeof (board_t));
     if (board == NULL)
     {
-        fprintf (stderr, "memory allocation failed\n");
-        return NULL;
+        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
     }
 
     board->buffer = calloc ((size_t)((size + 2) * (size + 2)), sizeof (int8_t));
     if (board->buffer == NULL)
     {
-        fprintf (stderr, "memory allocation failed\n");
+        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
         free (board);
-        return NULL;
+        exit (EXIT_FAILURE);
     }
 
     board->grid = calloc ((size_t)(size + 2), sizeof (int8_t*));
     if (board->grid == NULL)
     {
-        fprintf (stderr, "memory allocation failed\n");
+        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
         free (board);
         free (board->buffer);
-        return NULL;
+        exit (EXIT_FAILURE);
     }
 
     for (uint8_t i = 0; i < size + 2; ++i)

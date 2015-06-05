@@ -9,78 +9,109 @@ int edge_count(int input_count, int hidden_layer_count, int neurons_per_hidden_l
 		neurons_per_hidden_layer * output_count;
 }
 
-neuralnet* allocate_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
+neuralnet_t* allocate_neural_net(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
 	
-	neuralnet* n = (neuralnet*)malloc(sizeof(neuralnet));
+	neuralnet_t* net = NULL;
+    net = malloc (sizeof(neuralnet_t));
+    if (net == NULL)
+    {
+        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
 
-	n->input_count = input_count;
-	n->hidden_layer_count = hidden_layer_count;
-	n->neurons_per_hidden_layer = neurons_per_hidden_layer;
-	n->output_count = output_count;
+	net->input_count = input_count;
+	net->hidden_layer_count = hidden_layer_count;
+	net->neurons_per_hidden_layer = neurons_per_hidden_layer;
+	net->output_count = output_count;
 
-	n->edges_count = edge_count(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+	net->edges_count = edge_count(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 
-	n->edges = (float*)malloc(sizeof(float) *(n->edges_count));
+	net->edges = malloc (sizeof(float) *(net->edges_count));
+    if (net->edges == NULL)
+    {
+        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        free (net);
+        exit (EXIT_FAILURE);
+    }
 
-	return n;
+	return net;
 
 }
 
-void initialize_neural_net_random(neuralnet* net){
+void initialize_neural_net_random(neuralnet_t* net){
 	
 	for (int i = 0; i < net->edges_count; i++){
 		net->edges[i] = inverse_sigmoid(random_value_01());
 	}
 
 }
-void initialize_neural_net_buffer(neuralnet* net, float* edges){
+void initialize_neural_net_buffer(neuralnet_t* net, float* edges){
 
 	for (int i = 0; i < net->edges_count; i++){
 		net->edges[i] = edges[i];
 	}
 
 }
-void initialize_neural_net_data(neuralnet* net, char* filepath){
+void initialize_neural_net_data(neuralnet_t* net, char* filepath){
 	//TODO: implement
 }
 
-neuralnet* create_neural_net_random(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
+neuralnet_t* create_neural_net_random(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count){
 	
-	neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_random(net);
 	return net;
 
 }
-neuralnet* create_neural_net_buffer(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, float* edges){
+neuralnet_t* create_neural_net_buffer(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, float* edges){
 
-	neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_buffer(net, edges);
 	return net;
 
 }
-neuralnet* create_neural_net_data(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, char* filepath){
+neuralnet_t* create_neural_net_data(int input_count, int hidden_layer_count, int neurons_per_hidden_layer, int output_count, char* filepath){
 
-	neuralnet* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	initialize_neural_net_data(net, filepath);
 	return net;
 
 }
 
-void deallocate_neural_net(neuralnet* net){
+void deallocate_neural_net(neuralnet_t* net){
 
 	free(net->edges);
 	free(net);
 	
 }
 
-void destroy_neural_net(neuralnet* net){
+void destroy_neural_net(neuralnet_t* net){
 	deallocate_neural_net(net);
 }
 
-void calculate_output(const neuralnet* net, float* input, float* output){ //Tons of parallel optimization possibilities.
+void calculate_output(const neuralnet_t* net, float* input, float* output){ //Tons of parallel optimization possibilities.
 	
-	float* old_current = (float*)malloc(sizeof(float) * net->neurons_per_hidden_layer);
-	float* current = (float*)malloc(sizeof(float) * net->neurons_per_hidden_layer);
+    float* old_current = NULL;
+    float* current = NULL;
+
+	old_current = malloc (sizeof(float) * net->neurons_per_hidden_layer);
+    if (old_current == NULL)
+    {
+        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+	current = malloc (sizeof(float) * net->neurons_per_hidden_layer);
+    if (current == NULL)
+    {
+        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        free(old_current);
+        exit (EXIT_FAILURE);
+    }
 
 	float sum = 0.0f;
 	int index = 0;
@@ -122,7 +153,7 @@ void calculate_output(const neuralnet* net, float* input, float* output){ //Tons
 	free(current);
 }
 
-void print_neural_net(const neuralnet* net){
+void print_neural_net(const neuralnet_t* net){
 
 	int index = 0;
 
