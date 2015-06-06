@@ -72,7 +72,7 @@ board_t* board_create (uint8_t size)
 
 void board_destroy (board_t* board)
 {
-    free (&board->grid[-1]);
+    free (board->grid);
     free (board->buffer);
     free (board);
 }
