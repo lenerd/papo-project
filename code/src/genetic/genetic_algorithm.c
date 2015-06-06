@@ -36,6 +36,8 @@ population_t* create_population(uint32_t population_size, genome_t** genomes, fl
 	pop->back_buffer = malloc(sizeof(genome_t*) * population_size);
 	pop->generation = 0;
 	pop->base_fitness = base_fitness;
+    pop->total_fitness = 0.0f;
+    pop->avg_fitness = 0.0f;
 	return pop;
 
 }
@@ -112,5 +114,5 @@ void next_generation(population_t* pop){
 	genome_t** temp = pop->individuals;
 	pop->individuals = pop->back_buffer;
 	pop->back_buffer = temp;
-
+	++pop->generation;
 }
