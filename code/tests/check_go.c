@@ -2,18 +2,18 @@
 #include <stdlib.h>
 #include "go/board.h"
 #include "go/record.h"
+#include "go/game_controller.h"
 #include "neuralnet/neuralnet.h"
 
 board_t* board;
-neuralnet* net1;
-neuralnet* net2;
-FILE* record = create_file(0);
+neuralnet_t* net1;
+neuralnet_t* net2;
 
 void setup (void)
 {
     board = board_create(5);
-	net1 = initialize_neural_net_random(net1);
-	net2 = initialize_neural_net_random(net2);
+	initialize_neural_net_random(net1);
+	initialize_neural_net_random(net2);
 }
 
 void teardown (void)
@@ -96,31 +96,32 @@ END_TEST
 //Tests for record.c
 START_TEST (test_create_file)
 {
-	FILE* test_record = create_file(1);
-	assert(test_record != NULL);
-	assert(fgets(line, 150, test_record) == "AP[nugengo:?]");
-	assert(fgets(line, 150, test_record) == "GM[1]");
-	assert(fgets(line, 150, test_record) == "SZ[9]");
-	fclose(test_record);	
+	FILE* record = create_file(0);
+	ck_assert(record != NULL);
+	fclose(record);	
 }
 END_TEST
 
-START_TEST (test_record_move)
+START_TEST (test_record_content)
 {
+	
+	char *line = malloc(150);
+	FILE* test_record = create_file(1);
+
 	write_move(record, 1, 2, 3);
 	write_move(record, 0, 5, 3);
 	write_move(record, 1, 4, 9);
 	write_move(record, 0, 7, 1);
 	
-	assert(fgets(line, 150, record) == "AP[nugengo:?]");
-	assert(fgets(line, 150, record) == "GM[1]");
-	assert(fgets(line, 150, record) == "SZ[9]");
-	assert(fgets(line, 150, record) == "B[bc]");
-	assert(fgets(line, 150, record) == "W[ec]");
-	assert(fgets(line, 150, record) == "B[di]");
-	assert(fgets(line, 150, record) == "W[ga]");
+	ck_assert(fgets(line, 150, test_record) == "AP[nugengo:?]");
+	ck_assert(fgets(line, 150, test_record) == "GM[1]");
+	ck_assert(fgets(line, 150, test_record) == "SZ[9]");
+	ck_assert(fgets(line, 150, test_record) == "B[bc]");
+	ck_assert(fgets(line, 150, test_record) == "W[ec]");
+	ck_assert(fgets(line, 150, test_record) == "B[di]");
+	ck_assert(fgets(line, 150, test_record) == "W[ga]");
 	
-	fclose(record);	
+	fclose(test_record);	
 }
 END_TEST
 
@@ -146,6 +147,8 @@ Suite* board_suite (void)
 {
     Suite* s;
     TCase* tc_board;
+	TCase* tc_record;
+	TCase* tc_game;
     s = suite_create("Go");
 
 	//Test case for board
@@ -161,15 +164,13 @@ Suite* board_suite (void)
 	//Test case for record
     tc_record = tcase_create("Record");
 
-    tcase_add_checked_fixture(tc_record);
     tcase_add_test(tc_record, test_create_file);
-    tcase_add_test(tc_record, test_record_move);
+    tcase_add_test(tc_record, test_record_content);
     suite_add_tcase(s, tc_record);
 
 	//Test case for game_controller
 	tc_game = tc_create("Game Controller");
 	
-	tcase_add_checked_fixture(tc_game);
 	tcase_add_test(tc_game, test_execute_move);
 	tcase_add_test(tc_game, test_result_init);
 	suite_add_tcase(s, tc_game);
