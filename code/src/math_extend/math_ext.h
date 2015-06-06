@@ -5,7 +5,7 @@
 * \file
 * \brief Extension functions for random and mathematical calculation.
 * \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
-* \ingroup go
+* \ingroup math
 */
 
 

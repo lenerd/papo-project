@@ -35,15 +35,9 @@ START_TEST (test_board_init)
 
     /* check grid pointer */
     ck_assert(board->grid[0][0] == ps_empty);
-    ck_assert(board->grid[-1][0] == ps_illegal);
-    ck_assert(board->grid[0][-1] == ps_illegal);
-    ck_assert(board->grid[-1][-1] == ps_illegal);
     ck_assert(board->grid[board->size - 1][0] == ps_empty);
     ck_assert(board->grid[0][board->size - 1] == ps_empty);
     ck_assert(board->grid[board->size - 1][board->size - 1] == ps_empty);
-    ck_assert(board->grid[board->size][0] == ps_illegal);
-    ck_assert(board->grid[0][board->size] == ps_illegal);
-    ck_assert(board->grid[board->size][board->size] == ps_illegal);
 }
 END_TEST
 
