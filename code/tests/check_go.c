@@ -12,8 +12,11 @@ neuralnet_t* net2;
 void setup (void)
 {
     board = board_create (5);
-    initialize_neural_net_random (net1);
-    initialize_neural_net_random (net2);
+    uint16_t buf_size = board->size * board->size;
+
+    // TODO: use a deterministic initialition
+    net1 = create_neural_net_random (buf_size, 5, 5, buf_size);
+    net2 = create_neural_net_random (buf_size, 5, 5, buf_size);
 }
 
 void teardown (void)
