@@ -18,4 +18,5 @@ set (CMAKE_INCLUDE_CURRENT_DIR ON)
 add_library (${PROJECT_NAME}_lib ${PROJECT_SOURCES})
 add_executable (${PROJECT_NAME} ${MAIN_SOURCE})
 
+target_link_libraries (${PROJECT_NAME}_lib m)
 target_link_libraries (${PROJECT_NAME} ${PROJECT_NAME}_lib)
