@@ -100,8 +100,8 @@ START_TEST (test_board_groups)
     board_place (board, 1, 0);
     board_place (board, 0, 0);
     board_place (board, 2, 0);
-	int** group = board_get_group(board, 1, 0);
-	int** expected[][2] = {{0},{1, 0},{2, 0}};
+	int* group = board_get_group(board, 1, 0);
+	int* expected[] = {0, 1, 0, 2, 0};
     ck_assert (group == expected);
 }
 END_TEST
@@ -211,7 +211,10 @@ int main (void)
 
     sr = srunner_create (make_go_suite ());
 
-    srunner_run_all (sr, CK_VERBOSE);
+	//If needed for debugging:
+	srunner_set_fork_status (sr, CK_NOFORK);
+
+	srunner_run_all (sr, CK_VERBOSE);
 
     n = srunner_ntests_failed (sr);
     srunner_free (sr);

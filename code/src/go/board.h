@@ -102,12 +102,12 @@ void board_pass (board_t* board);
  * \brief The number of liberties of a (group of) stone(s).
  * \pre board->grid[x][y] == ps_black || board->grid[x][y] == ps_white
  */
-uint16_t board_num_liberties (const board_t* board, int** group);
+uint16_t board_num_liberties (const board_t* board, int* group);
 
 /**
  * \brief Finds the group the selected stone belongs to and returns its positions.
  */
-int** board_get_group(const board_t* board, uint8_t x, uint8_t y);
+int* board_get_group(const board_t* board, uint8_t x, uint8_t y);
 
 /**
 * \brief Checks if the groups next to a stone are to be captured and updates the board accordingly.
