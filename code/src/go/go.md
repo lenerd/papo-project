@@ -19,7 +19,9 @@ Go Board
 
 ### Todo
 
-* test everything and maybe improve the functions a bit 
+* Fix the group function
+* Remove move approximation
+* Test everything and maybe improve the functions a bit 
 
 
 SGF Implementation
@@ -43,3 +45,4 @@ GTP Implementation
 
 * See if it works
 * Decide wether to add implementation for human players (and how to do it)
+* Do we want to play against software?

@@ -151,7 +151,7 @@ int** get_group(const board_t* board, uint8_t x, uint8_t y)
 {
 	pos_state_t state = board_position_state(board, x, y);
 	int size = 1;
-	int** group; // FIXME: uninitialised pointer
+	int** group = malloc (120*sizeof (int));
 	group[1][0]=x;
 	group[1][1]=y;
 	int current = 1;
@@ -227,13 +227,13 @@ int** get_group(const board_t* board, uint8_t x, uint8_t y)
 		board->grid[group[j][0]][group[j][1]]=state;
 	}
 
-    // FIXME: return value
+    return group;
 }
 
 void capture(board_t* board, uint8_t x, uint8_t y)
 {
 	pos_state_t state= board_position_state(board, x, y);
-	int ***neighbours; // FIXME: uninitialised pointer
+	int ***neighbours = malloc (4*120*sizeof(int));
 	int stones_captured = 0;
 	uint8_t left = x-1;
 	uint8_t right = x+1;
@@ -333,41 +333,4 @@ uint8_t score_black(const board_t* board, int *groups_black)
 	}
 	
 	return score;
-}
-
-int approximate_move (board_t* board, uint8_t x, uint8_t y)
-{
-	int **spots; // FIXME: uninitialized pointer
-	uint8_t index = 0;
-	color_t color = board->turn;
-		
-	for(int i = 0; i < board->size; ++i)
-	{
-		for(int j = 0; j < board->size; ++j)
-		{
-			if(board_position_state(board, i, j)==ps_empty && board_legal_placement(board, i, j, color))
-			{
-				spots[index][0]=i;
-				spots[index][1]=j;	
-			}
-		}
-	}
-	
-	if(index == 0)
-		return -1;
-	else
-	{
-		uint8_t closest = 0;
-		for(int a = 0; a <=index; a++)
-		{
-			if((spots[a][0] < spots[closest][0] && (x - spots[a][0] + y - spots[a][1]) <= (x - spots[closest][0] + y - spots[closest][1])) ||
-			  (spots[a][1] < spots[closest][1] && (x - spots[a][0] + y - spots[a][1]) <= (x - spots[closest][0] + y - spots[closest][1])))
-			{
-				closest = a;
-			} 
-		}	
-	
-		board_place(board, spots[closest][1], spots[closest][2]);
-		return 1;
-	}		
 }

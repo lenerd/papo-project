@@ -149,13 +149,8 @@ int execute_move(board_t* board, uint8_t x, uint8_t y, color_t color)
 		board_place(board, x, y);
 		return 0;
 	}	
-	else
-	{
-		if(approximate_move(board, x, y)==-1)
-			return -1;
-	}
 
-	return 2;
+	return -1;
 }
 
 result_t result_init(neuralnet_t* black, neuralnet_t* white)
