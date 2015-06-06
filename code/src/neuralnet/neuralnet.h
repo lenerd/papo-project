@@ -5,7 +5,7 @@
 * \file
 * \brief Contains everything required for neural networks.
 * \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
-* \ingroup go
+* \ingroup neuralnet
 */
 
 
