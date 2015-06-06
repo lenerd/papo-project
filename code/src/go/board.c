@@ -38,7 +38,7 @@ board_t* board_create (uint8_t size)
         exit (EXIT_FAILURE);
     }
 
-    board->buffer = calloc ((size_t)((size + 2) * (size + 2)), sizeof (int8_t));
+    board->buffer = calloc ((size_t)(size * size), sizeof (uint8_t));
     if (board->buffer == NULL)
     {
         fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
@@ -47,7 +47,7 @@ board_t* board_create (uint8_t size)
         exit (EXIT_FAILURE);
     }
 
-    board->grid = calloc ((size_t)(size + 2), sizeof (int8_t*));
+    board->grid = calloc ((size_t)size, sizeof (int8_t*));
     if (board->grid == NULL)
     {
         fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
@@ -57,22 +57,10 @@ board_t* board_create (uint8_t size)
         exit (EXIT_FAILURE);
     }
 
-    for (uint8_t i = 0; i < size + 2; ++i)
+    for (uint8_t i = 0; i < size; ++i)
     {
-        board->buffer[i] = ps_illegal;
-        board->buffer[(size + 1) * (size + 2) + i] = ps_illegal;
+        board->grid[i] = board->buffer + i * size;
     }
-    for (uint8_t i = 1; i < size + 1; ++i)
-    {
-        board->buffer[i * (size + 2)] = ps_illegal;
-        board->buffer[i * (size + 2) + (size + 1)] = ps_illegal;
-    }
-
-    for (uint8_t i = 0; i < size + 2; ++i)
-    {
-        board->grid[i] = board->buffer + 1 + (i) * (size + 2);
-    }
-    board->grid = &board->grid[1];
 
     board->size = size;
     board->turn = c_black;
