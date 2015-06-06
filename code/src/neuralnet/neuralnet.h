@@ -28,6 +28,9 @@ typedef struct
 	/** \brief Count of output neurons.*/
 	uint32_t output_count;
 
+	/** \brief Array of floats to store the calculated output.*/
+	float* output;
+
 	/** \brief Weights of all edges.*/
 	float* edges;
 } neuralnet_t;
@@ -40,35 +43,6 @@ typedef struct
 * \pre output_count > 0
 */
 uint32_t edge_count(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count);
-
-/**
-* \brief Allocates and returns the start adress of a neuralnet.
-* \pre input_count > 0
-* \pre hidden_layer_count > 0
-* \pre neurons_per_hidden_layer > 0
-* \pre output_count > 0
-*/
-neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count);
-
-/**
-* \brief Initializes a given neuralnet with random edge-weights.
-* \pre net != NULL
-*/
-void initialize_neural_net_random(neuralnet_t* net);
-
-/**
-* \brief Initializes a given neuralnet with given edge-weights in form of an float array.
-* \pre net != NULL
-* \pre edges != NULL
-*/
-void initialize_neural_net_buffer(neuralnet_t* net, float* edges);
-
-/**
-* \brief Initializes a given neuralnet with given edge-weights in form of a data.
-* \pre net != NULL
-* \pre filepath != NULL
-*/
-void initialize_neural_net_data(neuralnet_t* net, char* filepath);
 
 /**
 * \brief Creates and returns a neuralnet with random edge-weights, given its preferences. This essentially does nothing but allocates and initializes a new neural net.
@@ -100,24 +74,17 @@ neuralnet_t* create_neural_net_buffer(uint32_t input_count, uint32_t hidden_laye
 neuralnet_t* create_neural_net_data(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, char* filepath);
 
 /**
-* \brief Deallocates (frees) the memory a given neuralnet used.
-* \pre net != NULL
-*/
-void deallocate_neural_net(neuralnet_t* net);
-
-/**
 * \brief Removes and cleans up a given neuralnet. Essentially this does nothing else than deallocating the neuralnet. If there will be further means to clean up a neuralnet, all those functions should be summarized here.
 * \pre net =! NULL
 */
 void destroy_neural_net(neuralnet_t* net);
 
 /**
-* \brief Calculates and stores output of a given neuralnet and input.
+* \brief Calculates and returns output of a given neuralnet and input.
 * \pre net != NULL
 * \pre input != NULL
-* \pre output != NULL
 */
-void calculate_output(const neuralnet_t* net, float* input, float* output);
+float* calculate_output(const neuralnet_t* net, float* input);
 
 /**
 * \brief Print the edge weights to console. TH stands for threashold, EWs are the edge weights. Each row stands for one receiving neuron with it's TH and receiving EWs.

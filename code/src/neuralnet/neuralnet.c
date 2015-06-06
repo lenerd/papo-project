@@ -9,7 +9,14 @@ uint32_t edge_count(uint32_t input_count, uint32_t hidden_layer_count, uint32_t 
 		neurons_per_hidden_layer * output_count;
 }
 
-neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count){
+/**
+* \brief Allocates and returns the start adress of a neuralnet.
+* \pre input_count > 0
+* \pre hidden_layer_count > 0
+* \pre neurons_per_hidden_layer > 0
+* \pre output_count > 0
+*/
+static neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count){
 	
 	neuralnet_t* net = NULL;
     net = malloc (sizeof(neuralnet_t));
@@ -24,15 +31,14 @@ neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_layer_co
 	net->hidden_layer_count = hidden_layer_count;
 	net->neurons_per_hidden_layer = neurons_per_hidden_layer;
 	net->output_count = output_count;
-
+	net->output = malloc(sizeof(float) * output_count);
 	net->edges_count = edge_count(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 
 	net->edges = malloc (sizeof(float) *(net->edges_count));
     if (net->edges == NULL)
     {
-        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
-                 __LINE__);
-        free (net);
+		fprintf(stderr, "malloc() failed in file %s at line # %d", __FILE__,
+			__LINE__);
         exit (EXIT_FAILURE);
     }
 
@@ -40,21 +46,37 @@ neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_layer_co
 
 }
 
-void initialize_neural_net_random(neuralnet_t* net){
+/**
+* \brief Initializes a given neuralnet with random edge-weights.
+* \pre net != NULL
+*/
+static void initialize_neural_net_random(neuralnet_t* net){
 	
 	for (uint32_t i = 0; i < net->edges_count; i++){
 		net->edges[i] = inverse_sigmoid(random_value_01());
 	}
 
 }
-void initialize_neural_net_buffer(neuralnet_t* net, float* edges){
+
+/**
+* \brief Initializes a given neuralnet with given edge-weights in form of an float array.
+* \pre net != NULL
+* \pre edges != NULL
+*/
+static void initialize_neural_net_buffer(neuralnet_t* net, float* edges){
 
 	for (uint32_t i = 0; i < net->edges_count; i++){
 		net->edges[i] = edges[i];
 	}
 
 }
-void initialize_neural_net_data(neuralnet_t* net, char* filepath){
+
+/**
+* \brief Initializes a given neuralnet with given edge-weights in form of a data.
+* \pre net != NULL
+* \pre filepath != NULL
+*/
+static void initialize_neural_net_data(neuralnet_t* net, char* filepath){
 	//TODO: implement
 }
 
@@ -80,9 +102,14 @@ neuralnet_t* create_neural_net_data (uint32_t input_count, uint32_t hidden_layer
 
 }
 
-void deallocate_neural_net(neuralnet_t* net){
+/**
+* \brief Deallocates (frees) the memory a given neuralnet used.
+* \pre net != NULL
+*/
+static void deallocate_neural_net(neuralnet_t* net){
 
 	free(net->edges);
+	free(net->output);
 	free(net);
 	
 }
@@ -91,7 +118,7 @@ void destroy_neural_net(neuralnet_t* net){
 	deallocate_neural_net(net);
 }
 
-void calculate_output(const neuralnet_t* net, float* input, float* output){ //Tons of parallel optimization possibilities.
+float* calculate_output(const neuralnet_t* net, float* input){ //Tons of parallel optimization possibilities.
 	
     float* old_current = NULL;
     float* current = NULL;
@@ -109,7 +136,6 @@ void calculate_output(const neuralnet_t* net, float* input, float* output){ //To
     {
         fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
                  __LINE__);
-        free(old_current);
         exit (EXIT_FAILURE);
     }
 
@@ -146,11 +172,13 @@ void calculate_output(const neuralnet_t* net, float* input, float* output){ //To
 		for (uint32_t j = 0; j < net->neurons_per_hidden_layer; j++, index++){
 			sum += net->edges[index] * current[j];
 		}
-		output[i] = sum;
+		net->output[i] = sum;
 	}
 
 	free(old_current);
 	free(current);
+
+	return net->output;
 }
 
 void print_neural_net(const neuralnet_t* net){
