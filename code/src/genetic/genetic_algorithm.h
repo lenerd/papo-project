@@ -89,7 +89,7 @@ genome_t* crossover_genomes(genome_t* father, genome_t* mother);
 * \pre pop != NULL
 * \pre base_fitness >= 0
 */
-genome_t* select_individual(population_t* pop, float base_fitness);
+genome_t* select_individual(population_t* pop);
 
 /**
 * \brief Advances a given population one generation with mutation/crossovers defining the genomes of the next generation.
