@@ -5,21 +5,21 @@
 
 START_TEST (test_lib)
 {
-    ck_assert(say_true() == true);
-    ck_assert(say_false() == false);
+    ck_assert (say_true () == true);
+    ck_assert (say_false () == false);
 }
 END_TEST
 
-Suite* lib_suite (void)
+Suite* make_example_suite (void)
 {
     Suite* s;
     TCase* tc_core;
-    s = suite_create("Lib");
+    s = suite_create ("Lib");
 
-    tc_core = tcase_create("Core");
+    tc_core = tcase_create ("Core");
 
-    tcase_add_test(tc_core, test_lib);
-    suite_add_tcase(s, tc_core);
+    tcase_add_test (tc_core, test_lib);
+    suite_add_tcase (s, tc_core);
 
     return s;
 }
@@ -27,15 +27,14 @@ Suite* lib_suite (void)
 
 int main (void)
 {
-    int number_failed;
-    Suite* s;
+    int n;
     SRunner* sr;
 
-    s = lib_suite();
-    sr = srunner_create(s);
+    sr = srunner_create (make_example_suite ());
 
-    srunner_run_all(sr, CK_NORMAL);
-    number_failed = srunner_ntests_failed(sr);
-    srunner_free(sr);
-    return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    srunner_run_all (sr, CK_NORMAL);
+
+    n = srunner_ntests_failed (sr);
+    srunner_free (sr);
+    return (n == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

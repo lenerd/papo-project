@@ -15,3 +15,5 @@ add_test (check_example ${CMAKE_CURRENT_BINARY_DIR}/check_example)
 add_executable (check_go check_go.c)
 target_link_libraries (check_go ${LIBS})
 add_test (check_go ${CMAKE_CURRENT_BINARY_DIR}/check_go)
+
+# feel free to add more tests :)
