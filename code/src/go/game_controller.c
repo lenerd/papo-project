@@ -10,14 +10,14 @@ result_t play_nets(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, u
 	bool game_over = false;
     int8_t passed  = 0;
 	result_t final = result_init(black, white);
-    float move[2];
+    float* move;
     int ret;
 
 	while(game_over == false)
 	{
 		if(board->turn == c_black)
 		{
-			calculate_output(black, (float*) NULL, move);	
+			move = calculate_output(black, (float*) NULL);	
 			ret = execute_move(board, (uint8_t) move[0], (uint8_t) move[1], c_white);
 			
             switch (ret)
@@ -41,7 +41,7 @@ result_t play_nets(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, u
 			// calculate_output(white, (float) board, move);
             // FIXME: function wants a pointer to a float array
             // (nullpointer for compilibility only
-			calculate_output(white, (float*) NULL, move);
+			move = calculate_output(white, (float*) NULL);
             ret = execute_move(board, (uint8_t) move[0], (uint8_t) move[1], c_white);
 			
             switch (ret)
@@ -65,7 +65,7 @@ result_t play_nets(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, u
 			game_over = true;
 	}
 	
-	int score_val = score(board, board_size, komi);
+	int score_val = board_score(board, board_size, komi);
 	final.score_black = score_val;
 	final.score_white = - score_val;
 
@@ -85,7 +85,7 @@ int play_human_vs_net(uint8_t board_size, neuralnet_t* net, color_t human_player
 	{
 		if(board->turn == human_player)
 		{
-            uint8_t move[2];
+            float* move;
 			/* TODO: Reading from command line (every round)...  Is that even possible? */
 			
 			ret = execute_move(board, move[0], move[1], c_white);
@@ -106,11 +106,11 @@ int play_human_vs_net(uint8_t board_size, neuralnet_t* net, color_t human_player
 		}
 		else
 		{
-            float move[2];
+            float* move;
 			// calculate_output(net, (float) board, move);
             // FIXME: function wants a pointer to a float array
             // (nullpointer for compilibility only
-			calculate_output(net, (float*) NULL, move);
+			move = calculate_output(net, (float*) NULL);
 			ret = execute_move(board, (uint8_t) move[0], (uint8_t) move[1], c_white);
 			
             switch (ret)
@@ -133,7 +133,7 @@ int play_human_vs_net(uint8_t board_size, neuralnet_t* net, color_t human_player
 			game_over = true;
 	}
 	
-	return score(board, board_size, komi);
+	return board_score(board, board_size, komi);
 }
 
 

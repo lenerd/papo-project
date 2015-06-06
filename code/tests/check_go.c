@@ -69,29 +69,50 @@ START_TEST (test_board_placement)
 }
 END_TEST
 
-START_TEST (test_board_liberties)
+START_TEST (test_board_pass)
 {
-    board_place (board, 0, 0);
-    ck_assert (board_num_liberties (board, get_group (board, 0, 0)) == 2);
-    board_place (board, 1, 0);
-    ck_assert (board_num_liberties (board, get_group (board, 0, 0)) == 1);
-    ck_assert (board_num_liberties (board, get_group (board, 1, 0)) == 2);
-    board_place (board, 0, 1);
-    ck_assert (board_num_liberties (board, get_group (board, 0, 0)) == 2);
-    ck_assert (board_num_liberties (board, get_group (board, 1, 0)) == 2);
-    board_place (board, 1, 1);
-    ck_assert (board_num_liberties (board, get_group (board, 0, 0)) == 1);
-    ck_assert (board_num_liberties (board, get_group (board, 1, 0)) == 3);
+	uint8_t** before = board->grid;
+    ck_assert (board->turn == c_black);
+	board_pass(board);
+	ck_assert(before == board->grid);
+    ck_assert (board->turn == c_white);
 }
 END_TEST
 
-START_TEST (test_board_capture)
+START_TEST (test_board_liberties)
+{
+    board_place (board, 0, 0);
+    ck_assert (board_num_liberties (board, board_get_group (board, 0, 0)) == 2);
+    board_place (board, 1, 0);
+    ck_assert (board_num_liberties (board, board_get_group (board, 0, 0)) == 1);
+    ck_assert (board_num_liberties (board, board_get_group (board, 1, 0)) == 2);
+    board_place (board, 0, 1);
+    ck_assert (board_num_liberties (board, board_get_group (board, 0, 0)) == 2);
+    ck_assert (board_num_liberties (board, board_get_group (board, 1, 0)) == 2);
+    board_place (board, 1, 1);
+    ck_assert (board_num_liberties (board, board_get_group (board, 0, 0)) == 1);
+    ck_assert (board_num_liberties (board, board_get_group (board, 1, 0)) == 3);
+}
+END_TEST
+
+START_TEST (test_board_groups)
+{
+    board_place (board, 1, 0);
+    board_place (board, 0, 0);
+    board_place (board, 2, 0);
+	int** group = board_get_group(board, 1, 0);
+	int** expected[][2] = {{0},{1, 0},{2, 0}};
+    ck_assert (group == expected);
+}
+END_TEST
+
+START_TEST (test_board_score)
 {
     board_place (board, 0, 0);
     board_place (board, 1, 0);
     board_place (board, 2, 0);
     board_place (board, 0, 1);
-    ck_assert (board_position_state (board, 0, 0) == ps_empty);
+    ck_assert(board_score(board, 9, 0) == -79);
 }
 END_TEST
 
@@ -99,7 +120,7 @@ END_TEST
 // Tests for record.c
 START_TEST (test_create_file)
 {
-    FILE* record = create_file (0);
+    FILE* record = create_file ("0");
     ck_assert (record != NULL);
     fclose (record);
 }
@@ -108,20 +129,20 @@ END_TEST
 START_TEST (test_record_content)
 {
     char* line = malloc (150);
-    FILE* test_record = create_file (1);
+    FILE* test_record = create_file ("1");
 
     write_move (test_record, 1, 2, 3);
     write_move (test_record, 0, 5, 3);
     write_move (test_record, 1, 4, 9);
     write_move (test_record, 0, 7, 1);
 
-    ck_assert (fgets (line, 150, test_record) == "AP[nugengo:?]");
-    ck_assert (fgets (line, 150, test_record) == "GM[1]");
-    ck_assert (fgets (line, 150, test_record) == "SZ[9]");
-    ck_assert (fgets (line, 150, test_record) == "B[bc]");
-    ck_assert (fgets (line, 150, test_record) == "W[ec]");
-    ck_assert (fgets (line, 150, test_record) == "B[di]");
-    ck_assert (fgets (line, 150, test_record) == "W[ga]");
+    ck_assert_str_eq (fgets (line, 150, test_record), "AP[nugengo:?]");
+    ck_assert_str_eq (fgets (line, 150, test_record), "GM[1]");
+    ck_assert_str_eq (fgets (line, 150, test_record), "SZ[9]");
+    ck_assert_str_eq (fgets (line, 150, test_record), "B[bc]");
+    ck_assert_str_eq (fgets (line, 150, test_record), "W[ec]");
+    ck_assert_str_eq (fgets (line, 150, test_record), "B[di]");
+    ck_assert_str_eq (fgets (line, 150, test_record), "W[ga]");
 
     fclose (test_record);
 }
@@ -159,8 +180,10 @@ Suite* make_go_suite (void)
     tcase_add_checked_fixture (tc_board, setup, teardown);
     tcase_add_test (tc_board, test_board_init);
     tcase_add_test (tc_board, test_board_placement);
+	tcase_add_test (tc_board, test_board_pass);
     tcase_add_test (tc_board, test_board_liberties);
-    tcase_add_test (tc_board, test_board_capture);
+	tcase_add_test (tc_board, test_board_groups);
+    tcase_add_test (tc_board, test_board_score);
     suite_add_tcase (s, tc_board);
 
     /* Test case for record */

@@ -11,9 +11,9 @@
 /**
 * \brief creates a .sgf file and deals with the setup
 */
-FILE* create_file(int rank)
+FILE* create_file(const char* file_name)
 {
-	FILE* record = fopen("/rank.sgf", "a");
+	FILE* record = fopen(file_name, "a");
     if (record == NULL)
     {
         fprintf (stderr, "fopen() failed in file %s at line # %d", __FILE__,

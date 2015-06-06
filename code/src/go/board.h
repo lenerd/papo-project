@@ -107,27 +107,27 @@ uint16_t board_num_liberties (const board_t* board, int** group);
 /**
  * \brief Finds the group the selected stone belongs to and returns its positions.
  */
-int** get_group(const board_t* board, uint8_t x, uint8_t y);
+int** board_get_group(const board_t* board, uint8_t x, uint8_t y);
 
 /**
 * \brief Checks if the groups next to a stone are to be captured and updates the board accordingly.
 */
-void capture(board_t* board, uint8_t x, uint8_t y);
+void board_capture(board_t* board, uint8_t x, uint8_t y);
 
 /**
 * \brief Returns the final score from black's perspective including komi.
 */
-int score(const board_t* board, uint8_t size, uint8_t komi);
+int board_score(const board_t* board, uint8_t size, uint8_t komi);
 
 /**
 * \brief Computes score for white.
 */
-uint8_t score_white(const board_t* board, int *groups_white);
+uint8_t board_score_white(const board_t* board, int *groups_white);
 
 /**
 * \brief Computes score for black.
 */
-uint8_t score_black(const board_t* board, int *groups_black);
+uint8_t board_score_black(const board_t* board, int *groups_black);
 
 
 #endif /* BOARD_H */

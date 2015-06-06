@@ -13,7 +13,7 @@
 /**
 * \brief Creates a .sgf file to record the game in 
 */
-FILE* create_file(int rank);
+FILE* create_file(const char* file_name);
 
 /**
 * \brief writes a move to the .sgf
