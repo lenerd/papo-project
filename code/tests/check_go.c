@@ -1,6 +1,7 @@
 #include <check.h>
 #include <stdlib.h>
 #include "go/board.h"
+#include "go/record.h"
 
 board_t* board;
 
@@ -14,6 +15,7 @@ void teardown (void)
     board_destroy(board);
 }
 
+//Tests for board.c
 START_TEST (test_board_init)
 {
     /* no null pointer */
@@ -90,12 +92,38 @@ START_TEST (test_board_capture)
 }
 END_TEST
 
+
+//Tests for record.c
+START_TEST (test_create_file)
+{
+}
+END_TEST
+
+START_TEST (test_record_move)
+{
+}
+END_TEST
+
+
+//Tests for game_controller.c
+START_TEST (test_execute_move)
+{
+}
+END_TEST
+
+START_TEST (test_result_init)
+{
+}
+END_TEST
+
+
 Suite* board_suite (void)
 {
     Suite* s;
     TCase* tc_board;
     s = suite_create("Go");
 
+	//Test case for board
     tc_board = tcase_create("Board");
 
     tcase_add_checked_fixture(tc_board, setup, teardown);
@@ -104,6 +132,22 @@ Suite* board_suite (void)
     tcase_add_test(tc_board, test_board_liberties);
     tcase_add_test(tc_board, test_board_capture);
     suite_add_tcase(s, tc_board);
+
+	//Test case for record
+    tc_record = tcase_create("Record");
+
+    tcase_add_checked_fixture(tc_record);
+    tcase_add_test(tc_record, test_create_file);
+    tcase_add_test(tc_record, test_record_move);
+    suite_add_tcase(s, tc_record);
+
+	//Test case for game_controller
+	tc_game = tc_create("Game Controller");
+	
+	tcase_add_checked_fixture(tc_game);
+	tcase_add_test(tc_game, test_execute_move);
+	tcase_add_test(tc_game, test_result_init);
+	suite_add_tcase(s, tc_game);
 
     return s;
 }
