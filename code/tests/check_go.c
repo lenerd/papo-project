@@ -100,8 +100,8 @@ START_TEST (test_board_groups)
     board_place (board, 1, 0);
     board_place (board, 0, 0);
     board_place (board, 2, 0);
-	int* group = board_get_group(board, 1, 0);
-	int* expected[] = {0, 1, 0, 2, 0};
+	uint8_t* group = board_get_group(board, 1, 0);
+	uint8_t* expected[] = {0, 1, 0, 2, 0};
     ck_assert (group == expected);
 }
 END_TEST

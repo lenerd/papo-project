@@ -154,7 +154,7 @@ int* board_get_group(const board_t* board, uint8_t x, uint8_t y)
 	{
 		uint8_t a = group[current];
 		uint8_t b = group[current+1];
-		int left = a-1;
+		uint8_t left = a-1;
 		uint8_t right = a+1;
 		uint8_t top = b-1;
 		uint8_t bottom = b+1;
