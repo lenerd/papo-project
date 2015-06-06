@@ -4,7 +4,7 @@
 #include "genetic/genetic_algorithm.h"
 
 float mutation_crossover_ratio = 0.3f;
-float gene_mutation_chance = 0.001f;
+float gene_mutation_chance = 0.3f;
 
 genome_t* create_genome(uint32_t genes_count, float* genes){
 
@@ -34,6 +34,12 @@ population_t* create_population(uint32_t population_size, genome_t** genomes, fl
 	pop->size = population_size;
 	pop->individuals = genomes;
 	pop->back_buffer = malloc(sizeof(genome_t*) * population_size);
+    if (pop->back_buffer == NULL)
+    {
+        fprintf(stderr, "malloc() failed in file %s at line # %d",
+                __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+    }
 	pop->generation = 0;
 	pop->base_fitness = base_fitness;
     pop->total_fitness = 0.0f;
@@ -96,7 +102,7 @@ genome_t* select_individual(population_t* pop){
 		f += pop->individuals[i]->fitness + pop->base_fitness;
 		if (f > r) { break; }
 	}
-	return pop->individuals[i];
+	return pop->individuals[(i < pop->size - 1) ? i : pop->size - 1];
 
 }
 
@@ -115,4 +121,6 @@ void next_generation(population_t* pop){
 	pop->individuals = pop->back_buffer;
 	pop->back_buffer = temp;
 	++pop->generation;
+    pop->total_fitness = 0.0f;
+    pop->avg_fitness = 0.0f;
 }

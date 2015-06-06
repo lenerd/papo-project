@@ -52,7 +52,7 @@ int main(int argc, char** argv){
 				sum_err += sqr_err;
 			}
 			float fit = 1.0f / sum_err;
-			genomes[j]->fitness = fit;
+			pop->individuals[j]->fitness = fit;
 			pop->total_fitness += fit;
 		}
 		pop->avg_fitness = pop->total_fitness / pop->size;
