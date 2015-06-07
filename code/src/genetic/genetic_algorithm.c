@@ -48,7 +48,7 @@ void mutate_genome (genome_t* genome)
     {
         if (random_value_01 () < gene_mutation_chance)
         {
-            *genome->genes[i] += inverse_sigmoid (random_value_01 ());
+            (*genome->genes)[i] += inverse_sigmoid (random_value_01 ());
         }
     }
 }
@@ -105,7 +105,7 @@ void next_generation (population_t* pop)
 
     for (uint32_t i = 0; i < pop->size; ++i)
     {
-        size_t buf_len = pop->individuals[i]->genes_count * sizeof (float*);
+        size_t buf_len = pop->individuals[i]->genes_count * sizeof (float);
         new_genes[i] = malloc (buf_len);
         if (new_genes[i] == NULL)
         {
@@ -123,6 +123,7 @@ void next_generation (population_t* pop)
         mutate_genome (pop->individuals[i]);
     }
 
+    free(new_genes);
     ++pop->generation;
     pop->total_fitness = 0.0f;
     pop->avg_fitness = 0.0f;
