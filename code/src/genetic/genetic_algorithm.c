@@ -48,7 +48,7 @@ void mutate_genome (genome_t* genome)
     {
         if (random_value_01 () < gene_mutation_chance)
         {
-            *genome->genes[i] += inverse_sigmoid (random_value_01 ());
+            (*genome->genes)[i] += inverse_sigmoid (random_value_01 ());
         }
     }
 }
