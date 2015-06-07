@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #include <check.h>
 #include <math.h>
 #include <stdlib.h>
@@ -50,6 +51,14 @@ START_TEST (test_sigmoid)
     comp = 0.6034832498647263f;
     ck_assert_msg (fabsf (val - comp) < 0.000001f, "%f != %f", (double) val,
                    (double) comp);
+    val = sigmoid (INFINITY);
+    comp = 1.0f;
+    ck_assert_msg (fabsf (val - comp) < 0.000001f, "%f != %f", (double) val,
+                   (double) comp);
+    val = sigmoid (-INFINITY);
+    comp = 0.0f;
+    ck_assert_msg (fabsf (val - comp) < 0.000001f, "%f != %f", (double) val,
+                   (double) comp);
 }
 END_TEST
 
@@ -57,6 +66,12 @@ START_TEST (test_inverse_sigmoid)
 {
     float val;
     float comp;
+    val = inverse_sigmoid (0.0f);
+    comp = -INFINITY;
+    ck_assert_msg (isinff (val) == -1, "%f != %f", (double) val, (double) comp);
+    val = inverse_sigmoid (1.0f);
+    comp = INFINITY;
+    ck_assert_msg (isinff (val) == 1, "%f != %f", (double) val, (double) comp);
     val = inverse_sigmoid (0.1f);
     comp = -2.1972245773362196f;
     ck_assert_msg (fabsf (val - comp) < 0.000001f, "%f != %f", (double) val,
