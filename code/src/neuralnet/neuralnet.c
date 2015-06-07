@@ -18,10 +18,13 @@ uint32_t edge_count(uint32_t input_count, uint32_t hidden_layer_count, uint32_t 
 * \pre neurons_per_hidden_layer > 0
 * \pre output_count > 0
 */
-static neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count){
-	
-	neuralnet_t* net = NULL;
-    net = malloc (sizeof(neuralnet_t));
+static neuralnet_t* allocate_neural_net (uint32_t input_count,
+                                         uint32_t hidden_layer_count,
+                                         uint32_t neurons_per_hidden_layer,
+                                         uint32_t output_count)
+{
+    neuralnet_t* net = NULL;
+    net = malloc (sizeof (neuralnet_t));
     if (net == NULL)
     {
         fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
@@ -29,30 +32,59 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_l
         exit (EXIT_FAILURE);
     }
 
-	net->input_count = input_count;
-	net->hidden_layer_count = hidden_layer_count;
-	net->neurons_per_hidden_layer = neurons_per_hidden_layer;
+    net->input_count = input_count;
+    net->hidden_layer_count = hidden_layer_count;
+    net->neurons_per_hidden_layer = neurons_per_hidden_layer;
 
     net->output_count = output_count;
-    net->output = calloc(output_count, sizeof(float));
+    net->output = calloc (output_count, sizeof (float));
     if (net->output == NULL)
     {
-        fprintf(stderr, "calloc() failed in file %s at line # %d", __FILE__,
-        	__LINE__);
+        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
         exit (EXIT_FAILURE);
     }
 
-	net->edges_count = edge_count(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
-	net->edges = malloc (sizeof(float) *(net->edges_count));
-    if (net->edges == NULL)
+    net->edges_count = edge_count (input_count, hidden_layer_count,
+                                   neurons_per_hidden_layer, output_count);
+    net->edge_buf = malloc (sizeof (float) * (net->edges_count));
+    if (net->edge_buf == NULL)
     {
-		fprintf(stderr, "malloc() failed in file %s at line # %d", __FILE__,
-			__LINE__);
+        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
         exit (EXIT_FAILURE);
     }
 
-	return net;
+    net->edges = calloc (hidden_layer_count - 1, sizeof (float**));
+    if (net == NULL)
+    {
+        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+    net->edge_helper_buf = calloc (
+        (hidden_layer_count - 1) * neurons_per_hidden_layer, sizeof (float*));
 
+    if (net == NULL)
+    {
+        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    for (uint32_t i = 0; i < hidden_layer_count - 1; ++i)
+    {
+        for (uint32_t j = 0; j < neurons_per_hidden_layer; ++j)
+        {
+            net->edge_helper_buf[(i * neurons_per_hidden_layer) + j] =
+                &net->edge_buf[i * neurons_per_hidden_layer *
+                                   neurons_per_hidden_layer +
+                               j * neurons_per_hidden_layer];
+        }
+        net->edges[i] = &net->edge_helper_buf[i * neurons_per_hidden_layer];
+    }
+
+    return net;
 }
 
 /**
@@ -129,20 +161,13 @@ neuralnet_t* create_neural_net_file (uint32_t input_count,
     return net;
 }
 
-/**
-* \brief Deallocates (frees) the memory a given neuralnet used.
-* \pre net != NULL
-*/
-static void deallocate_neural_net(neuralnet_t* net){
-
-	free(net->edges);
-	free(net->output);
-	free(net);
-	
-}
-
-void destroy_neural_net(neuralnet_t* net){
-	deallocate_neural_net(net);
+void destroy_neural_net (neuralnet_t* net)
+{
+    free (net->edges);
+    free (net->edge_helper_buf);
+    free (net->edge_buf);
+    free (net->output);
+    free (net);
 }
 
 float* calculate_output(const neuralnet_t* net, float* input){ //Tons of parallel optimization possibilities.

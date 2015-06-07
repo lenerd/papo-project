@@ -13,26 +13,39 @@
 
 
 /**
-* \brief Represents a neural network.
-*/
+ * \brief Represents a neural network.
+ */
 typedef struct
 {
-	/** \brief Total count of all edges.*/
-	uint32_t edges_count;
-	/** \brief Count of input neurons.*/
-	uint32_t input_count;
-	/** \brief Count of hidden layers.*/
-	uint32_t hidden_layer_count;
-	/** \brief Count of neurons each hidden layer has.*/
-	uint32_t neurons_per_hidden_layer;
-	/** \brief Count of output neurons.*/
-	uint32_t output_count;
+    /** \brief Total count of all edges.*/
+    uint32_t edges_count;
+    /** \brief Count of input neurons.*/
+    uint32_t input_count;
+    /** \brief Count of hidden layers.*/
+    uint32_t hidden_layer_count;
+    /** \brief Count of neurons each hidden layer has.*/
+    uint32_t neurons_per_hidden_layer;
+    /** \brief Count of output neurons.*/
+    uint32_t output_count;
 
-	/** \brief Array of floats to store the calculated output.*/
-	float* output;
+    /** \brief Array of floats to store the calculated output.*/
+    float* output;
 
-	/** \brief Weights of all edges.*/
-	float* edges;
+    /** \brief Weights of all edges.*/
+    float* edge_buf;
+
+    /** \brief Buffer to store some pointers (required for magic). */
+    float** edge_helper_buf;
+
+    /**
+     * \brief 3D-Interface to edge_buf
+     *
+     * Dimensions: (hidden_layer_count - 1) X (neurons_per_hidden_layer)
+     *                                      X (neurons_per_hidden_layer)
+     * edges[x][y][z] = edge weight between neuron y on layer x and neuron z on
+     *                  layer x + 1
+     */
+    float*** edges;
 } neuralnet_t;
 
 /**
@@ -121,11 +134,15 @@ neuralnet_t* create_neural_net_file (uint32_t input_count,
 void destroy_neural_net(neuralnet_t* net);
 
 /**
-* \brief Calculates and returns output of a given neuralnet and input.
-* \pre net != NULL
-* \pre input != NULL
-*/
-float* calculate_output(const neuralnet_t* net, float* input);
+ * \brief Calculates the output of a given neuralnet and input.
+ * \param net Network to be used
+ * \param input Buffer containing input values.
+ * \pre net != NULL
+ * \pre input != NULL
+ * \pre length(input) = net->input_count
+ * \post net->output is updated
+ */
+float* calculate_output(neuralnet_t* net, float* input);
 
 /**
 * \brief Print the edge weights to console. TH stands for threashold, EWs are the edge weights. Each row stands for one receiving neuron with it's TH and receiving EWs.
