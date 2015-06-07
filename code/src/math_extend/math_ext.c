@@ -7,11 +7,13 @@
 void set_seed (unsigned int seed)
 {
     srand (seed);
+    seed_set = true;
 }
 
 void set_seed_time (void)
 {
     srand ((unsigned int) time (NULL));
+    seed_set = true;
 }
 
 void set_seed_ifn ()

@@ -5,6 +5,7 @@
 * \file
 * \brief Extension functions for random and mathematical calculation.
 * \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
+* \author Lennart Braun <3braun@informatik.uni-hamburg.de>
 * \ingroup math
 */
 
@@ -20,17 +21,20 @@ bool seed_set;
 /**
  * \brief Sets the seed for the random number generator.
  * \param seed Seed to be used.
+ * \post seed_set == true
  */
 void set_seed (unsigned int seed);
 /**
  * \brief Seeds the random number generator with the system time.
  * timestamp.
+ * \post seed_set == true
  */
 void set_seed_time (void);
 
 /**
  * \brief Seeds the random number generator with the system time, if not already
  * done.
+ * \post seed_set == true
  */
 void set_seed_ifn ();
 
