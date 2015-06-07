@@ -20,7 +20,7 @@ typedef struct
 	/** \brief Count of genes this genome contains. */
 	uint32_t genes_count;
 	/** \brief Values of all genes. */
-	float* genes;
+	float** genes;
 	/** \brief How fit this genome is. */
 	float fitness;
 } genome_t;
@@ -30,21 +30,19 @@ typedef struct
  */
 typedef struct
 {
-
-	/** \brief Size of the population. */
-	uint32_t size;
-	/** \brief Array of pointer towards all genomes of this population. */
-	genome_t** individuals;
-	/** \brief Array of pointer for buffer-swapping for individuals. */
-	genome_t** back_buffer;
-	/** \brief The current generation this population is in. */
-	uint32_t generation;
-	/** \brief Summed up fitnesses of all genomes. */
-	float total_fitness;
-	/** \brief Average fitness of all genomes of this population. */
-	float avg_fitness;
-	/** \brief Base fitness added for each individual. Should be as low as possible. */
-	float base_fitness;
+    /** \brief Size of the population. */
+    uint32_t size;
+    /** \brief Array of pointer towards all genomes of this population. */
+    genome_t** individuals;
+    /** \brief The current generation this population is in. */
+    uint32_t generation;
+    /** \brief Summed up fitnesses of all genomes. */
+    float total_fitness;
+    /** \brief Average fitness of all genomes of this population. */
+    float avg_fitness;
+    /** \brief Base fitness added for each individual. Should be as low as
+     * possible. */
+    float base_fitness;
 
 } population_t;
 
@@ -55,10 +53,12 @@ float gene_mutation_chance;
 
 /**
 * \brief Creates and returns a genome with given genes.
+* \param genes Pointer to the buffer where the genes are stored.
+* \param genes_count Sizes of that buffer.
 * \pre genes_count > 0
 * \pre genes != NULL
 */
-genome_t* create_genome(uint32_t genes_count, float* genes);
+genome_t* create_genome(uint32_t genes_count, float** genes);
 
 /**
 * \brief Creates and returns a population of genomes based on an array of pointers of precreated genomes.
@@ -69,17 +69,18 @@ genome_t* create_genome(uint32_t genes_count, float* genes);
 population_t* create_population(uint32_t population_size, genome_t** genomes, float base_fitness);
 
 /**
-* \brief Creates and returns a mutated version of the given genome.
-* \pre gen != NULL
-*/
-genome_t* mutate_genome(genome_t* gen);
+ * \brief Mutates a given genome in-place.
+ * \param genome Genome to mutate.
+ * \pre gen != NULL
+ */
+void mutate_genome (genome_t* genome);
 
-/**
-* \brief Creates and returns a crossover child of the given two genomes.
-* \pre father != NULL
-* \pre mother != NULL
-*/
-genome_t* crossover_genomes(genome_t* father, genome_t* mother);
+// /**
+// * \brief Creates and returns a crossover child of the given two genomes.
+// * \pre father != NULL
+// * \pre mother != NULL
+// */
+// genome_t* crossover_genomes(genome_t* father, genome_t* mother);
 
 /**
 * \brief Returns a random genome based on fittnesses 
@@ -92,9 +93,11 @@ genome_t* crossover_genomes(genome_t* father, genome_t* mother);
 genome_t* select_individual(population_t* pop);
 
 /**
-* \brief Advances a given population one generation with mutation/crossovers defining the genomes of the next generation.
+* \brief Advances a given population one generation with mutation/crossovers
+* defining the genomes of the next generation.
+* \param pop Population to advance.
 * \pre pop != NULL
 */
-void next_generation(population_t* pop);
+void next_generation (population_t* pop);
 
 #endif /* GENETIC_ALGORITHM_H */
