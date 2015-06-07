@@ -1,7 +1,9 @@
+#include "neuralnet/neuralnet.h"
+
+#include "math_extend/math_ext.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "neuralnet/neuralnet.h"
-#include "math_extend/math_ext.h"
+#include <string.h>
 
 uint32_t edge_count(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count){
 	return (input_count + 1) * neurons_per_hidden_layer +
@@ -30,10 +32,17 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_l
 	net->input_count = input_count;
 	net->hidden_layer_count = hidden_layer_count;
 	net->neurons_per_hidden_layer = neurons_per_hidden_layer;
-	net->output_count = output_count;
-	net->output = malloc(sizeof(float) * output_count);
-	net->edges_count = edge_count(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 
+    net->output_count = output_count;
+    net->output = calloc(output_count, sizeof(float));
+    if (net->output == NULL)
+    {
+        fprintf(stderr, "calloc() failed in file %s at line # %d", __FILE__,
+        	__LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+	net->edges_count = edge_count(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
 	net->edges = malloc (sizeof(float) *(net->edges_count));
     if (net->edges == NULL)
     {
@@ -47,28 +56,32 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count, uint32_t hidden_l
 }
 
 /**
-* \brief Initializes a given neuralnet with random edge-weights.
-* \pre net != NULL
-*/
-static void initialize_neural_net_random(neuralnet_t* net){
-	
-	for (uint32_t i = 0; i < net->edges_count; i++){
-		net->edges[i] = inverse_sigmoid(random_value_01());
-	}
-
+ * \brief Initializes a given neuralnet with random edge-weights.
+ * \param net Neural network to initialize.
+ * \pre net != NULL
+ * \post net is initialized.
+ */
+static void initialize_neural_net_random (neuralnet_t* net)
+{
+    for (uint32_t i = 0; i < net->edges_count; ++i)
+    {
+        net->edges[i] = inverse_sigmoid (random_value_01 ());
+    }
 }
 
 /**
-* \brief Initializes a given neuralnet with given edge-weights in form of an float array.
-* \pre net != NULL
-* \pre edges != NULL
-*/
-static void initialize_neural_net_buffer(neuralnet_t* net, float* edges){
-
-	for (uint32_t i = 0; i < net->edges_count; i++){
-		net->edges[i] = edges[i];
-	}
-
+ * \brief Initializes a given neuralnet with given edge-weights in form of an
+ * float array.
+ * \param net Neural network to initialize.
+ * \param edges Buffer containing edge values.
+ * \pre net != NULL
+ * \pre edges != NULL
+ * \pre length(edges) = net->edge_count
+ * \post net is initialized.
+ */
+static void initialize_neural_net_buffer (neuralnet_t* net, float* edges)
+{
+    memcpy (net->edges, edges, net->edges_count);
 }
 
 /**
@@ -80,26 +93,40 @@ static void initialize_neural_net_data(neuralnet_t* net, char* filepath){
 	//TODO: implement
 }
 
-neuralnet_t* create_neural_net_random (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count){
-	
-	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
-	initialize_neural_net_random(net);
-	return net;
-
+neuralnet_t* create_neural_net_random (uint32_t input_count,
+                                       uint32_t hidden_layer_count,
+                                       uint32_t neurons_per_hidden_layer,
+                                       uint32_t output_count)
+{
+    neuralnet_t* net =
+        allocate_neural_net (input_count, hidden_layer_count,
+                             neurons_per_hidden_layer, output_count);
+    initialize_neural_net_random (net);
+    return net;
 }
-neuralnet_t* create_neural_net_buffer (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, float* edges){
 
-	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
-	initialize_neural_net_buffer(net, edges);
-	return net;
-
+neuralnet_t* create_neural_net_buffer (uint32_t input_count,
+                                       uint32_t hidden_layer_count,
+                                       uint32_t neurons_per_hidden_layer,
+                                       uint32_t output_count, float* edges)
+{
+    neuralnet_t* net =
+        allocate_neural_net (input_count, hidden_layer_count,
+                             neurons_per_hidden_layer, output_count);
+    initialize_neural_net_buffer (net, edges);
+    return net;
 }
-neuralnet_t* create_neural_net_data (uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, char* filepath){
 
-	neuralnet_t* net = allocate_neural_net(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
-	initialize_neural_net_data(net, filepath);
-	return net;
-
+neuralnet_t* create_neural_net_file (uint32_t input_count,
+                                     uint32_t hidden_layer_count,
+                                     uint32_t neurons_per_hidden_layer,
+                                     uint32_t output_count, char* path)
+{
+    neuralnet_t* net =
+        allocate_neural_net (input_count, hidden_layer_count,
+                             neurons_per_hidden_layer, output_count);
+    initialize_neural_net_data (net, path);
+    return net;
 }
 
 /**

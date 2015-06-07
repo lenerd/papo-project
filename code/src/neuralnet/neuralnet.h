@@ -45,38 +45,79 @@ typedef struct
 uint32_t edge_count(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count);
 
 /**
-* \brief Creates and returns a neuralnet with random edge-weights, given its preferences. This essentially does nothing but allocates and initializes a new neural net.
-* \pre input_count > 0
-* \pre hidden_layer_count > 0
-* \pre neurons_per_hidden_layer > 0
-* \pre output_count > 0
-*/
-neuralnet_t* create_neural_net_random(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count);
+ * \brief Creates and returns a neuralnet with random edge-weights, given its
+ * preferences.
+ *
+ * This allocates and initializes a new neural net with the given preferences.
+ * \param input_count              Number of input neurons.
+ * \param hidden_layer_count       Number of hidden layers.
+ * \param neurons_per_hidden_layer Number of neurons in each hidden layer.
+ * \param output_count             Number of output neurons.
+ * \return Pointer to the new neural network.
+ * \pre input_count > 0
+ * \pre hidden_layer_count > 0
+ * \pre neurons_per_hidden_layer > 0
+ * \pre output_count > 0
+ */
+neuralnet_t* create_neural_net_random (uint32_t input_count,
+                                       uint32_t hidden_layer_count,
+                                       uint32_t neurons_per_hidden_layer,
+                                       uint32_t output_count);
 
 /**
-* \brief Creates and returns a neuralnet with given edge-weights in form of an float array, given its preferences. This essentially does nothing but allocates and initializes a new neural net.
-* \pre input_count > 0
-* \pre hidden_layer_count > 0
-* \pre neurons_per_hidden_layer > 0
-* \pre output_count > 0
-* \pre edges != NULL
-*/
-neuralnet_t* create_neural_net_buffer(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, float* edges);
+ * \brief Creates and returns a neuralnet with given edge-weights.
+ *
+ * This allocates and initializes a new neural net with the given preferences.
+ * \param input_count              Number of input neurons.
+ * \param hidden_layer_count       Number of hidden layers.
+ * \param neurons_per_hidden_layer Number of neurons in each hidden layer.
+ * \param output_count             Number of output neurons.
+ * \param edges                    Buffer containing edge weights
+ * \return Pointer to the new neural network.
+ * \pre input_count > 0
+ * \pre hidden_layer_count > 0
+ * \pre neurons_per_hidden_layer > 0
+ * \pre output_count > 0
+ * \pre edges != NULL
+ * \pre length(edges) = edge_count
+ * \post Returned network is initialized with given edge weigths.
+ */
+neuralnet_t* create_neural_net_buffer (uint32_t input_count,
+                                       uint32_t hidden_layer_count,
+                                       uint32_t neurons_per_hidden_layer,
+                                       uint32_t output_count, float* edges);
 
 /**
-* \brief Creates and returns a neuralnet with given edge-weights in form of a data, given its preferences. This essentially does nothing but allocates and initializes a new neural net.
-* \pre input_count > 0
-* \pre hidden_layer_count > 0
-* \pre neurons_per_hidden_layer > 0
-* \pre output_count > 0
-* \pre filepath != NULL
-*/
-neuralnet_t* create_neural_net_data(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count, char* filepath);
+ * \brief Creates and returns a neuralnet with edge-weights stored in a file.
+ *
+ * This allocates and initializes a new neural net with the given preferences.
+ * The file format is a binary sequence of floats stored as little endian.
+ *
+ * \param input_count              Number of input neurons.
+ * \param hidden_layer_count       Number of hidden layers.
+ * \param neurons_per_hidden_layer Number of neurons in each hidden layer.
+ * \param output_count             Number of output neurons.
+ * \param path                     Path to a file containing edge weights.
+ * \return Pointer to the new neural network.
+ * \pre input_count > 0
+ * \pre hidden_layer_count > 0
+ * \pre neurons_per_hidden_layer > 0
+ * \pre output_count > 0
+ * \pre path != NULL
+ * \pre The file speicified by path exists, is readable and contains data in the correct format.
+ * \post Returned network is initialized with given edge weigths.
+ */
+neuralnet_t* create_neural_net_file (uint32_t input_count,
+                                     uint32_t hidden_layer_count,
+                                     uint32_t neurons_per_hidden_layer,
+                                     uint32_t output_count, char* path);
 
 /**
-* \brief Removes and cleans up a given neuralnet. Essentially this does nothing else than deallocating the neuralnet. If there will be further means to clean up a neuralnet, all those functions should be summarized here.
-* \pre net =! NULL
-*/
+ * \brief Destroys a neuralnet and frees all used ressources.
+ * \param net Neural network to destroy.
+ * \pre net =! NULL
+ * \post All used memory is freed.
+ */
 void destroy_neural_net(neuralnet_t* net);
 
 /**
