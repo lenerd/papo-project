@@ -5,6 +5,7 @@
 * \file
 * \brief Contains everything required for neural networks.
 * \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
+* \author Lennart Braun <3braun@informatik.uni-hamburg.de>
 * \ingroup neuralnet
 */
 
@@ -31,21 +32,48 @@ typedef struct
     /** \brief Array of floats to store the calculated output.*/
     float* output;
 
-    /** \brief Weights of all edges.*/
+    /**
+     * \brief Buffer containing all edge weights.
+     *
+     * The buffer is partioned as following:
+     * - (input_count + 1) * neurons_per_hidden_layer
+     * - hidden_layer_count * (neurons_per_hidden_layer + 1)
+     *                      * neurons_per_hidden_layer
+     * - neurons_per_hidden_layer * output_count
+     */
     float* edge_buf;
 
-    /** \brief Buffer to store some pointers (required for magic). */
-    float** edge_helper_buf;
+    /**
+     * \brief 2D-Interface for the edges between input and first hidden layer.
+     *
+     * Dimensions: (neurons_per_hidden_layer) X (neurons_per_hidden_layer)
+     * edges[x][y] = edge weight between input neuron x and neuron y on the
+     * first hidden layer
+     */
+    float** input_edges;
 
     /**
-     * \brief 3D-Interface to edge_buf
+     * \brief 3D-Interface for the edges between the hidden layers
      *
      * Dimensions: (hidden_layer_count - 1) X (neurons_per_hidden_layer)
      *                                      X (neurons_per_hidden_layer)
      * edges[x][y][z] = edge weight between neuron y on layer x and neuron z on
      *                  layer x + 1
      */
-    float*** edges;
+    float*** hidden_edges;
+
+    /**
+     * \brief 2D-Interface for the edges between last hidden and output layer.
+     *
+     * Dimensions: (neurons_per_hidden_layer) X (neurons_per_hidden_layer)
+     * edges[x][y] = edge weight between input neuron x and neuron y on the
+     * first hidden layer
+     */
+    float** output_edges;
+
+    /** \brief Buffer to store some pointers (required for magic). */
+    float** edge_helper_buf;
+
 } neuralnet_t;
 
 /**
