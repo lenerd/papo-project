@@ -211,8 +211,8 @@ int main (void)
 
     sr = srunner_create (make_go_suite ());
 
-	//If needed for debugging:
-	srunner_set_fork_status (sr, CK_NOFORK);
+	//Uncomment if needed for debugging with gdb:
+	//srunner_set_fork_status (sr, CK_NOFORK);
 
 	srunner_run_all (sr, CK_VERBOSE);
 
