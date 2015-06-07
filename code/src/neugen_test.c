@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 
 	for (uint32_t i = 0; i < population_size; i++){
 		nnets[i] = create_neural_net_random(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
-		genomes[i] = create_genome(nnets[i]->edges_count, &nnets[i]->edges);
+		genomes[i] = create_genome(nnets[i]->edges_count, &nnets[i]->edge_buf);
 	}
 
 	population_t* pop = create_population(population_size, genomes, 0.0f);
