@@ -101,8 +101,8 @@ START_TEST (test_board_groups)
     board_place (board, 0, 0);
     board_place (board, 2, 0);
 	uint8_t* group = board_get_group(board, 1, 0);
-	uint8_t* expected[] = {0, 1, 0, 2, 0};
-    ck_assert (group == expected);
+	uint8_t expected[] = {0, 1, 0, 2, 0};
+    ck_assert (memcmp (group, expected, 5 * sizeof(uint8_t)) == 0);
 }
 END_TEST
 
