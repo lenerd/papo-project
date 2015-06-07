@@ -16,7 +16,7 @@ void set_seed_time (void)
     seed_set = true;
 }
 
-void set_seed_ifn ()
+void set_seed_ifn (void)
 {
     if (!seed_set)
     {
@@ -25,7 +25,7 @@ void set_seed_ifn ()
     }
 }
 
-float random_value_01 ()
+float random_value_01 (void)
 {
     return random_value_mm (0.0f, 1.0f);
 }
@@ -43,12 +43,14 @@ float random_value_mm (float min, float max)
 
 float sigmoid (float x)
 {
-    return 1.0f / (1.0f + (float) exp (x));
+    return 1.0f / (1.0f + expf (-x));
 }
-float inverse_sigmoid (float x)
+
+float inverse_sigmoid (float y)
 {
-    return (float) (-log (1.0f / x - 1.0f));
+    return (-logf (1.0f / y - 1.0f));
 }
+
 float centered_sigmoid (float x)
 {
     return 2.0f * (sigmoid (x) - 0.5f);
