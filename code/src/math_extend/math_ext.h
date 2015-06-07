@@ -65,19 +65,41 @@ float random_value_0m (float max);
 float random_value_mm (float min, float max);
 
 /**
-* \brief Mathematical sigmoid function. Output values are between 0.0 and 1.0, exclusive. Cuts the y-Axis at 0.5.
-*/
-float sigmoid(float x);
+ * \brief Sigmoid function.
+ *
+ * Maps a floating point number to a value between 0.0 and 1.0. Cuts the y-Axis
+ *at 0.5.
+ *
+ * Definition:
+ * \f[
+ * S(x) = \frac{1}{1 + e^{-x}}
+ * \f]
+ * Edge cases: \f$S(-\infty) = 0\f$ and \f$S(\infty) = 1\f$.
+ * \param x \f$x\f$
+ * \return \f$S(x)\f$
+ * \post \f$0 \leq S(x) \leq 1\f$
+ */
+float sigmoid (float x);
 
 /**
-* \brief Inverse of the sigmoid function (x has to be between 0.0 and 1.0, exclusive).
-* \pre x > 0 && x < 1
-*/
-float inverse_sigmoid(float x);
+ * \brief Inverse of the sigmoid function.
+ *
+ * Definition:
+ * \f[
+ * S^{-1}(y) = - \ln \left( \frac{1}{y} - 1 \right)
+ * \f]
+ * Edge cases: \f$S^{-1}(0) = -\infty\f$ and \f$S^{-1}(1) = \infty\f$.
+ *
+ * \param y \f$y\f$
+ * \return \f$S^{-1}(y)\f$
+ * \pre 0 <= y <= 1
+ */
+float inverse_sigmoid (float y);
 
 /**
-* \brief Centered version of the Sigmoid function. Output values range from -1.0 to 1.0 (exclusive) with the center of the function at (0|0).
-*/
-float centered_sigmoid(float x);
+ * \brief Centered version of the Sigmoid function. Output values range from -1.0
+ * to 1.0 (exclusive) with the center of the function at (0|0).
+ */
+float centered_sigmoid (float x);
 
 #endif /* MATH_EXT_H */
