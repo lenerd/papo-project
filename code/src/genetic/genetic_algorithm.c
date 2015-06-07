@@ -123,6 +123,7 @@ void next_generation (population_t* pop)
         mutate_genome (pop->individuals[i]);
     }
 
+    free(new_genes);
     ++pop->generation;
     pop->total_fitness = 0.0f;
     pop->avg_fitness = 0.0f;
