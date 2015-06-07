@@ -105,7 +105,7 @@ void next_generation (population_t* pop)
 
     for (uint32_t i = 0; i < pop->size; ++i)
     {
-        size_t buf_len = pop->individuals[i]->genes_count * sizeof (float*);
+        size_t buf_len = pop->individuals[i]->genes_count * sizeof (float);
         new_genes[i] = malloc (buf_len);
         if (new_genes[i] == NULL)
         {
