@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 void board_print(board_t *board, bool complete) {
   if (complete)
@@ -123,6 +124,7 @@ uint16_t board_num_liberties(const board_t *board, int *group) {
 }
 
 int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
+
   // Finds out which color to look for
   pos_state_t state = board_position_state(board, x, y);
 
@@ -130,6 +132,7 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
   // is one.
   int size = 1;
   int *group = calloc(120, sizeof(int));
+	group[0] = size;
   group[1] = x;
   group[2] = y;
   board->grid[x][y] = ps_marked;
@@ -138,7 +141,7 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
 
   // Alway goes left, right, up or down from every stone until the next one is
   // either marked or of a different color
-  while (group[current] != NULL) // FIXME: comparison between int and pointer
+  while (current < index) 
   {
     // x and y coordinates of the current stone
     uint8_t a = group[current];
@@ -150,22 +153,40 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
     uint8_t bottom = b + 1;
     uint8_t neighbours[4] = {left, right, top, bottom};
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 2; ++i) {
       while (neighbours[i] < board->size && neighbours[i] >= 0 &&
-             board_position_state(board, neighbours[i], b) == state) {
-        if (board_position_state(board, neighbours[i], b) != ps_marked) {
+             board_position_state(board, neighbours[i], y) == state) 
+      {
+        if (board_position_state(board, neighbours[i], y) != ps_marked) 
+	{
           group[index] = neighbours[i];
-          group[index + 1] = b;
-          board->grid[neighbours[i]][b] = ps_marked;
-          ++index;
+          group[index + 1] = y;
+          board->grid[neighbours[i]][y] = ps_marked;
+          index+=2;
           ++size;
         }
-        neighbours[i] -= 1;
+        neighbours[i] = neighbours[i+2] + (int) pow(-1, i);
+      }
+
+      while (neighbours[i+2] < board->size && neighbours[i+2] >= 0 &&
+             board_position_state(board, x, neighbours[i+2]) == state) 
+      {
+        if (board_position_state(board, x, neighbours[i+2]) != ps_marked) 
+	{
+          group[index] = x;
+          group[index + 1] = neighbours[i+2];
+          board->grid[x][neighbours[i+2]] = ps_marked;
+          index+=2;
+          ++size;
+        }
+        
+	neighbours[i+2] = neighbours[i+2] + (int) pow(-1, i);
       }
     }
 
     current += 2;
   }
+
   group[0] = size;
 
   // Resets the marked states
@@ -214,15 +235,15 @@ void board_capture(board_t *board, uint8_t x, uint8_t y) {
 
 int board_score(const board_t *board, uint8_t size, uint8_t komi) {
   int final_score;
-  int *groups_white;  // FIXME: may be used uninitialized -> alloc memory
-  int *groups_black;  // FIXME: may be used uninitialized -> alloc memory
+  int *groups_white = malloc(60*sizeof(int)); 
+  int *groups_black = malloc(60*sizeof(int));  
   int size_white = 0;
   int size_black = 0;
   uint8_t ind_white = 1;
   uint8_t ind_black = 1;
 
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
+  for (int i = 0; i < board->size; i++) {
+    for (int j = 0; j < board->size; j++) {
       if (board_position_state(board, i, j) == ps_empty) {
         int *group = board_get_group(board, i, j);
         pos_state_t state;

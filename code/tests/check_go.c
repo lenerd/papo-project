@@ -44,6 +44,7 @@ START_TEST (test_board_init)
 
     /* check grid pointer */
     ck_assert (board->grid[0][0] == ps_empty);
+    ck_assert (board->grid[1][0] == ps_empty);
     ck_assert (board->grid[board->size - 1][0] == ps_empty);
     ck_assert (board->grid[0][board->size - 1] == ps_empty);
     ck_assert (board->grid[board->size - 1][board->size - 1] == ps_empty);
@@ -59,12 +60,14 @@ START_TEST (test_board_placement)
     ck_assert (board_legal_placement (board, 0, 0, c_black));
     ck_assert (!board_legal_placement (board, 0, 0, c_white));
     board_place (board, 0, 0);
+	ck_assert(board_position_state(board, 0, 0) == ps_black);
     ck_assert (board->turn == c_white);
     ck_assert (!board_legal_placement (board, 0, 0, c_black));
     ck_assert (!board_legal_placement (board, 0, 0, c_white));
     ck_assert (!board_legal_placement (board, 1, 0, c_black));
     ck_assert (board_legal_placement (board, 1, 0, c_white));
     board_place (board, 1, 0);
+	ck_assert(board_position_state(board, 1, 0) == ps_white);
     ck_assert (board->turn == c_black);
 }
 END_TEST
@@ -76,6 +79,8 @@ START_TEST (test_board_pass)
 	board_pass(board);
 	ck_assert(before == board->grid);
     ck_assert (board->turn == c_white);
+	board_pass(board);
+    ck_assert (board->turn == c_black);
 }
 END_TEST
 
@@ -97,12 +102,19 @@ END_TEST
 
 START_TEST (test_board_groups)
 {
+	ck_assert(board->turn == c_black);
     board_place (board, 1, 0);
     board_place (board, 0, 0);
     board_place (board, 2, 0);
+	ck_assert(board_position_state(board, 1, 0) == ps_black);
+	ck_assert(board_position_state(board, 0, 0) == ps_white);
+	ck_assert(board_position_state(board, 2, 0) == ps_black);
 	uint8_t* group = board_get_group(board, 1, 0);
-	uint8_t expected[] = {0, 1, 0, 2, 0};
-    ck_assert (memcmp (group, expected, 5 * sizeof(uint8_t)) == 0);
+	ck_assert(group[0] == 2);
+	ck_assert(group[0] == 1);
+	ck_assert(group[2] == 0);
+	ck_assert(group[3] == 2);
+	ck_assert(group[4] == 0);
 }
 END_TEST
 
@@ -224,7 +236,7 @@ int main (void)
     sr = srunner_create (make_go_suite ());
 
 	//Uncomment if needed for debugging with gdb:
-	//srunner_set_fork_status (sr, CK_NOFORK);
+	srunner_set_fork_status (sr, CK_NOFORK);
 
 	srunner_run_all (sr, CK_VERBOSE);
 
