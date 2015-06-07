@@ -135,16 +135,28 @@ START_TEST (test_record_content)
     write_move (test_record, 0, 5, 3);
     write_move (test_record, 1, 4, 9);
     write_move (test_record, 0, 7, 1);
+    
+    fclose(test_record);
+    test_record = fopen("1", "r");
 
-    ck_assert_str_eq (fgets (line, 150, test_record), "AP[nugengo:?]");
-    ck_assert_str_eq (fgets (line, 150, test_record), "GM[1]");
-    ck_assert_str_eq (fgets (line, 150, test_record), "SZ[9]");
-    ck_assert_str_eq (fgets (line, 150, test_record), "B[bc]");
-    ck_assert_str_eq (fgets (line, 150, test_record), "W[ec]");
-    ck_assert_str_eq (fgets (line, 150, test_record), "B[di]");
-    ck_assert_str_eq (fgets (line, 150, test_record), "W[ga]");
+    fgets (line, 150, test_record);
+    ck_assert_str_eq (line, "AP[nugengo:?] \n");
+    fgets (line, 150, test_record);
+    ck_assert_str_eq (line, "GM[1] \n");
+    fgets (line, 150, test_record);
+    ck_assert_str_eq (line, "SZ[9] \n");
+    fgets (line, 150, test_record);
+    ck_assert_str_eq (line, "B[cd]\n");
+    fgets (line, 150, test_record);
+    ck_assert_str_eq (line, "W[fd]\n");
+    fgets (line, 150, test_record);
+    ck_assert_str_eq (line, "B[ej]\n");
+    fgets (line, 150, test_record);
+    ck_assert_str_eq (line, "W[hb]\n");
 
+    free (line);
     fclose (test_record);
+    remove ("1");
 }
 END_TEST
 
