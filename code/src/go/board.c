@@ -1,24 +1,19 @@
 #include "board.h"
 
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 
-void board_print(board_t *board, bool complete) {
-  if (complete)
-    for (int i = 0; i < board->size + 2; ++i) {
-      for (int j = 0; j < board->size + 2; ++j) {
-        printf("%d ", board->buffer[i * (board->size + 2) + j]);
-      }
-      printf("\n");
-    }
-  else
-    for (int i = 0; i < board->size; ++i) {
-      for (int j = 0; j < board->size; ++j) {
-        printf("%d ", board->grid[i][j]);
-      }
-      printf("\n");
+void board_print (board_t* board)
+{
+    for (int i = 0; i < board->size; ++i)
+    {
+        for (int j = 0; j < board->size; ++j)
+        {
+            printf ("%d ", board->grid[i][j]);
+        }
+        printf ("\n");
     }
 }
 
