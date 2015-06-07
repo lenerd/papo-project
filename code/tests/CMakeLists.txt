@@ -16,4 +16,9 @@ add_executable (check_go check_go.c)
 target_link_libraries (check_go ${LIBS})
 add_test (check_go ${CMAKE_CURRENT_BINARY_DIR}/check_go)
 
+# math test
+add_executable (check_math check_math.c)
+target_link_libraries (check_math ${LIBS})
+add_test (check_math ${CMAKE_CURRENT_BINARY_DIR}/check_math)
+
 # feel free to add more tests :)
