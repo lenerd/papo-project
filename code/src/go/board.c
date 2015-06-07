@@ -105,16 +105,16 @@ uint16_t board_num_liberties(const board_t *board, int *group) {
     top = b - 1;
     bottom = b + 1;
 
-    if (left < board->size && left >= 0 &&
+    if (left < board->size &&
         board_position_state(board, left, b) == ps_empty)
       liberties += 1;
-    if (right < board->size && right >= 0 &&
+    if (right < board->size &&
         board_position_state(board, right, b) == ps_empty)
       liberties += 1;
-    if (top < board->size && top >= 0 &&
+    if (top < board->size &&
         board_position_state(board, a, top) == ps_empty)
       liberties += 1;
-    if (bottom < board->size && bottom >= 0 &&
+    if (bottom < board->size &&
         board_position_state(board, a, bottom) == ps_empty)
       liberties += 1;
   }
@@ -138,7 +138,8 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
 
   // Alway goes left, right, up or down from every stone until the next one is
   // either marked or of a different color
-  while (group[current] != NULL) {
+  while (group[current] != NULL) // FIXME: comparison between int and pointer
+  {
     // x and y coordinates of the current stone
     uint8_t a = group[current];
     uint8_t b = group[current + 1];
@@ -213,10 +214,10 @@ void board_capture(board_t *board, uint8_t x, uint8_t y) {
 
 int board_score(const board_t *board, uint8_t size, uint8_t komi) {
   int final_score;
-  int *groups_white;
-  int *groups_black;
-  int size_white;
-  int size_black;
+  int *groups_white;  // FIXME: may be used uninitialized -> alloc memory
+  int *groups_black;  // FIXME: may be used uninitialized -> alloc memory
+  int size_white = 0;
+  int size_black = 0;
   uint8_t ind_white = 1;
   uint8_t ind_black = 1;
 
