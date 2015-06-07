@@ -91,6 +91,14 @@ uint32_t edge_count (uint32_t input_count, uint32_t hidden_layer_count,
                      uint32_t neurons_per_hidden_layer, uint32_t output_count);
 
 /**
+ * \brief Setup pointer interface
+ * \param net The neural network to work on.
+ * \pre net != NULL
+ * \post {input,hidden,outpout}_edges contain valid pointers.
+ */
+void build_pointer (neuralnet_t* net);
+
+/**
  * \brief Creates and returns a neuralnet with random edge-weights, given its
  * preferences.
  *

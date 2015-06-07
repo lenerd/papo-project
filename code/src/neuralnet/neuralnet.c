@@ -60,7 +60,7 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
         exit (EXIT_FAILURE);
     }
 
-    net->input_edges = calloc (input_count, sizeof (float*));
+    net->input_edges = calloc (input_count + 1, sizeof (float*));
     if (net->input_edges == NULL)
     {
         fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
@@ -83,7 +83,7 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
-    net->output_edges = calloc (hidden_layer_count - 1, sizeof (float**));
+    net->output_edges = calloc (hidden_layer_count + 1, sizeof (float**));
     if (net->output_edges == NULL)
     {
         fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
@@ -91,34 +91,39 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
         exit (EXIT_FAILURE);
     }
 
-    ptrdiff_t offset_hidden = input_count * neurons_per_hidden_layer;
-    ptrdiff_t offset_output = offset_hidden +
-                              (hidden_layer_count - 1) *
-                                  neurons_per_hidden_layer *
-                                  neurons_per_hidden_layer;
-
-    for (uint32_t i = 0; i < input_count + 1; ++i)
-    {
-        net->input_edges[i] = net->edge_buf + i * hidden_layer_count;
-    }
-    for (uint32_t i = 0; i < hidden_layer_count - 1; ++i)
-    {
-        for (uint32_t j = 0; j < neurons_per_hidden_layer; ++j)
-        {
-            net->edge_helper_buf[i * (neurons_per_hidden_layer + 1) + j] =
-                net->edge_buf + offset_hidden +
-                i * (neurons_per_hidden_layer + 1) * neurons_per_hidden_layer +
-                j * (neurons_per_hidden_layer + 1);
-        }
-        net->hidden_edges[i] =
-            &net->edge_helper_buf[i * neurons_per_hidden_layer];
-    }
-    for (uint32_t i = 0; i < neurons_per_hidden_layer; ++i)
-    {
-        net->output_edges[i] = net->edge_buf + offset_output + i * output_count;
-    }
+    build_pointer(net);
 
     return net;
+}
+
+void build_pointer (neuralnet_t* net)
+{
+    ptrdiff_t offset_hidden = net->input_count * net->neurons_per_hidden_layer;
+    ptrdiff_t offset_output = offset_hidden +
+                              (net->hidden_layer_count - 1) *
+                                  net->neurons_per_hidden_layer *
+                                  net->neurons_per_hidden_layer;
+
+    for (uint32_t i = 0; i < net->input_count + 1; ++i)
+    {
+        net->input_edges[i] = net->edge_buf + i * (net->neurons_per_hidden_layer);
+    }
+    for (uint32_t i = 0; i < net->hidden_layer_count - 1; ++i)
+    {
+        for (uint32_t j = 0; j < net->neurons_per_hidden_layer; ++j)
+        {
+            net->edge_helper_buf[i * (net->neurons_per_hidden_layer + 1) + j] =
+                net->edge_buf + offset_hidden +
+                i * (net->neurons_per_hidden_layer + 1) * net->neurons_per_hidden_layer +
+                j * (net->neurons_per_hidden_layer + 1);
+        }
+        net->hidden_edges[i] =
+            &net->edge_helper_buf[i * net->neurons_per_hidden_layer];
+    }
+    for (uint32_t i = 0; i < net->neurons_per_hidden_layer + 1; ++i)
+    {
+        net->output_edges[i] = net->edge_buf + offset_output + i * net->output_count;
+    }
 }
 
 /**
@@ -237,7 +242,7 @@ float* calculate_output (neuralnet_t* net, float* input)
     {
         /* threshold */
         sum = -1 * net->input_edges[net->input_count][to];
-        for (uint32_t from = 0; from < net->input_count + 1; ++from)
+        for (uint32_t from = 0; from < net->input_count; ++from)
         {
             sum += net->input_edges[from][to] * input[from];
         }
