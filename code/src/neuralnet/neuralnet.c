@@ -29,16 +29,16 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
                                          uint32_t neurons_per_hidden_layer,
                                          uint32_t output_count)
 {
-    assert(input_count > 0);
-    assert(hidden_layer_count > 0);
-    assert(neurons_per_hidden_layer > 0);
-    assert(output_count > 0);
+    assert (input_count > 0);
+    assert (hidden_layer_count > 0);
+    assert (neurons_per_hidden_layer > 0);
+    assert (output_count > 0);
 
     neuralnet_t* net = NULL;
     net = malloc (sizeof (neuralnet_t));
     if (net == NULL)
     {
-        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
@@ -51,7 +51,7 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
     net->output = calloc (output_count, sizeof (float));
     if (net->output == NULL)
     {
-        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
@@ -61,7 +61,7 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
     net->edge_buf = malloc (sizeof (float) * (net->edges_count));
     if (net->edge_buf == NULL)
     {
-        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
@@ -69,7 +69,7 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
     net->input_edges = calloc (input_count + 1, sizeof (float*));
     if (net->input_edges == NULL)
     {
-        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
@@ -81,24 +81,25 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
 
         exit (EXIT_FAILURE);
     }
-    net->edge_helper_buf = calloc (
-        (hidden_layer_count - 1) * (neurons_per_hidden_layer + 1), sizeof (float*));
+    net->edge_helper_buf =
+        calloc ((hidden_layer_count - 1) * (neurons_per_hidden_layer + 1),
+                sizeof (float*));
 
     if (net->edge_helper_buf == NULL)
     {
-        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
     net->output_edges = calloc (hidden_layer_count + 1, sizeof (float**));
     if (net->output_edges == NULL)
     {
-        fprintf (stderr, "calloc() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
 
-    build_pointer(net);
+    build_pointer (net);
 
     return net;
 }
@@ -203,7 +204,7 @@ void neural_net_to_file (neuralnet_t* net, const char* path, bool binary)
     file = fopen (path, "w");
     if (file == NULL)
     {
-        fprintf (stderr, "fopen() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "fopen() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
@@ -221,41 +222,44 @@ void neural_net_to_file (neuralnet_t* net, const char* path, bool binary)
     }
     else
     {
-        fprintf(file, "# neuralnet_t\n");
-        fprintf(file, "edges_count = %u\n", net->edges_count);
-        fprintf(file, "input_count = %u\n", net->input_count);
-        fprintf(file, "hidden_layer_count = %u\n", net->hidden_layer_count);
-        fprintf(file, "neurons_per_hidden_layer = %u\n", net->neurons_per_hidden_layer);
-        fprintf(file, "output_count = %u\n", net->output_count);
-        fprintf(file, "# input layer to first hidden layer\n");
+        fprintf (file, "# neuralnet_t\n");
+        fprintf (file, "edges_count = %u\n", net->edges_count);
+        fprintf (file, "input_count = %u\n", net->input_count);
+        fprintf (file, "hidden_layer_count = %u\n", net->hidden_layer_count);
+        fprintf (file, "neurons_per_hidden_layer = %u\n",
+                 net->neurons_per_hidden_layer);
+        fprintf (file, "output_count = %u\n", net->output_count);
+        fprintf (file, "# input layer to first hidden layer\n");
         for (uint32_t from = 0; from < net->input_count + 1; ++from)
         {
             for (uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to)
             {
-                fprintf(file, "%0.9f ", (double) net->input_edges[from][to]);
+                fprintf (file, "%0.9f ", (double) net->input_edges[from][to]);
             }
-            fprintf(file, "\n");
+            fprintf (file, "\n");
         }
         for (uint32_t layer = 0; layer < net->hidden_layer_count - 1; ++layer)
         {
-            fprintf(file, "# hidden layer %u to %u\n", layer, layer + 1);
-            for (uint32_t from = 0; from < net->neurons_per_hidden_layer + 1; ++from)
+            fprintf (file, "# hidden layer %u to %u\n", layer, layer + 1);
+            for (uint32_t from = 0; from < net->neurons_per_hidden_layer + 1;
+                 ++from)
             {
                 for (uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to)
                 {
-                    fprintf(file, "%0.9f ", (double) net->hidden_edges[layer][from][to]);
+                    fprintf (file, "%0.9f ",
+                             (double) net->hidden_edges[layer][from][to]);
                 }
-                fprintf(file, "\n");
+                fprintf (file, "\n");
             }
         }
-        fprintf(file, "# last hidden to output layer\n");
+        fprintf (file, "# last hidden to output layer\n");
         for (uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from)
         {
             for (uint32_t to = 0; to < net->output_count; ++to)
             {
-                fprintf(file, "%0.9f ", (double) net->output_edges[from][to]);
+                fprintf (file, "%0.9f ", (double) net->output_edges[from][to]);
             }
-            fprintf(file, "\n");
+            fprintf (file, "\n");
         }
     }
 
@@ -267,22 +271,22 @@ void skip_comments (FILE* file)
     bool comment = true;
     while (comment)
     {
-        int c = fgetc(file);
+        int c = fgetc (file);
         if (c == '#')
         {
             while (c != '\n')
             {
-                c = fgetc(file);
+                c = fgetc (file);
                 if (c == EOF)
                 {
-                    ungetc(EOF, file);
+                    ungetc (EOF, file);
                     return;
                 }
             }
         }
         else
         {
-            ungetc(c, file);
+            ungetc (c, file);
             comment = false;
         }
     }
@@ -301,7 +305,7 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
     file = fopen (path, "r");
     if (file == NULL)
     {
-        fprintf (stderr, "fopen() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "fopen() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
@@ -324,8 +328,8 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
         if (edges_count != edge_count (input_count, hidden_layer_count,
                                        neurons_per_hidden_layer, output_count))
         {
-            fprintf (stderr, "file corrupted in file %s at line # %d", __FILE__,
-                     __LINE__);
+            fprintf (stderr, "file corrupted in file %s at line # %d\n",
+                     __FILE__, __LINE__);
             fclose (file);
             exit (EXIT_FAILURE);
         }
@@ -338,9 +342,10 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
         {
             if (feof (file))
             {
-                fprintf (stderr,
-                         "fread reached unexpected EOF in file %s at line # %d",
-                         __FILE__, __LINE__);
+                fprintf (
+                    stderr,
+                    "fread reached unexpected EOF in file %s at line # %d\n",
+                    __FILE__, __LINE__);
                 fclose (file);
                 exit (EXIT_FAILURE);
             }
@@ -356,22 +361,23 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
     }
     else
     {
-        skip_comments(file);
-        fscanf(file, "edges_count = %u\n", &edges_count);
-        skip_comments(file);
-        fscanf(file, "input_count = %u\n", &input_count);
-        skip_comments(file);
-        fscanf(file, "hidden_layer_count = %u\n", &hidden_layer_count);
-        skip_comments(file);
-        fscanf(file, "neurons_per_hidden_layer = %u\n", &neurons_per_hidden_layer);
-        skip_comments(file);
-        fscanf(file, "output_count = %u\n", &output_count);
+        skip_comments (file);
+        fscanf (file, "edges_count = %u\n", &edges_count);
+        skip_comments (file);
+        fscanf (file, "input_count = %u\n", &input_count);
+        skip_comments (file);
+        fscanf (file, "hidden_layer_count = %u\n", &hidden_layer_count);
+        skip_comments (file);
+        fscanf (file, "neurons_per_hidden_layer = %u\n",
+                &neurons_per_hidden_layer);
+        skip_comments (file);
+        fscanf (file, "output_count = %u\n", &output_count);
 
         if (edges_count != edge_count (input_count, hidden_layer_count,
                                        neurons_per_hidden_layer, output_count))
         {
-            fprintf (stderr, "file corrupted in file %s at line # %d\n", __FILE__,
-                     __LINE__);
+            fprintf (stderr, "file corrupted in file %s at line # %d\n",
+                     __FILE__, __LINE__);
             fclose (file);
             exit (EXIT_FAILURE);
         }
@@ -379,35 +385,35 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
         net = allocate_neural_net (input_count, hidden_layer_count,
                                    neurons_per_hidden_layer, output_count);
 
-        skip_comments(file);
+        skip_comments (file);
         for (uint32_t from = 0; from < input_count + 1; ++from)
         {
             for (uint32_t to = 0; to < neurons_per_hidden_layer; ++to)
             {
-                fscanf(file, "%f ", &net->input_edges[from][to]);
+                fscanf (file, "%f ", &net->input_edges[from][to]);
             }
-            fscanf(file, "\n");
+            fscanf (file, "\n");
         }
         for (uint32_t layer = 0; layer < hidden_layer_count - 1; ++layer)
         {
-            skip_comments(file);
+            skip_comments (file);
             for (uint32_t from = 0; from < neurons_per_hidden_layer + 1; ++from)
             {
                 for (uint32_t to = 0; to < neurons_per_hidden_layer; ++to)
                 {
-                    fscanf(file, "%f ", &net->hidden_edges[layer][from][to]);
+                    fscanf (file, "%f ", &net->hidden_edges[layer][from][to]);
                 }
             }
-            fscanf(file, "\n");
+            fscanf (file, "\n");
         }
-        skip_comments(file);
+        skip_comments (file);
         for (uint32_t from = 0; from < neurons_per_hidden_layer; ++from)
         {
             for (uint32_t to = 0; to < output_count; ++to)
             {
-                fscanf(file, "%f ", &net->output_edges[from][to]);
+                fscanf (file, "%f ", &net->output_edges[from][to]);
             }
-            fscanf(file, "\n");
+            fscanf (file, "\n");
         }
     }
 
@@ -436,7 +442,7 @@ float* calculate_output (neuralnet_t* net, float* input)
     ires1 = malloc (sizeof (float) * net->neurons_per_hidden_layer);
     if (ires1 == NULL)
     {
-        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
@@ -444,7 +450,7 @@ float* calculate_output (neuralnet_t* net, float* input)
     ires2 = malloc (sizeof (float) * net->neurons_per_hidden_layer);
     if (ires2 == NULL)
     {
-        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
@@ -510,11 +516,11 @@ float* calculate_output (neuralnet_t* net, float* input)
 }
 
 // void print_neural_net(const neuralnet_t* net){
-// 
+//
 // 	int index = 0;
-// 
+//
 // 	printf("Neural Net Edge Weights:");
-// 
+//
 // 	//Input layer to hidden layer calculation
 // 	printf("\n\n\tInput layer to hidden layer:\n");
 // 	for (uint32_t i = 0; i < net->neurons_per_hidden_layer; i++){
@@ -525,7 +531,7 @@ float* calculate_output (neuralnet_t* net, float* input)
 // 			printf(" %+.2f", net->edges[index]);
 // 		}
 // 	}
-// 
+//
 // 	//Hidden layer intern calculation
 // 	printf("\n\n\tHidden layer intern:");
 // 	for (uint32_t i = 0; i < net->hidden_layer_count - 1; i++){
@@ -534,12 +540,13 @@ float* calculate_output (neuralnet_t* net, float* input)
 // 			//Threashold and incoming edge weights of j-th neuron
 // 			printf("\n\t\tTH: %+.2f EWs:", net->edges[index]);
 // 			index++;
-// 			for (uint32_t k = 0; k < net->neurons_per_hidden_layer; k++, index++){
+// 			for (uint32_t k = 0; k < net->neurons_per_hidden_layer; k++,
+// index++){
 // 				printf(" %+.2f", net->edges[index]);
 // 			}
 // 		}
 // 	}
-// 
+//
 // 	//Hidden layer to output layer
 // 	printf("\n\n\tHidden layer to output layer:\n");
 // 	for (uint32_t i = 0; i < net->output_count; i++){
@@ -550,5 +557,5 @@ float* calculate_output (neuralnet_t* net, float* input)
 // 		}
 // 	}
 // 	printf("\n\n\n");
-// 
+//
 // }

@@ -50,7 +50,10 @@ typedef struct
 
 } population_t;
 
-/** \brief Percentage, how many mutations happen to create new genomes compared to crossovers. I.e. mutation_crossover_ratio = 0.3, so there is a 30% chance that a mutation and a 70% chance that a crossover happens to create a new genome in an advancement of the population. */
+/** \brief Percentage, how many mutations happen to create new genomes compared
+ * to crossovers. I.e. mutation_crossover_ratio = 0.3, so there is a 30% chance
+ * that a mutation and a 70% chance that a crossover happens to create a new
+ * genome in an advancement of the population. */
 float mutation_crossover_ratio;
 /** \brief Chance for each gene in a genome to mutate */
 float gene_mutation_chance;
@@ -62,15 +65,18 @@ float gene_mutation_chance;
 * \pre genes_count > 0
 * \pre genes != NULL
 */
-genome_t* create_genome(uint32_t genes_count, float** genes, void (update_fun) (void*), void* update_arg);
+genome_t* create_genome (uint32_t genes_count, float** genes,
+                         void(update_fun)(void*), void* update_arg);
 
 /**
-* \brief Creates and returns a population of genomes based on an array of pointers of precreated genomes.
+* \brief Creates and returns a population of genomes based on an array of
+* pointers of precreated genomes.
 * \pre population_size > 0
 * \pre genomes != NULL
 * \pre base_fitness >= 0
 */
-population_t* create_population(uint32_t population_size, genome_t** genomes, float base_fitness);
+population_t* create_population (uint32_t population_size, genome_t** genomes,
+                                 float base_fitness);
 
 /**
  * \brief Mutates a given genome in-place.
@@ -87,14 +93,17 @@ void mutate_genome (genome_t* genome);
 // genome_t* crossover_genomes(genome_t* father, genome_t* mother);
 
 /**
-* \brief Returns a random genome based on fittnesses 
-*        Returns a random genome (individual) of the given population where fitter ones have a higher chance to be returned.
-*		 This method supports fitnesses of 0 as long as base_fitness is bigger than 0.
-*		 If Fitnesses are always bigger than zero you should use 0 as base_fitness.
+* \brief Returns a random genome based on fittnesses
+*        Returns a random genome (individual) of the given population where
+*fitter ones have a higher chance to be returned.
+*		 This method supports fitnesses of 0 as long as base_fitness is bigger
+*than 0.
+*		 If Fitnesses are always bigger than zero you should use 0 as
+*base_fitness.
 * \pre pop != NULL
 * \pre base_fitness >= 0
 */
-genome_t* select_individual(population_t* pop);
+genome_t* select_individual (population_t* pop);
 
 /**
 * \brief Advances a given population one generation with mutation/crossovers
