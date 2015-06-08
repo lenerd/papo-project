@@ -8,7 +8,7 @@ float mutation_crossover_ratio = 0.3f;
 float gene_mutation_chance = 0.3f;
 
 genome_t* create_genome (uint32_t genes_count, float** genes,
-                         void(update_fun)(void*), void* update_arg)
+                         genes_update_fun update_fun, void* update_arg)
 {
     genome_t* genome = malloc (sizeof (genome_t));
     if (genome == NULL)
@@ -82,7 +82,7 @@ void mutate_genome (genome_t* genome)
 genome_t* select_individual (population_t* pop)
 {
     float r = random_value_01 () *
-              (pop->total_fitness + pop->size * pop->base_fitness);
+              (pop->total_fitness + (float) pop->size * pop->base_fitness);
     float f = 0.0f;
     uint32_t i = 0;
     for (; i < pop->size; ++i)

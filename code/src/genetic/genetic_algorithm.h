@@ -13,6 +13,13 @@
 
 
 /**
+ * \brief Function accepting a void pointer and returning nothing.
+ * \param arg Argument of this function.
+ */
+typedef void (*genes_update_fun)(void* arg);
+
+
+/**
  * \brief Represents a genome.
  */
 typedef struct
@@ -24,7 +31,7 @@ typedef struct
     /** \brief How fit this genome is. */
     float fitness;
     /** \brief Function to call when *genes is changed. */
-    void (*update_fun)(void*);
+    genes_update_fun update_fun;
     /** \brief Argument for update_fun. */
     void* update_arg;
 } genome_t;
@@ -62,11 +69,14 @@ float gene_mutation_chance;
 * \brief Creates and returns a genome with given genes.
 * \param genes Pointer to the buffer where the genes are stored.
 * \param genes_count Sizes of that buffer.
+* \param update_fun Function to call, when *genes is modified.
+* \param update_arg Argument to pass to above function.
 * \pre genes_count > 0
 * \pre genes != NULL
+* \pre update_fun != NULL
 */
 genome_t* create_genome (uint32_t genes_count, float** genes,
-                         void(update_fun)(void*), void* update_arg);
+                         genes_update_fun update_fun, void* update_arg);
 
 /**
 * \brief Creates and returns a population of genomes based on an array of
