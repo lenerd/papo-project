@@ -161,17 +161,6 @@ static void initialize_neural_net_buffer (neuralnet_t* net, float* edges)
     memcpy (net->edge_buf, edges, net->edges_count);
 }
 
-/**
-* \brief Initializes a given neuralnet with given edge-weights in form of a
-* data.
-* \pre net != NULL
-* \pre filepath != NULL
-*/
-static void initialize_neural_net_data (neuralnet_t* net, char* filepath)
-{
-    // TODO: implement
-}
-
 neuralnet_t* create_neural_net_random (uint32_t input_count,
                                        uint32_t hidden_layer_count,
                                        uint32_t neurons_per_hidden_layer,
@@ -196,15 +185,109 @@ neuralnet_t* create_neural_net_buffer (uint32_t input_count,
     return net;
 }
 
-neuralnet_t* create_neural_net_file (uint32_t input_count,
-                                     uint32_t hidden_layer_count,
-                                     uint32_t neurons_per_hidden_layer,
-                                     uint32_t output_count, char* path)
+void neural_net_to_file (neuralnet_t* net, const char* path, bool binary)
 {
-    neuralnet_t* net =
-        allocate_neural_net (input_count, hidden_layer_count,
-                             neurons_per_hidden_layer, output_count);
-    initialize_neural_net_data (net, path);
+    FILE* file = NULL;
+    file = fopen (path, "w");
+    if (file == NULL)
+    {
+        fprintf (stderr, "fopen() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    if (binary)
+    {
+        fwrite (&net->edges_count, sizeof (net->edges_count), 1, file);
+        fwrite (&net->input_count, sizeof (net->input_count), 1, file);
+        fwrite (&net->hidden_layer_count, sizeof (net->hidden_layer_count), 1,
+                file);
+        fwrite (&net->neurons_per_hidden_layer,
+                sizeof (net->neurons_per_hidden_layer), 1, file);
+        fwrite (&net->output_count, sizeof (net->output_count), 1, file);
+        fwrite (net->edge_buf, sizeof (float), net->edges_count, file);
+    }
+    else
+    {
+        // TODO
+    }
+
+    fclose (file);
+}
+
+neuralnet_t* neural_net_from_file (const char* path, bool binary)
+{
+    uint32_t edges_count = 0;
+    uint32_t input_count = 0;
+    uint32_t hidden_layer_count = 0;
+    uint32_t neurons_per_hidden_layer = 0;
+    uint32_t output_count = 0;
+
+    neuralnet_t* net;
+    FILE* file = NULL;
+    file = fopen (path, "r");
+    if (file == NULL)
+    {
+        fprintf (stderr, "fopen() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    if (binary)
+    {
+        bool success = true;
+        size_t num = 0;
+        num = fread (&edges_count, sizeof (edges_count), 1, file);
+        success = success && num == 1;
+        num = fread (&input_count, sizeof (input_count), 1, file);
+        success = success && num == 1;
+        num = fread (&hidden_layer_count, sizeof (hidden_layer_count), 1, file);
+
+        num = fread (&neurons_per_hidden_layer,
+                     sizeof (neurons_per_hidden_layer), 1, file);
+        success = success && num == 1;
+        fread (&output_count, sizeof (output_count), 1, file);
+        success = success && num == 1;
+        if (edges_count != edge_count (input_count, hidden_layer_count,
+                                       neurons_per_hidden_layer, output_count))
+        {
+            fprintf (stderr, "file corrupted in file %s at line # %d", __FILE__,
+                     __LINE__);
+            fclose (file);
+            exit (EXIT_FAILURE);
+        }
+        net = allocate_neural_net (input_count, hidden_layer_count,
+                                   neurons_per_hidden_layer, output_count);
+        num = fread (net->edge_buf, sizeof (float), edges_count, file);
+        success = success && num == edges_count;
+
+        if (!success)
+        {
+            if (feof (file))
+            {
+                fprintf (stderr,
+                         "fread reached unexpected EOF in file %s at line # %d",
+                         __FILE__, __LINE__);
+                fclose (file);
+                exit (EXIT_FAILURE);
+            }
+            if (ferror (file))
+            {
+                fprintf (stderr,
+                         "error occurred in fread in file %s at line # %d",
+                         __FILE__, __LINE__);
+                fclose (file);
+                exit (EXIT_FAILURE);
+            }
+        }
+    }
+    else
+    {
+        // TODO
+    }
+
+    fclose (file);
+
     return net;
 }
 

@@ -10,6 +10,7 @@
 */
 
 
+#include <stdbool.h>
 #include <stdint.h>
 
 
@@ -151,30 +152,38 @@ neuralnet_t* create_neural_net_buffer (uint32_t input_count,
                                        uint32_t output_count, float* edges);
 
 /**
+ * \brief Saves a neural network in a file;
+ *
+ * If the file already exists, it will be overwritten.
+ * The output buffer will not be saved.
+ * TODO: format specification
+ *
+ * \param net    Pointer to the new neural network.
+ * \param path   Path to a file.
+ * \param binary Is the file in a binary format?
+ * \pre net != NULL
+ * \pre path != NULL
+ * \pre User is permitted to write in the path.
+ * \post The state of the neural network is saved in the file.
+ */
+void neural_net_to_file (neuralnet_t* net, const char* path, bool binary);
+
+/**
  * \brief Creates and returns a neuralnet with edge-weights stored in a file.
  *
- * This allocates and initializes a new neural net with the given preferences.
- * The file format is a binary sequence of floats stored as little endian.
+ * This allocates and initializes a new neural net with the data stored in given
+ * file.
+ * TODO: format specification
  *
- * \param input_count              Number of input neurons.
- * \param hidden_layer_count       Number of hidden layers.
- * \param neurons_per_hidden_layer Number of neurons in each hidden layer.
- * \param output_count             Number of output neurons.
- * \param path                     Path to a file containing edge weights.
+ * \param path   Path to a file containing edge weights.
+ * \param binary Is the file in a binary format?
  * \return Pointer to the new neural network.
- * \pre input_count > 0
- * \pre hidden_layer_count > 0
- * \pre neurons_per_hidden_layer > 0
- * \pre output_count > 0
  * \pre path != NULL
- * \pre The file speicified by path exists, is readable and contains data in the
- *correct format.
- * \post Returned network is initialized with given edge weigths.
+ * \pre The file specified by path exists, is readable and contains data in the
+ * correct format.
+ * \post Returned network is initialized with the data from the file.
  */
-neuralnet_t* create_neural_net_file (uint32_t input_count,
-                                     uint32_t hidden_layer_count,
-                                     uint32_t neurons_per_hidden_layer,
-                                     uint32_t output_count, char* path);
+neuralnet_t* neural_net_from_file (const char* path, bool binary);
 
 /**
  * \brief Destroys a neuralnet and frees all used ressources.

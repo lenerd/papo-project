@@ -21,4 +21,9 @@ add_executable (check_math check_math.c)
 target_link_libraries (check_math ${LIBS})
 add_test (check_math ${CMAKE_CURRENT_BINARY_DIR}/check_math)
 
+# neuralnet test
+add_executable (check_neuralnet check_neuralnet.c)
+target_link_libraries (check_neuralnet ${LIBS})
+add_test (check_neuralnet ${CMAKE_CURRENT_BINARY_DIR}/check_neuralnet)
+
 # feel free to add more tests :)
