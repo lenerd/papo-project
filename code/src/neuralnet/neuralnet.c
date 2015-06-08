@@ -12,13 +12,58 @@ uint32_t edge_count (uint32_t input_count, uint32_t hidden_layer_count,
                      uint32_t neurons_per_hidden_layer, uint32_t output_count)
 {
     return (input_count + 1) * neurons_per_hidden_layer +
-           (neurons_per_hidden_layer + 1) * neurons_per_hidden_layer *
-               (hidden_layer_count - 1) +
+           (hidden_layer_count - 1) * (neurons_per_hidden_layer + 1) *
+               neurons_per_hidden_layer +
            neurons_per_hidden_layer * output_count;
 }
 
+void build_pointer (neuralnet_t* net)
+{
+    assert (net != NULL);
+
+    float* start_hidden =
+        net->edge_buf + (net->input_count + 1) * net->neurons_per_hidden_layer;
+    float* start_output = start_hidden +
+                          (net->hidden_layer_count - 1) *
+                              (net->neurons_per_hidden_layer + 1) *
+                              net->neurons_per_hidden_layer;
+
+    for (uint32_t from = 0; from < net->input_count + 1; ++from)
+    {
+        net->input_edges[from] =
+            net->edge_buf + from * (net->neurons_per_hidden_layer);
+    }
+    for (uint32_t layer = 0; layer < net->hidden_layer_count - 1; ++layer)
+    {
+        for (uint32_t from = 0; from < net->neurons_per_hidden_layer + 1;
+             ++from)
+        {
+            net->edge_helper_buf[layer * (net->neurons_per_hidden_layer + 1) +
+                                 from] =
+                start_hidden +
+                layer * (net->neurons_per_hidden_layer + 1) *
+                    net->neurons_per_hidden_layer +
+                from * net->neurons_per_hidden_layer;
+        }
+        net->hidden_edges[layer] =
+            net->edge_helper_buf + layer * (net->neurons_per_hidden_layer + 1);
+    }
+    for (uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from)
+    {
+        net->output_edges[from] = start_output + from * net->output_count;
+    }
+}
+
+void update_neuralnet (void* arg)
+{
+    assert (arg != NULL);
+
+    neuralnet_t* net = (neuralnet_t*) arg;
+    build_pointer (net);
+}
+
 /**
- * \brief Builds an uninitialized neural network.
+ * \brief Allocates required memory for a neural network of a given size;
  * \pre input_count > 0
  * \pre hidden_layer_count > 0
  * \pre neurons_per_hidden_layer > 0
@@ -104,85 +149,24 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
     return net;
 }
 
-void build_pointer (neuralnet_t* net)
-{
-    float* start_hidden =
-        net->edge_buf + (net->input_count + 1) * net->neurons_per_hidden_layer;
-    float* start_output = start_hidden +
-                          (net->hidden_layer_count - 1) *
-                              (net->neurons_per_hidden_layer + 1) *
-                              net->neurons_per_hidden_layer;
-
-    for (uint32_t from = 0; from < net->input_count + 1; ++from)
-    {
-        net->input_edges[from] =
-            net->edge_buf + from * (net->neurons_per_hidden_layer);
-    }
-    for (uint32_t layer = 0; layer < net->hidden_layer_count - 1; ++layer)
-    {
-        for (uint32_t from = 0; from < net->neurons_per_hidden_layer + 1;
-             ++from)
-        {
-            net->edge_helper_buf[layer * (net->neurons_per_hidden_layer + 1) +
-                                 from] =
-                start_hidden +
-                layer * (net->neurons_per_hidden_layer + 1) *
-                    net->neurons_per_hidden_layer +
-                from * net->neurons_per_hidden_layer;
-        }
-        net->hidden_edges[layer] =
-            net->edge_helper_buf + layer * (net->neurons_per_hidden_layer + 1);
-    }
-    for (uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from)
-    {
-        net->output_edges[from] = start_output + from * net->output_count;
-    }
-}
-
-void update_neuralnet (void* arg)
-{
-    neuralnet_t* net = (neuralnet_t*) arg;
-    build_pointer (net);
-}
-
-/**
- * \brief Initializes a given neuralnet with random edge-weights.
- * \param net Neural network to initialize.
- * \pre net != NULL
- * \post net is initialized.
- */
-static void initialize_neural_net_random (neuralnet_t* net)
-{
-    for (uint32_t i = 0; i < net->edges_count; ++i)
-    {
-        net->edge_buf[i] = inverse_sigmoid (random_value_01 ());
-    }
-}
-
-/**
- * \brief Initializes a given neuralnet with given edge-weights in form of an
- * float array.
- * \param net Neural network to initialize.
- * \param edges Buffer containing edge values.
- * \pre net != NULL
- * \pre edges != NULL
- * \pre length(edges) = net->edge_count
- * \post net is initialized.
- */
-static void initialize_neural_net_buffer (neuralnet_t* net, float* edges)
-{
-    memcpy (net->edge_buf, edges, net->edges_count);
-}
-
 neuralnet_t* create_neural_net_random (uint32_t input_count,
                                        uint32_t hidden_layer_count,
                                        uint32_t neurons_per_hidden_layer,
                                        uint32_t output_count)
 {
+    assert (input_count > 0);
+    assert (hidden_layer_count > 0);
+    assert (neurons_per_hidden_layer > 0);
+    assert (output_count > 0);
+
     neuralnet_t* net =
         allocate_neural_net (input_count, hidden_layer_count,
                              neurons_per_hidden_layer, output_count);
-    initialize_neural_net_random (net);
+    for (uint32_t i = 0; i < net->edges_count; ++i)
+    {
+        net->edge_buf[i] = inverse_sigmoid (random_value_01 ());
+    }
+
     return net;
 }
 
@@ -191,15 +175,24 @@ neuralnet_t* create_neural_net_buffer (uint32_t input_count,
                                        uint32_t neurons_per_hidden_layer,
                                        uint32_t output_count, float* edges)
 {
+    assert (input_count > 0);
+    assert (hidden_layer_count > 0);
+    assert (neurons_per_hidden_layer > 0);
+    assert (output_count > 0);
+    assert (edges != NULL);
+
     neuralnet_t* net =
         allocate_neural_net (input_count, hidden_layer_count,
                              neurons_per_hidden_layer, output_count);
-    initialize_neural_net_buffer (net, edges);
+    memcpy (net->edge_buf, edges, net->edges_count);
     return net;
 }
 
 void neural_net_to_file (neuralnet_t* net, const char* path, bool binary)
 {
+    assert (net != NULL);
+    assert (path != NULL);
+
     FILE* file = NULL;
     file = fopen (path, "w");
     if (file == NULL)
@@ -294,6 +287,8 @@ void skip_comments (FILE* file)
 
 neuralnet_t* neural_net_from_file (const char* path, bool binary)
 {
+    assert (path != NULL);
+
     uint32_t edges_count = 0;
     uint32_t input_count = 0;
     uint32_t hidden_layer_count = 0;
@@ -424,6 +419,8 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
 
 void destroy_neural_net (neuralnet_t* net)
 {
+    assert (net != NULL);
+
     free (net->input_edges);
     free (net->hidden_edges);
     free (net->output_edges);
@@ -435,6 +432,9 @@ void destroy_neural_net (neuralnet_t* net)
 
 float* calculate_output (neuralnet_t* net, float* input)
 {
+    assert (net != NULL);
+    assert (input != NULL);
+
     /* buffer for intermediary results */
     float* ires1 = NULL;
     float* ires2 = NULL;

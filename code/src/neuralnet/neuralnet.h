@@ -81,18 +81,24 @@ typedef struct
 } neuralnet_t;
 
 /**
- * \brief Returns how many total edges there will be in a neuralnet, based on
- * given preferences.
- * \pre input_count > 0
- * \pre hidden_layer_count > 0
- * \pre neurons_per_hidden_layer > 0
- * \pre output_count > 0
+ * \brief Calculates how many edges are required for a neural network of a given
+ * size.
+ *
+ * \f[
+ * E(i, f, n, o) = (i + 1) \cdot n + (h - 1) \cdot (n + 1) \cdot n + n \cdot o
+ * \f]
+ *
+ * \param input_count \f$i\f$
+ * \param hidden_layer_count \f$h\f$
+ * \param neurons_per_hidden_layer \f$n\f$
+ * \param output_count \f$o\f$
+ * \return \f$E(i, h, n, o)\f$
  */
 uint32_t edge_count (uint32_t input_count, uint32_t hidden_layer_count,
                      uint32_t neurons_per_hidden_layer, uint32_t output_count);
 
 /**
- * \brief Setup pointer interface
+ * \brief Setup pointer interface.
  * \param net The neural network to work on.
  * \pre net != NULL
  * \post {input,hidden,outpout}_edges contain valid pointers.
@@ -188,7 +194,7 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary);
 /**
  * \brief Destroys a neuralnet and frees all used ressources.
  * \param net Neural network to destroy.
- * \pre net =! NULL
+ * \pre net != NULL
  * \post All used memory is freed.
  */
 void destroy_neural_net (neuralnet_t* net);
