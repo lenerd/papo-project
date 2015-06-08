@@ -75,7 +75,7 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
         exit (EXIT_FAILURE);
     }
     net->edge_helper_buf = calloc (
-        (hidden_layer_count - 1) * neurons_per_hidden_layer, sizeof (float*));
+        (hidden_layer_count - 1) * (neurons_per_hidden_layer + 1), sizeof (float*));
 
     if (net->edge_helper_buf == NULL)
     {
@@ -110,7 +110,7 @@ void build_pointer (neuralnet_t* net)
     }
     for (uint32_t i = 0; i < net->hidden_layer_count - 1; ++i)
     {
-        for (uint32_t j = 0; j < net->neurons_per_hidden_layer; ++j)
+        for (uint32_t j = 0; j < net->neurons_per_hidden_layer + 1; ++j)
         {
             net->edge_helper_buf[i * (net->neurons_per_hidden_layer + 1) + j] =
                 net->edge_buf + offset_hidden +
