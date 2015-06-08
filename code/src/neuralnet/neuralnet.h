@@ -99,6 +99,15 @@ uint32_t edge_count (uint32_t input_count, uint32_t hidden_layer_count,
 void build_pointer (neuralnet_t* net);
 
 /**
+ * \brief Call this, when a neural networks edge buffer is used as a genome and
+ * edge_buf points to a new location.
+ * \param arg Pointer to a neural network.
+ * \pre arg != NULL
+ * \post The neural network is updated to use the new buffer.
+ */
+void update_neuralnet (void* arg);
+
+/**
  * \brief Creates and returns a neuralnet with random edge-weights, given its
  * preferences.
  *

@@ -7,20 +7,22 @@
 float mutation_crossover_ratio = 0.3f;
 float gene_mutation_chance = 0.3f;
 
-genome_t* create_genome(uint32_t genes_count, float** genes){
-
-	genome_t* gen = malloc(sizeof(genome_t));
-    if (gen == NULL)
+genome_t* create_genome (uint32_t genes_count, float** genes,
+                         void(update_fun)(void*), void* update_arg)
+{
+    genome_t* genome = malloc (sizeof (genome_t));
+    if (genome == NULL)
     {
-        fprintf(stderr, "malloc() failed in file %s at line # %d",
-                __FILE__, __LINE__);
-        exit(EXIT_FAILURE);
+        fprintf (stderr, "malloc() failed in file %s at line # %d", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
     }
-	gen->genes_count = genes_count;
-	gen->genes = genes;
-	gen->fitness = 0.0f;
-	return gen;
-
+    genome->genes_count = genes_count;
+    genome->genes = genes;
+    genome->fitness = 0.0f;
+    genome->update_fun = update_fun;
+    genome->update_arg = update_arg;
+    return genome;
 }
 
 population_t* create_population(uint32_t population_size, genome_t** genomes, float base_fitness){
@@ -120,10 +122,12 @@ void next_generation (population_t* pop)
     {
         free (*pop->individuals[i]->genes);
         *pop->individuals[i]->genes = new_genes[i];
+        if (pop->individuals[i]->update_fun != NULL)
+            pop->individuals[i]->update_fun (pop->individuals[i]->update_arg);
         mutate_genome (pop->individuals[i]);
     }
 
-    free(new_genes);
+    free (new_genes);
     ++pop->generation;
     pop->total_fitness = 0.0f;
     pop->avg_fitness = 0.0f;

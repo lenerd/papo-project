@@ -17,12 +17,16 @@
  */
 typedef struct
 {
-	/** \brief Count of genes this genome contains. */
-	uint32_t genes_count;
-	/** \brief Values of all genes. */
-	float** genes;
-	/** \brief How fit this genome is. */
-	float fitness;
+    /** \brief Count of genes this genome contains. */
+    uint32_t genes_count;
+    /** \brief Values of all genes. */
+    float** genes;
+    /** \brief How fit this genome is. */
+    float fitness;
+    /** \brief Function to call when *genes is changed. */
+    void (*update_fun)(void*);
+    /** \brief Argument for update_fun. */
+    void* update_arg;
 } genome_t;
 
 /**
@@ -58,7 +62,7 @@ float gene_mutation_chance;
 * \pre genes_count > 0
 * \pre genes != NULL
 */
-genome_t* create_genome(uint32_t genes_count, float** genes);
+genome_t* create_genome(uint32_t genes_count, float** genes, void (update_fun) (void*), void* update_arg);
 
 /**
 * \brief Creates and returns a population of genomes based on an array of pointers of precreated genomes.

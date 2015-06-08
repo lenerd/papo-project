@@ -126,6 +126,12 @@ void build_pointer (neuralnet_t* net)
     }
 }
 
+void update_neuralnet (void* arg)
+{
+    neuralnet_t* net = (neuralnet_t*) arg;
+    build_pointer (net);
+}
+
 /**
  * \brief Initializes a given neuralnet with random edge-weights.
  * \param net Neural network to initialize.
