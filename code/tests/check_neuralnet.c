@@ -121,7 +121,7 @@ int main (void)
 
     sr = srunner_create (make_neuralnet_suite ());
 
-	srunner_set_fork_status (sr, CK_NOFORK);
+    srunner_set_fork_status (sr, CK_NOFORK);
     srunner_run_all (sr, CK_NORMAL);
 
     n = srunner_ntests_failed (sr);

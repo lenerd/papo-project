@@ -227,7 +227,7 @@ void neural_net_to_file (neuralnet_t* net, const char* path, bool binary)
         {
             for (uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to)
             {
-                fprintf (file, "%0.9f ", (double) net->input_edges[from][to]);
+                fprintf (file, "%.9e ", (double) net->input_edges[from][to]);
             }
             fprintf (file, "\n");
         }
@@ -239,7 +239,7 @@ void neural_net_to_file (neuralnet_t* net, const char* path, bool binary)
             {
                 for (uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to)
                 {
-                    fprintf (file, "%0.9f ",
+                    fprintf (file, "%.9e ",
                              (double) net->hidden_edges[layer][from][to]);
                 }
                 fprintf (file, "\n");
@@ -250,7 +250,7 @@ void neural_net_to_file (neuralnet_t* net, const char* path, bool binary)
         {
             for (uint32_t to = 0; to < net->output_count; ++to)
             {
-                fprintf (file, "%0.9f ", (double) net->output_edges[from][to]);
+                fprintf (file, "%.9e ", (double) net->output_edges[from][to]);
             }
             fprintf (file, "\n");
         }
@@ -385,7 +385,7 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
         {
             for (uint32_t to = 0; to < neurons_per_hidden_layer; ++to)
             {
-                fscanf (file, "%f ", &net->input_edges[from][to]);
+                fscanf (file, "%e ", &net->input_edges[from][to]);
             }
             fscanf (file, "\n");
         }
@@ -396,7 +396,7 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
             {
                 for (uint32_t to = 0; to < neurons_per_hidden_layer; ++to)
                 {
-                    fscanf (file, "%f ", &net->hidden_edges[layer][from][to]);
+                    fscanf (file, "%e ", &net->hidden_edges[layer][from][to]);
                 }
             }
             fscanf (file, "\n");
@@ -406,7 +406,7 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
         {
             for (uint32_t to = 0; to < output_count; ++to)
             {
-                fscanf (file, "%f ", &net->output_edges[from][to]);
+                fscanf (file, "%e ", &net->output_edges[from][to]);
             }
             fscanf (file, "\n");
         }
