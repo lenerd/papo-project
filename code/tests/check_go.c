@@ -74,13 +74,26 @@ END_TEST
 
 START_TEST (test_board_pass)
 {
-	uint8_t** before = board->grid;
+    uint8_t* buffer =
+        malloc ((size_t)(board->size * board->size) * sizeof (uint8_t));
+    memcpy (buffer, board->buffer,
+            (size_t)(board->size * board->size) * sizeof (uint8_t));
+
     ck_assert (board->turn == c_black);
-	board_pass(board);
-	ck_assert(before == board->grid);
+
+    board_pass (board);
     ck_assert (board->turn == c_white);
-	board_pass(board);
+    ck_assert (
+        memcmp (buffer, board->buffer,
+                (size_t)(board->size * board->size) * sizeof (uint8_t)) == 0);
+
+    board_pass (board);
     ck_assert (board->turn == c_black);
+    ck_assert (
+        memcmp (buffer, board->buffer,
+                (size_t)(board->size * board->size) * sizeof (uint8_t)) == 0);
+
+    free (buffer);
 }
 END_TEST
 
