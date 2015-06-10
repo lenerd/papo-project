@@ -118,16 +118,16 @@ START_TEST (test_board_groups)
 	ck_assert(board->turn == c_black);
     board_place (board, 1, 0);
     board_place (board, 0, 0);
-    board_place (board, 2, 0);
+    board_place (board, 1, 1);
 	ck_assert(board_position_state(board, 1, 0) == ps_black);
 	ck_assert(board_position_state(board, 0, 0) == ps_white);
-	ck_assert(board_position_state(board, 2, 0) == ps_black);
+	ck_assert(board_position_state(board, 1, 1) == ps_black);
 	uint8_t* group = board_get_group(board, 1, 0);
 	ck_assert(group[0] == 2);
-	ck_assert(group[0] == 1);
+	ck_assert_msg(group[1] == 1);
 	ck_assert(group[2] == 0);
-	ck_assert(group[3] == 2);
-	ck_assert(group[4] == 0);
+	ck_assert(group[3] == 1);
+	ck_assert(group[4] == 1);
 }
 END_TEST
 
@@ -249,7 +249,7 @@ int main (void)
     sr = srunner_create (make_go_suite ());
 
 	//Uncomment if needed for debugging with gdb:
-	srunner_set_fork_status (sr, CK_NOFORK);
+	//srunner_set_fork_status (sr, CK_NOFORK);
 
 	srunner_run_all (sr, CK_VERBOSE);
 

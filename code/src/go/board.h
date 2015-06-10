@@ -119,15 +119,5 @@ void board_capture(board_t* board, uint8_t x, uint8_t y);
 */
 int board_score(const board_t* board, uint8_t size, uint8_t komi);
 
-/**
-* \brief Computes score for white.
-*/
-uint8_t board_score_white(const board_t* board, int *groups_white);
-
-/**
-* \brief Computes score for black.
-*/
-uint8_t board_score_black(const board_t* board, int *groups_black);
-
 
 #endif /* BOARD_H */

@@ -126,8 +126,8 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
   // The first stone is always the one on the position given, so the intial size
   // is one.
   int size = 1;
-  int *group = calloc(120, sizeof(int));
-	group[0] = size;
+  int *group = malloc(120*sizeof(int));
+  group[0] = size;
   group[1] = x;
   group[2] = y;
   board->grid[x][y] = ps_marked;
@@ -135,8 +135,8 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
   int index = 3;
 
   // Alway goes left, right, up or down from every stone until the next one is
-  // either marked or of a different color
-  while (current < index) 
+  // either marked or of a different color while new unmarked stones can be found
+  while (2*current < index) 
   {
     // x and y coordinates of the current stone
     uint8_t a = group[current];
@@ -147,6 +147,7 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
     uint8_t top = b - 1;
     uint8_t bottom = b + 1;
     uint8_t neighbours[4] = {left, right, top, bottom};
+
 
     for (int i = 0; i < 2; ++i) {
       while (neighbours[i] < board->size && neighbours[i] >= 0 &&
@@ -160,7 +161,7 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
           index+=2;
           ++size;
         }
-        neighbours[i] = neighbours[i+2] + (int) pow(-1, i);
+        neighbours[i] = neighbours[i] + (int) pow(-1, i);
       }
 
       while (neighbours[i+2] < board->size && neighbours[i+2] >= 0 &&
@@ -170,7 +171,7 @@ int *board_get_group(const board_t *board, uint8_t x, uint8_t y) {
 	{
           group[index] = x;
           group[index + 1] = neighbours[i+2];
-          board->grid[x][neighbours[i+2]] = ps_marked;
+          board->grid[x][neighbours[i+2]] = ps_illegal;
           index+=2;
           ++size;
         }
@@ -207,9 +208,21 @@ void board_capture(board_t *board, uint8_t x, uint8_t y) {
 
   int *current;
 
-  for (int i = 0; i < 4; ++i) {
-    if (neighbours[i] >= 0 && neighbours[i] < board->size) {
+  for (int i = 0; i < 2; ++i) {
+    if (neighbours[i] >= 0 && neighbours[i] < board->size && board_position_state(board, neighbours[i], y) != state) {
       current = board_get_group(board, neighbours[i], y);
+
+      if (board_num_liberties(board, current) == 0) {
+
+        for (int j = 1; j <= current[0]; ++j) {
+          board->grid[current[j]][current[j + 1]] = ps_empty;
+          ++stones_captured;
+        }
+      }
+    }
+
+    if (neighbours[i+2] >= 0 && neighbours[i+2] < board->size && board_position_state(board, x, neighbours[i+2]) != state) {
+      current = board_get_group(board, x, neighbours[i+2]);
 
       if (board_num_liberties(board, current) == 0) {
 
@@ -230,60 +243,54 @@ void board_capture(board_t *board, uint8_t x, uint8_t y) {
 
 int board_score(const board_t *board, uint8_t size, uint8_t komi) {
   int final_score;
-  int *groups_white = malloc(60*sizeof(int)); 
-  int *groups_black = malloc(60*sizeof(int));  
-  int size_white = 0;
-  int size_black = 0;
-  uint8_t ind_white = 1;
-  uint8_t ind_black = 1;
 
   for (int i = 0; i < board->size; i++) {
     for (int j = 0; j < board->size; j++) {
       if (board_position_state(board, i, j) == ps_empty) {
         int *group = board_get_group(board, i, j);
-        pos_state_t state;
+	pos_state_t state;	
+	uint8_t top, bottom, a, b;
+	uint8_t left = group[1]-1;
+	uint8_t right = group[1]+1;
+	bool stop_count = false;
 
-        if (i > 0) {
-          int a = i - 1;
-          state = board_position_state(board, a, j);
-        } else {
-          int a = i + 1;
-          state = board_position_state(board, a, j);
-        }
+	if(left < board->size && left >= 0)
+			state = board_position_state(board, left, group[2]);
+	else if(right < board->size && right >= 0)
+			state = board_position_state(board, right, group[2]);	
+	
+	for(int a = 1; a <= group[0]; a+=2)
+	{
+		board->grid[group[a]][group[a+1]]=ps_marked;
+		
+		if(!stop_count)
+		{
+		a = group[a];
+  		  b = group[a + 1];
+  		  left = a - 1;
+  		  right = a + 1;
+  		  top = b - 1;
+  		  bottom = b + 1;
+		
+		if(left < board->size && left >= 0 && board_position_state(board, left, b) != state)
+			stop_count = true;
+		if(right < board->size && right >= 0 && board_position_state(board, right, b) != state)
+			stop_count = true;
+		if(top < board->size && top >= 0 && board_position_state(board, a, top) != state)
+			stop_count = true;
+		if(bottom < board->size && bottom >= 0 && board_position_state(board, a, bottom) != state)	
+			stop_count = true;
+		}
+	}       
+	
+	if(state=ps_black)
+		final_score += group[0];
+	else
+		final_score -= group[0];
 
-        if (state == ps_white) {
-          groups_white[ind_white] = group[0];
-          ++size_white;
-        } else {
-          groups_black[ind_black] = group[0];
-          ++size_white;
-        }
       }
     }
   }
 
-  final_score = (int)board_score_black(board, groups_black) -
-                (int)board_score_white(board, groups_white) - komi;
-
   return final_score;
-}
-
-uint8_t board_score_white(const board_t *board, int *groups_white) {
-  uint8_t score = board->white_captured;
-
-  for (int i = 0; i <= groups_white[0]; i++) {
-    score += (int)groups_white[i];
-  }
-
-  return score;
-}
-
-uint8_t board_score_black(const board_t *board, int *groups_black) {
-  uint8_t score = board->black_captured;
-
-  for (int i = 0; i <= groups_black[0]; i++) {
-    score += (int)groups_black[i];
-  }
-
-  return score;
 }
