@@ -21,6 +21,8 @@ void setup (void)
 void teardown (void)
 {
     board_destroy (board);
+    destroy_neural_net (net1);
+    destroy_neural_net (net2);
 }
 
 // Tests for board.c
