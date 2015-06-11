@@ -121,20 +121,49 @@ START_TEST (test_board_liberties)
 }
 END_TEST
 
+START_TEST (test_board_capture)
+{
+    board_place (board, 0, 0);
+    board_place (board, 1, 0);
+    board_place (board, 0, 1);
+    board_place (board, 0, 2);
+    board_place (board, 1, 1);
+    board_place (board, 2, 1);
+    board_pass (board);
+    ck_assert (board_position_state (board, 0, 0) == ps_black);
+    ck_assert (board_position_state (board, 0, 1) == ps_black);
+    ck_assert (board_position_state (board, 1, 1) == ps_black);
+    board_place (board, 1, 2);
+    ck_assert (board_position_state (board, 0, 0) == ps_empty);
+    ck_assert (board_position_state (board, 0, 1) == ps_empty);
+    ck_assert (board_position_state (board, 1, 1) == ps_empty);
+}
+END_TEST
+
 START_TEST (test_board_groups)
 {
-	ck_assert(board->turn == c_black);
+    ck_assert (board->turn == c_black);
+
     board_place (board, 1, 0);
     board_place (board, 0, 0);
     board_place (board, 1, 1);
-	ck_assert(board_position_state(board, 1, 0) == ps_black);
-	ck_assert(board_position_state(board, 0, 0) == ps_white);
-	ck_assert(board_position_state(board, 1, 1) == ps_black);
 
-    ck_assert(board_get_group(board, 1, 0) == board_get_group(board, 1, 1));
-    ck_assert(board_get_group(board, 1, 0) <= board_2d_to_1d(board, 1, 0));
-    ck_assert(board_get_group(board, 1, 1) <= board_2d_to_1d(board, 1, 1));
-    ck_assert(board_get_group(board, 0, 0) == board_2d_to_1d(board, 0, 0));
+    ck_assert (board_position_state (board, 1, 0) == ps_black);
+    ck_assert (board_position_state (board, 0, 0) == ps_white);
+    ck_assert (board_position_state (board, 1, 1) == ps_black);
+
+    ck_assert (board_get_group (board, 1, 0) == board_get_group (board, 1, 1));
+    ck_assert (board_get_group (board, 1, 0) <= board_2d_to_1d (board, 1, 0));
+    ck_assert (board_get_group (board, 1, 1) <= board_2d_to_1d (board, 1, 1));
+    ck_assert (board_get_group (board, 0, 0) == board_2d_to_1d (board, 0, 0));
+
+    board_place (board, 0, 2);
+    board_place (board, 2, 0);
+    board_place (board, 0, 1);
+
+    ck_assert (board_get_group (board, 0, 0) == board_get_group (board, 0, 1));
+    ck_assert (board_get_group (board, 0, 0) == board_get_group (board, 0, 2));
+    ck_assert (board_get_group (board, 2, 0) == board_get_group (board, 1, 0));
 }
 END_TEST
 
@@ -226,6 +255,7 @@ Suite* make_go_suite (void)
     tcase_add_test (tc_board, test_board_placement);
 	tcase_add_test (tc_board, test_board_pass);
     tcase_add_test (tc_board, test_board_liberties);
+    tcase_add_test (tc_board, test_board_capture);
 	tcase_add_test (tc_board, test_board_groups);
     tcase_add_test (tc_board, test_board_score);
     suite_add_tcase (s, tc_board);
