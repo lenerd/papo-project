@@ -123,12 +123,14 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
  * \param board Board to place one.
  * \param x x coordinate
  * \param x y coordinate
+ * \param color Color of the stone to place.
  * \return True if it would be suicide, else false.
  * \pre board != NULL
  * \pre x < board->size
  * \pre y < board->size
  */
-bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y);
+bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
+                         color_t color);
 
 /**
  * \brief Places a stone on given position.

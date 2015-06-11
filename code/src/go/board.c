@@ -134,7 +134,7 @@ bool board_legal_placement(const board_t *board, uint8_t x, uint8_t y,
     return false;
   if (board->grid[x][y] != ps_empty)
     return false;
-  if (board_test_suicide(board, x, y))
+  if (board_test_suicide(board, x, y, color))
     return false;
   return true;
 }
@@ -163,8 +163,10 @@ uint16_t board_num_liberties(const board_t *board, uint16_t group) {
     return board->group_liberties[group];
 }
 
-bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y)
+bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
+                         color_t color)
 {
+    color_t enemy = color == c_white ? c_black : c_white;
     uint16_t pos = board_2d_to_1d (board, x, y);
     uint16_t left = board_1d_left (board, pos);
     uint16_t right = board_1d_right (board, pos);
@@ -172,14 +174,35 @@ bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y)
     uint16_t bot = board_1d_bot (board, pos);
     uint16_t n[4] = {left, right, top, bot};
 
+    bool last_lib = false;
+    bool last_lib_enemy = false;
+    uint8_t enemy_cnt = 0;
+
     for (uint8_t x = 0; x < 4; ++x)
     {
-        if (n[x] != invalid_1d && board->buffer[n[x]] == board->turn &&
-            board_num_liberties (board, board->group_id[n[x]]) == 1)
-            return true;
+        if (n[x] == invalid_1d)
+        {
+            ++enemy_cnt;
+            continue;
+        }
+        if (board->buffer[n[x]] == ps_empty)
+        {
+            return false;
+        }
+        else if (board->buffer[n[x]] == enemy)
+        {
+            ++enemy_cnt;
+            if (board->group_liberties[board->group_id[n[x]]] == 1)
+                last_lib_enemy = true;
+        }
+        else if (board->buffer[n[x]] == color &&
+            board->group_liberties[board->group_id[n[x]]] == 1)
+        {
+            last_lib = true;
+        }
     }
 
-    return false;
+    return ((enemy_cnt == 4) || last_lib) && !last_lib_enemy;
 }
 
 uint16_t board_get_group (const board_t* board, uint8_t x, uint8_t y)
