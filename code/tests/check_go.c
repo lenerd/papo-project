@@ -73,6 +73,40 @@ START_TEST (test_board_placement)
 }
 END_TEST
 
+START_TEST (test_board_suicide)
+{
+    board_place (board, 1, 0);
+    board_pass (board);
+    board_place (board, 0, 1);
+    /* Board:
+     *  0123
+     * 0 B  
+     * 1B   
+     * 2    
+     * 3    
+     */
+    ck_assert (board_test_suicide(board, 0, 0, c_white));
+    ck_assert (!board_legal_placement(board, 0, 0, c_white));
+    board_place (board, 0, 2);
+    board_pass(board);
+    board_place (board, 1, 1);
+    board_pass(board);
+    board_place (board, 3, 0);
+    /* Board:
+     *  0123
+     * 0 BW 
+     * 1BW  
+     * 2W   
+     * 3    
+     */
+    ck_assert (board_test_suicide(board, 0, 0, c_black));
+    ck_assert (!board_legal_placement(board, 0, 0, c_black));
+    board_pass(board);
+    ck_assert (!board_test_suicide(board, 0, 0, c_white));
+    ck_assert (board_legal_placement(board, 0, 0, c_white));
+}
+END_TEST
+
 START_TEST (test_board_pass)
 {
     uint8_t* buffer =
@@ -253,6 +287,7 @@ Suite* make_go_suite (void)
     tcase_add_checked_fixture (tc_board, setup, teardown);
     tcase_add_test (tc_board, test_board_init);
     tcase_add_test (tc_board, test_board_placement);
+    tcase_add_test (tc_board, test_board_suicide);
 	tcase_add_test (tc_board, test_board_pass);
     tcase_add_test (tc_board, test_board_liberties);
     tcase_add_test (tc_board, test_board_capture);
