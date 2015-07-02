@@ -3,154 +3,118 @@
 #include "game_controller.h"
 #include "neuralnet/neuralnet.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-result_t play_nets(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* record)
+result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* record)
 {
 	board_t* board = board_create(board_size);
 	bool game_over = false;
     int8_t passed  = 0;
 	result_t final = result_init(black, white);
-    float* move;
     int ret;
 
+	//Game loop
 	while(game_over == false)
 	{
-		if(board->turn == c_black)
-		{
-			move = calculate_output(black, (float*) NULL);	
-			ret = execute_move(board, (uint8_t) move[0], (uint8_t) move[1], c_white);
+		int* move = genmove(board->turn, final, board_size);
 			
-            switch (ret)
-            {
-                case -1:
-                    game_over = true;
-                    break;
-                case 1:
-                    passed = 1;
-                    break;
-                case 0:
-                    passed = 0;
-                    write_move(record, 1, (uint8_t) move[0], (uint8_t) move[1]);
-                    break;
-                default:
-                    break;
+			//No move left
+			if(move[0] == -1)
+			{
+				game_over = true;
 			}
-		}
-		else
-		{
-			// calculate_output(white, (float) board, move);
-            // FIXME: function wants a pointer to a float array
-            // (nullpointer for compilibility only
-			move = calculate_output(white, (float*) NULL);
-            ret = execute_move(board, (uint8_t) move[0], (uint8_t) move[1], c_white);
-			
-            switch (ret)
-            {
-                case -1:
-                    game_over = true;
-                    break;
-                case 1:
-                    passed = 1;
-                    break;
-                case 0:
-                    passed = 0;
-                    write_move(record, 2, (uint8_t) move[0], (uint8_t) move[1]);
-                    break;
-                default:
-                    break;
+			//Pass
+			else if(move[0] == 10)
+			{
+				board_pass(board);
+				++passed;
+				if(passed > 1)
+					game_over = true;
 			}
-		}
+			//Placement
+			else
+			{
+				board_place(board, move[0], move[1]);
+				passed = 0;
+			}
 		
-		if(passed > 1)
-			game_over = true;
+		
 	}
 	
+	//Scoring
 	int score_val = board_score(board, board_size, komi);
 	final.score_black = score_val;
 	final.score_white = - score_val;
 
-	return final;
-	
-	
+	return final;	
 }
 
-int play_human_vs_net(uint8_t board_size, neuralnet_t* net, color_t human_player, uint8_t komi, FILE* record)
-{	
-	board_t* board = board_create(board_size);
-	bool game_over = false;
-	uint8_t passed;
-    int ret;
+int* genmove(color_t color, result_t result, board_t*	 board, int board_size)
+{
+	float* output;
+	int x1, y1, x2, y2, count;
+	int size = board_size * board_size +1; 
+	//Holds x and y positions as well as number of tried illegal moves
+	int* move = malloc(sizeof(int) * 3);
 
-	while(game_over == false)
-	{
-		if(board->turn == human_player)
+	//Get output of neural net
+	if(color == c_black)
+		output = calculate_output(result.black, board);
+	else
+		output = calculate_output(result.white, board);
+
+
+	//If count is equal or bigger than size, the whole board has been checked without finding
+	//a legal move
+	while(count < size)
+	{	
+		//Finds two highest ranked placements
+ 		for(int i = 0; i <= size; ++i)
 		{
-            float* move;
-			/* TODO: Reading from command line (every round)...  Is that even possible? */
-			
-			ret = execute_move(board, move[0], move[1], c_white);
-            switch (ret)
-            {
-                case -1:
-                    game_over = true;
-                    break;
-                case 1:
-                    passed = 1;
-                    break;
-                case 0:
-                    passed = 0;
-                    break;
-                default:
-                    break;
-            }
-		}
-		else
-		{
-            float* move;
-			// calculate_output(net, (float) board, move);
-            // FIXME: function wants a pointer to a float array
-            // (nullpointer for compilibility only
-			move = calculate_output(net, (float*) NULL);
-			ret = execute_move(board, (uint8_t) move[0], (uint8_t) move[1], c_white);
-			
-            switch (ret)
-            {
-                case -1:
-                    game_over = true;
-                    break;
-                case 1:
-                    passed = 1;
-                    break;
-                case 0:
-                    passed = 0;
-                    break;
-                default:
-                    break;
-            }
+			if(output[i] > output[x1*9+y1])
+			{
+				x2 = x1;		
+				y2 = y1;
+				x1 =  i/9;
+				y1 = i % 9;
+			}
 		}
 		
-		if(passed > 1)
-			game_over = true;
+		//Checks if one of them is legal
+		if(board_legal_placement(board, x1, y1, color))
+		{
+			move[0] = x1;
+			move[1] = y1;
+			break;
+		}
+		else if(board_legal_placement(board, x1, y1, color))
+		{
+			move[0] = x2;
+			move[1] = y2;
+			++count;
+			break;
+		}
+		//If not, set their rankings to a very low level and start again
+		else
+		{
+			output[x1*9+y1] = - 5000;
+			output[x2*9+y2] = - 5000;
+			count += 2;
+		}
 	}
 	
-	return board_score(board, board_size, komi);
-}
-
-
-int execute_move(board_t* board, uint8_t x, uint8_t y, color_t color)
-{
-	if (x > board->size || y > board->size)
-	{			
-		board_pass(board);
-		return 1;
-	}
-	else if(board_legal_placement(board, x, y, color))
+	move[2] = count;
+	
+	//In case no move has been found
+	if(count >= size)
 	{
-		board_place(board, x, y);
-		return 0;
-	}	
+		move[0] = -1;
+		move[1] = -1;
+		move[2] = 0;
+	}
 
-	return -1;
+	return move;
+	
 }
 
 result_t result_init(neuralnet_t* black, neuralnet_t* white)

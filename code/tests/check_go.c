@@ -131,6 +131,7 @@ START_TEST (test_board_groups)
 }
 END_TEST
 
+
 START_TEST (test_board_score)
 {
     board_place (board, 0, 0);
@@ -187,8 +188,14 @@ END_TEST
 
 
 // Tests for game_controller.c
-START_TEST (test_execute_move)
+START_TEST (test_genmove)
 {
+	int* test_move = genmove(board->turn);
+	ck_assert(test_move[0] > -2);
+	ck_assert(test_move[0] < 11);
+	ck_assert(test_move[1] > -2);
+	ck_assert(test_move[1] < 10);
+	ck_assert(test_move[2] > -1);
 }
 END_TEST
 
@@ -222,7 +229,7 @@ Suite* make_go_suite (void)
 	tcase_add_test (tc_board, test_board_groups);
     tcase_add_test (tc_board, test_board_score);
     suite_add_tcase (s, tc_board);
-
+	
     /* Test case for record */
     tc_record = tcase_create ("Record");
 
@@ -233,7 +240,7 @@ Suite* make_go_suite (void)
     /* Test case for game_controller */
     tc_game = tcase_create ("Game Controller");
 
-    tcase_add_test (tc_game, test_execute_move);
+    tcase_add_test (tc_game, test_genmove);
     tcase_add_test (tc_game, test_result_init);
     suite_add_tcase (s, tc_game);
 
@@ -249,7 +256,7 @@ int main (void)
     sr = srunner_create (make_go_suite ());
 
 	//Uncomment if needed for debugging with gdb:
-	//srunner_set_fork_status (sr, CK_NOFORK);
+	srunner_set_fork_status (sr, CK_NOFORK);
 
 	srunner_run_all (sr, CK_VERBOSE);
 
