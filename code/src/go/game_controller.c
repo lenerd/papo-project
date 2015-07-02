@@ -22,23 +22,26 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 			if(move[0] == -1)
 			{
 				game_over = true;
+				break;
 			}
 			//Pass
-			else if(move[0] == 10)
+			else if(move[0] >= board_size)
 			{
 				board_pass(board);
 				++passed;
 				if(passed > 1)
+				{
 					game_over = true;
+					break;
+				}
 			}
 			//Placement
 			else
 			{
+				write_move(record, board->turn, move[0], move[1]);
 				board_place(board, move[0], move[1]);
 				passed = 0;
 			}
-		
-		
 	}
 	
 	//Scoring
@@ -71,12 +74,12 @@ int* genmove(color_t color, result_t result, board_t*	 board, int board_size)
 		//Finds two highest ranked placements
  		for(int i = 0; i <= size; ++i)
 		{
-			if(output[i] > output[x1*9+y1])
+			if(output[i] > output[x1*board_size+y1])
 			{
 				x2 = x1;		
 				y2 = y1;
-				x1 =  i/9;
-				y1 = i % 9;
+				x1 =  i/board_size;
+				y1 = i % board_size;
 			}
 		}
 		
@@ -97,8 +100,8 @@ int* genmove(color_t color, result_t result, board_t*	 board, int board_size)
 		//If not, set their rankings to a very low level and start again
 		else
 		{
-			output[x1*9+y1] = - 5000;
-			output[x2*9+y2] = - 5000;
+			output[x1*board_size+y1] = - 5000;
+			output[x2*board_size+y2] = - 5000;
 			count += 2;
 		}
 	}

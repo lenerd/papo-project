@@ -18,7 +18,7 @@ FILE* create_file(const char* file_name);
 /**
 * \brief writes a move to the .sgf
 */
-void write_move(FILE* record, int player, uint8_t x, uint8_t y);
+void write_move(FILE* record, color_t color, uint8_t x, uint8_t y);
 
 #endif /* RECORD_H */
 
