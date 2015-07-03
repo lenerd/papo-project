@@ -56,6 +56,7 @@ int* genmove(board_t* board, result_t result)
 {
 	float* output;
 	int x1, y1, x2, y2;
+    x1 = x2 = y1 = y2 = 0;
     int count = 0;
 	int size = board->size * board->size +1; 
 	//Holds x and y positions as well as number of tried illegal moves
@@ -73,7 +74,7 @@ int* genmove(board_t* board, result_t result)
 	while(count < size)
 	{	
 		//Finds two highest ranked placements
- 		for(int i = 0; i <= size; ++i)
+ 		for(int i = 0; i < size; ++i)
 		{
 			if(output[i] > output[x1*board->size+y1])
 			{
