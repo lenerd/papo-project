@@ -12,7 +12,7 @@ int main(int argc, char** argv){
 	uint32_t hidden_layer_count = 1;
 	uint32_t neurons_per_hidden_layer = 1;
 
-	uint32_t generations = 1000000000;
+	uint32_t generations = 500000;
 	uint32_t tests_per_genome = 1;
 
 	neuralnet_t** nnets = malloc(population_size * sizeof(neuralnet_t*));
@@ -59,9 +59,12 @@ int main(int argc, char** argv){
 		printf("Generation: %d\n\tTotal Fitness: %f\n\tAverage Fitness: %f\n\n", i, pop->total_fitness, pop->avg_fitness);
 		next_generation(pop);
 	}
-
-    for (uint32_t i = 0; i < pop->size; ++i)
+    char* name = "netx";
+    for (uint32_t i = 0; i < pop->size; ++i){
+        name[3] = '0' + i;
+        neural_net_to_file(nnets[i], name, false);
         destroy_neural_net(nnets[i]);
+    }
     free(nnets);
     for (uint32_t i = 0; i < pop->size; ++i)
         free(pop->individuals[i]);
