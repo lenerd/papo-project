@@ -63,9 +63,9 @@ int* genmove(board_t* board, result_t result)
 
 	//Get output of neural net
 	if(board->turn == c_black)
-		output = calculate_output(result.black, board);
+		output = calculate_output(result.black, board->buffer, UINT8);
 	else
-		output = calculate_output(result.white, board);
+		output = calculate_output(result.white, board->buffer, UINT8);
 
 
 	//If count is equal or bigger than size, the whole board has been checked without finding
