@@ -8,8 +8,10 @@
 * \ingroup go
 */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include "board.h"
+#include "record.h"
 #include "neuralnet/neuralnet.h"
 
 /**
@@ -31,18 +33,12 @@ typedef struct
 * \brief Sets up and plays a game with two nets.
 */
 
-result_t play_nets(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* recordt);
+result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* record);
 
 /**
-* Let's a human play against a net.
+* \brief Generates a move from a neuralnet output
 */
-
-int play_human_vs_net(uint8_t board_size, neuralnet_t* net, color_t human_player, uint8_t komi, FILE* record);
-
-/**
-* \brief Executes a move and returns feedback if it worked.
-*/
-int execute_move(board_t* board, uint8_t x, uint8_t y, color_t color);
+int* genmove(color_t color, result_t result, board_t* board, int board_size);
 
 /**
 * \brief Initializes the result datatype.

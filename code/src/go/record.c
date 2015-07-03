@@ -38,16 +38,15 @@ FILE* create_file(const char* file_name)
 * \brief Writes moves into the created file (only use for legal moves without passing!)
 */
 
-void write_move(FILE* record, int player, uint8_t x, uint8_t y){
+void write_move(FILE* record, color_t color, uint8_t x, uint8_t y){
 	
-	// fopen(record, "a");
-	char i = (char) ('a' + x);
+	char i = (char) ('a' + x);		
 	char j = (char) ('a' + y);
-	
-	if(player == 1){
+	if(color == c_black){
 		fprintf(record, "B[%c%c]\n", i, j);
 	}
 	else{
-		fprintf(record, "W[%c%c]\n", i, j);
+		fprintf(record, "W[%c%c]\n", i, j);		
 	}
 }
+
