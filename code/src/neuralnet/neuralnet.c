@@ -430,10 +430,39 @@ void destroy_neural_net (neuralnet_t* net)
     free (net);
 }
 
-float* calculate_output (neuralnet_t* net, float* input)
+float* calculate_output (neuralnet_t* net, void* input, type_t type)
 {
     assert (net != NULL);
     assert (input != NULL);
+
+    float* input_f = (float*)input;
+    uint8_t* input_i8 = (uint8_t*)input;
+
+    /* Input layer to hidden layer calculation */
+    if(type == UINT8){
+	for (uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to)
+	{
+	    /* threshold */
+ 	    sum = -1 * net->input_edges[net->input_count][to];
+	    for (uint32_t from = 0; from < net->input_count; ++from)
+	    {
+		sum += net->input_edges[from][to] * input_i8[from];
+	    }
+	    ires2[to] = (sum > 0.0f) ? centered_sigmoid (sum) : 0.0f;
+	}
+    }
+    else if(type == FLOAT){
+	for (uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to)
+	{
+	    /* threshold */
+ 	    sum = -1 * net->input_edges[net->input_count][to];
+	    for (uint32_t from = 0; from < net->input_count; ++from)
+	    {
+		sum += net->input_edges[from][to] * input_f[from];
+	    }
+	    ires2[to] = (sum > 0.0f) ? centered_sigmoid (sum) : 0.0f;
+	}
+    }
 
     /* buffer for intermediary results */
     float* ires1 = NULL;
@@ -456,18 +485,6 @@ float* calculate_output (neuralnet_t* net, float* input)
     }
 
     float sum = 0.0f;
-
-    /* Input layer to hidden layer calculation */
-    for (uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to)
-    {
-        /* threshold */
-        sum = -1 * net->input_edges[net->input_count][to];
-        for (uint32_t from = 0; from < net->input_count; ++from)
-        {
-            sum += net->input_edges[from][to] * input[from];
-        }
-        ires2[to] = (sum > 0.0f) ? centered_sigmoid (sum) : 0.0f;
-    }
 
     /* between hidden layers */
     for (uint32_t layer = 0; layer < net->hidden_layer_count - 1; ++layer)
