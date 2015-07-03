@@ -16,7 +16,7 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 	//Game loop
 	while(game_over == false)
 	{
-		int* move = genmove(board->turn, final, board_size);
+		int* move = genmove(board, final);
 			
 			//No move left
 			if(move[0] == -1)
@@ -52,16 +52,17 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 	return final;	
 }
 
-int* genmove(color_t color, result_t result, board_t*	 board, int board_size)
+int* genmove(board_t* board, result_t result)
 {
 	float* output;
-	int x1, y1, x2, y2, count;
-	int size = board_size * board_size +1; 
+	int x1, y1, x2, y2;
+    int count = 0;
+	int size = board->size * board->size +1; 
 	//Holds x and y positions as well as number of tried illegal moves
 	int* move = malloc(sizeof(int) * 3);
 
 	//Get output of neural net
-	if(color == c_black)
+	if(board->turn == c_black)
 		output = calculate_output(result.black, board);
 	else
 		output = calculate_output(result.white, board);
@@ -74,23 +75,23 @@ int* genmove(color_t color, result_t result, board_t*	 board, int board_size)
 		//Finds two highest ranked placements
  		for(int i = 0; i <= size; ++i)
 		{
-			if(output[i] > output[x1*board_size+y1])
+			if(output[i] > output[x1*board->size+y1])
 			{
 				x2 = x1;		
 				y2 = y1;
-				x1 =  i/board_size;
-				y1 = i % board_size;
+				x1 =  i/board->size;
+				y1 = i % board->size;
 			}
 		}
 		
 		//Checks if one of them is legal
-		if(board_legal_placement(board, x1, y1, color))
+		if(board_legal_placement(board, x1, y1, board->turn))
 		{
 			move[0] = x1;
 			move[1] = y1;
 			break;
 		}
-		else if(board_legal_placement(board, x1, y1, color))
+		else if(board_legal_placement(board, x1, y1, board->turn))
 		{
 			move[0] = x2;
 			move[1] = y2;
@@ -100,8 +101,8 @@ int* genmove(color_t color, result_t result, board_t*	 board, int board_size)
 		//If not, set their rankings to a very low level and start again
 		else
 		{
-			output[x1*board_size+y1] = - 5000;
-			output[x2*board_size+y2] = - 5000;
+			output[x1*board->size+y1] = - 5000;
+			output[x2*board->size+y2] = - 5000;
 			count += 2;
 		}
 	}

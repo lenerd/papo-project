@@ -260,7 +260,8 @@ END_TEST
 // Tests for game_controller.c
 START_TEST (test_genmove)
 {
-	int* test_move = genmove(board->turn);
+    result_t test_result = result_init (net1, net2);
+	int* test_move = genmove(board, test_result);
 	ck_assert(test_move[0] > -2);
 	ck_assert(test_move[0] < 11);
 	ck_assert(test_move[1] > -2);

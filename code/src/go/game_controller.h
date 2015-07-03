@@ -38,7 +38,7 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 /**
 * \brief Generates a move from a neuralnet output
 */
-int* genmove(color_t color, result_t result, board_t* board, int board_size);
+int* genmove(board_t* board, result_t result);
 
 /**
 * \brief Initializes the result datatype.
