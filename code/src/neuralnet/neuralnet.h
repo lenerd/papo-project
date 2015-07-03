@@ -6,7 +6,6 @@
 * \brief Contains everything required for neural networks.
 * \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
 * \author Lennart Braun <3braun@informatik.uni-hamburg.de>
-* \author Theresa Eimer <3eimer@informatik.uni-hamburg.de>
 * \ingroup neuralnet
 */
 
@@ -218,10 +217,5 @@ float* calculate_output (neuralnet_t* net, float* input);
  * \pre net != NULL
  */
 void print_neural_net (const neuralnet_t* net);
-
-/**
-* \brief Executes a backpropagation algorithm to train the nets
-*/
-float* backpropagation(neuralnet_t* net, int board_size, float threshold);
 
 #endif /* NEURALNET_H */
