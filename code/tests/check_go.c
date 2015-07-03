@@ -12,16 +12,17 @@ neuralnet_t* net2;
 void setup (void)
 {
     board = board_create (5);
-    uint16_t buf_size = board->size * board->size;
 
     // TODO: use a deterministic initialition
-    net1 = create_neural_net_random (buf_size, 5, 5, buf_size);
-    net2 = create_neural_net_random (buf_size, 5, 5, buf_size);
+    net1 = create_neural_net_random (board->buf_size, 5, 5, board->buf_size);
+    net2 = create_neural_net_random (board->buf_size, 5, 5, board->buf_size);
 }
 
 void teardown (void)
 {
     board_destroy (board);
+    destroy_neural_net (net1);
+    destroy_neural_net (net2);
 }
 
 // Tests for board.c
@@ -72,6 +73,40 @@ START_TEST (test_board_placement)
 }
 END_TEST
 
+START_TEST (test_board_suicide)
+{
+    board_place (board, 1, 0);
+    board_pass (board);
+    board_place (board, 0, 1);
+    /* Board:
+     *  0123
+     * 0 B  
+     * 1B   
+     * 2    
+     * 3    
+     */
+    ck_assert (board_test_suicide(board, 0, 0, c_white));
+    ck_assert (!board_legal_placement(board, 0, 0, c_white));
+    board_place (board, 0, 2);
+    board_pass(board);
+    board_place (board, 1, 1);
+    board_pass(board);
+    board_place (board, 3, 0);
+    /* Board:
+     *  0123
+     * 0 BW 
+     * 1BW  
+     * 2W   
+     * 3    
+     */
+    ck_assert (board_test_suicide(board, 0, 0, c_black));
+    ck_assert (!board_legal_placement(board, 0, 0, c_black));
+    board_pass(board);
+    ck_assert (!board_test_suicide(board, 0, 0, c_white));
+    ck_assert (board_legal_placement(board, 0, 0, c_white));
+}
+END_TEST
+
 START_TEST (test_board_pass)
 {
     uint8_t* buffer =
@@ -100,34 +135,69 @@ END_TEST
 START_TEST (test_board_liberties)
 {
     board_place (board, 0, 0);
-    ck_assert (board_num_liberties (board, board_get_group (board, 0, 0)) == 2);
+    ck_assert_msg (board_num_liberties (board, board_get_group (board, 0, 0)) ==
+                   2);
     board_place (board, 1, 0);
-    ck_assert (board_num_liberties (board, board_get_group (board, 0, 0)) == 1);
-    ck_assert (board_num_liberties (board, board_get_group (board, 1, 0)) == 2);
+    ck_assert_msg (board_num_liberties (board, board_get_group (board, 0, 0)) ==
+                   1);
+    ck_assert_msg (board_num_liberties (board, board_get_group (board, 1, 0)) ==
+                   2);
     board_place (board, 0, 1);
-    ck_assert (board_num_liberties (board, board_get_group (board, 0, 0)) == 2);
-    ck_assert (board_num_liberties (board, board_get_group (board, 1, 0)) == 2);
+    ck_assert_msg (board_num_liberties (board, board_get_group (board, 0, 0)) ==
+                   2);
+    ck_assert_msg (board_num_liberties (board, board_get_group (board, 1, 0)) ==
+                   2);
     board_place (board, 1, 1);
-    ck_assert (board_num_liberties (board, board_get_group (board, 0, 0)) == 1);
-    ck_assert (board_num_liberties (board, board_get_group (board, 1, 0)) == 3);
+    ck_assert_msg (board_num_liberties (board, board_get_group (board, 0, 0)) ==
+                   1);
+    ck_assert_msg (board_num_liberties (board, board_get_group (board, 1, 0)) ==
+                   3);
+}
+END_TEST
+
+START_TEST (test_board_capture)
+{
+    board_place (board, 0, 0);
+    board_place (board, 1, 0);
+    board_place (board, 0, 1);
+    board_place (board, 0, 2);
+    board_place (board, 1, 1);
+    board_place (board, 2, 1);
+    board_pass (board);
+    ck_assert (board_position_state (board, 0, 0) == ps_black);
+    ck_assert (board_position_state (board, 0, 1) == ps_black);
+    ck_assert (board_position_state (board, 1, 1) == ps_black);
+    board_place (board, 1, 2);
+    ck_assert (board_position_state (board, 0, 0) == ps_empty);
+    ck_assert (board_position_state (board, 0, 1) == ps_empty);
+    ck_assert (board_position_state (board, 1, 1) == ps_empty);
 }
 END_TEST
 
 START_TEST (test_board_groups)
 {
-	ck_assert(board->turn == c_black);
+    ck_assert (board->turn == c_black);
+
     board_place (board, 1, 0);
     board_place (board, 0, 0);
     board_place (board, 1, 1);
-	ck_assert(board_position_state(board, 1, 0) == ps_black);
-	ck_assert(board_position_state(board, 0, 0) == ps_white);
-	ck_assert(board_position_state(board, 1, 1) == ps_black);
-	uint8_t* group = board_get_group(board, 1, 0);
-	ck_assert(group[0] == 2);
-	ck_assert_msg(group[1] == 1);
-	ck_assert(group[2] == 0);
-	ck_assert(group[3] == 1);
-	ck_assert(group[4] == 1);
+
+    ck_assert (board_position_state (board, 1, 0) == ps_black);
+    ck_assert (board_position_state (board, 0, 0) == ps_white);
+    ck_assert (board_position_state (board, 1, 1) == ps_black);
+
+    ck_assert (board_get_group (board, 1, 0) == board_get_group (board, 1, 1));
+    ck_assert (board_get_group (board, 1, 0) <= board_2d_to_1d (board, 1, 0));
+    ck_assert (board_get_group (board, 1, 1) <= board_2d_to_1d (board, 1, 1));
+    ck_assert (board_get_group (board, 0, 0) == board_2d_to_1d (board, 0, 0));
+
+    board_place (board, 0, 2);
+    board_place (board, 2, 0);
+    board_place (board, 0, 1);
+
+    ck_assert (board_get_group (board, 0, 0) == board_get_group (board, 0, 1));
+    ck_assert (board_get_group (board, 0, 0) == board_get_group (board, 0, 2));
+    ck_assert (board_get_group (board, 2, 0) == board_get_group (board, 1, 0));
 }
 END_TEST
 
@@ -224,8 +294,10 @@ Suite* make_go_suite (void)
     tcase_add_checked_fixture (tc_board, setup, teardown);
     tcase_add_test (tc_board, test_board_init);
     tcase_add_test (tc_board, test_board_placement);
+    tcase_add_test (tc_board, test_board_suicide);
 	tcase_add_test (tc_board, test_board_pass);
     tcase_add_test (tc_board, test_board_liberties);
+    tcase_add_test (tc_board, test_board_capture);
 	tcase_add_test (tc_board, test_board_groups);
     tcase_add_test (tc_board, test_board_score);
     suite_add_tcase (s, tc_board);
