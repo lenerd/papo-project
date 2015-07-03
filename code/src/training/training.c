@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
-#include "neuralnet.h"
+#include "neuralnet/neuralnet.h"
 
 float* backpropagation(neuralnet_t* net, int board_size, float threshold)
 {
-	float error = 1000;
+	float error = 1000
 
 	//Get training data for board size
 	int** data = generate_data(board_size);
