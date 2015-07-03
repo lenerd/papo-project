@@ -435,6 +435,28 @@ float* calculate_output (neuralnet_t* net, void* input, type_t type)
     assert (net != NULL);
     assert (input != NULL);
 
+    /* buffer for intermediary results */
+    float* ires1 = NULL;
+    float* ires2 = NULL;
+
+    ires1 = malloc (sizeof (float) * net->neurons_per_hidden_layer);
+    if (ires1 == NULL)
+    {
+        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    ires2 = malloc (sizeof (float) * net->neurons_per_hidden_layer);
+    if (ires2 == NULL)
+    {
+        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    float sum = 0.0f;
+
     float* input_f = (float*)input;
     uint8_t* input_i8 = (uint8_t*)input;
 
@@ -463,28 +485,6 @@ float* calculate_output (neuralnet_t* net, void* input, type_t type)
 	    ires2[to] = (sum > 0.0f) ? centered_sigmoid (sum) : 0.0f;
 	}
     }
-
-    /* buffer for intermediary results */
-    float* ires1 = NULL;
-    float* ires2 = NULL;
-
-    ires1 = malloc (sizeof (float) * net->neurons_per_hidden_layer);
-    if (ires1 == NULL)
-    {
-        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
-
-    ires2 = malloc (sizeof (float) * net->neurons_per_hidden_layer);
-    if (ires2 == NULL)
-    {
-        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
-
-    float sum = 0.0f;
 
     /* between hidden layers */
     for (uint32_t layer = 0; layer < net->hidden_layer_count - 1; ++layer)
