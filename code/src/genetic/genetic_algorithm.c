@@ -118,7 +118,7 @@ void next_generation (population_t* pop)
                      __FILE__, __LINE__);
             exit (EXIT_FAILURE);
         }
-        memcpy (new_genes[i], *pop->individuals[i]->genes, buf_len);
+        memcpy (new_genes[i], *select_individual(pop)->genes, buf_len);
     }
 
     for (uint32_t i = 0; i < pop->size; ++i)
