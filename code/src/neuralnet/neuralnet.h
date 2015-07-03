@@ -13,6 +13,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/**
+ * \brief Enumeration of number types.
+ */
+typedef enum{FLOAT, UINT8} type_t;
 
 /**
  * \brief Represents a neural network.
@@ -202,13 +206,14 @@ void destroy_neural_net (neuralnet_t* net);
 /**
  * \brief Calculates the output of a given neuralnet and input.
  * \param net Network to be used
- * \param input Buffer containing input values.
+ * \param input Buffer containing input values of a given type.
+ * \param type The type of the input buffer. 
  * \pre net != NULL
  * \pre input != NULL
  * \pre length(input) = net->input_count
  * \post net->output is updated
  */
-float* calculate_output (neuralnet_t* net, float* input);
+float* calculate_output (neuralnet_t* net, void* input, type_t type);
 
 /**
  * \brief Print the edge weights to console. TH stands for threashold, EWs are
