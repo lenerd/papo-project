@@ -1,4 +1,5 @@
 find_package (Check)
+find_package (Threads)
 if (CHECK_FOUND)
 
     enable_testing ()
@@ -6,7 +7,7 @@ if (CHECK_FOUND)
     include_directories (${CHECK_INCLUDE_DIRS})
     include_directories (. ../src)
 
-    set (LIBS ${LIBS} ${PROJECT_NAME}_lib ${CHECK_LIBRARIES})
+    set (LIBS ${LIBS} ${PROJECT_NAME}_lib ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
     # example test
     add_executable (check_example check_example.c)
