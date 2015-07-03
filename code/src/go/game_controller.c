@@ -16,16 +16,16 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 	//Game loop
 	while(game_over == false)
 	{
-		int* move = genmove(board, final);
+		move_t move = genmove(board, final);
 			
 			//No move left
-			if(move[0] == -1)
+			if(move.x == -1)
 			{
 				game_over = true;
 				break;
 			}
 			//Pass
-			else if(move[0] >= board_size)
+			else if(move.x >= board_size)
 			{
 				board_pass(board);
 				++passed;
@@ -38,8 +38,8 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 			//Placement
 			else
 			{
-				write_move(record, board->turn, move[0], move[1]);
-				board_place(board, move[0], move[1]);
+				write_move(record, board->turn, move.x, move.y);
+				board_place(board, move.x, move.y);
 				passed = 0;
 			}
 	}
@@ -52,7 +52,7 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 	return final;	
 }
 
-int* genmove(board_t* board, result_t result)
+move_t genmove(board_t* board, result_t result)
 {
 	float* output;
 	int x1, y1, x2, y2;
@@ -60,7 +60,7 @@ int* genmove(board_t* board, result_t result)
     int count = 0;
 	int size = board->size * board->size +1; 
 	//Holds x and y positions as well as number of tried illegal moves
-	int* move = malloc(sizeof(int) * 3);
+    move_t move;
 
 	//Get output of neural net
 	if(board->turn == c_black)
@@ -88,14 +88,14 @@ int* genmove(board_t* board, result_t result)
 		//Checks if one of them is legal
 		if(board_legal_placement(board, x1, y1, board->turn))
 		{
-			move[0] = x1;
-			move[1] = y1;
+			move.x = x1;
+			move.y = y1;
 			break;
 		}
 		else if(board_legal_placement(board, x1, y1, board->turn))
 		{
-			move[0] = x2;
-			move[1] = y2;
+			move.x = x2;
+			move.y = y2;
 			++count;
 			break;
 		}
@@ -108,14 +108,14 @@ int* genmove(board_t* board, result_t result)
 		}
 	}
 	
-	move[2] = count;
+	move.count = count;
 	
 	//In case no move has been found
 	if(count >= size)
 	{
-		move[0] = -1;
-		move[1] = -1;
-		move[2] = 0;
+		move.x = -1;
+		move.y = -1;
+		move.count = 0;
 	}
 
 	return move;

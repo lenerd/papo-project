@@ -261,12 +261,12 @@ END_TEST
 START_TEST (test_genmove)
 {
     result_t test_result = result_init (net1, net2);
-	int* test_move = genmove(board, test_result);
-	ck_assert(test_move[0] > -2);
-	ck_assert(test_move[0] < 11);
-	ck_assert(test_move[1] > -2);
-	ck_assert(test_move[1] < 10);
-	ck_assert(test_move[2] > -1);
+	move_t test_move = genmove(board, test_result);
+	ck_assert(test_move.x > -2);
+	ck_assert(test_move.x < 11);
+	ck_assert(test_move.y > -2);
+	ck_assert(test_move.y < 10);
+	ck_assert(test_move.count > -1);
 }
 END_TEST
 
