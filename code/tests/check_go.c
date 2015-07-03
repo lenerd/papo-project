@@ -14,8 +14,8 @@ void setup (void)
     board = board_create (5);
 
     // TODO: use a deterministic initialition
-    net1 = create_neural_net_random (board->buf_size, 5, 5, board->buf_size);
-    net2 = create_neural_net_random (board->buf_size, 5, 5, board->buf_size);
+    net1 = create_neural_net_random (board->buf_size, 5, 5, (uint32_t) board->buf_size + 1);
+    net2 = create_neural_net_random (board->buf_size, 5, 5, (uint32_t) board->buf_size + 1);
 }
 
 void teardown (void)
@@ -261,12 +261,11 @@ END_TEST
 START_TEST (test_genmove)
 {
     result_t test_result = result_init (net1, net2);
-	int* test_move = genmove(board, test_result);
-	ck_assert(test_move[0] > -2);
-	ck_assert(test_move[0] < 11);
-	ck_assert(test_move[1] > -2);
-	ck_assert(test_move[1] < 10);
-	ck_assert(test_move[2] > -1);
+	move_t test_move = genmove(board, test_result);
+	ck_assert(test_move.x > -2);
+	ck_assert(test_move.x < 11);
+	ck_assert(test_move.y > -2);
+	ck_assert(test_move.y < 10);
 }
 END_TEST
 

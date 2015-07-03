@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include "neuralnet/neuralnet.h"
+#include "training.h"
 
 float* backpropagation(neuralnet_t* net, int board_size, float threshold)
 {
-	float error = 1000
+	float error = 1000;
 
 	//Get training data for board size
 	int** data = generate_data(board_size);
@@ -19,8 +20,8 @@ float* backpropagation(neuralnet_t* net, int board_size, float threshold)
 		for(int i = 1; i <= data_size; ++i)
 		{
 			//calculate output
-			float output = calculate_output_from_int(net, data[i]);			
-			int output_size = board_size * board_size +1
+			float* output = calculate_output_from_int(net, data[i]);			
+			int output_size = board_size * board_size +1;
 
 			//calculate difference matrix between output and desired result (can probably be used as error)
 			float* wanted = data[i];			
@@ -31,12 +32,12 @@ float* backpropagation(neuralnet_t* net, int board_size, float threshold)
 				delta[j] = wanted[j]-output[j];	
 			}
 			
-			float* edges = net.edge_buf;
+			float* edges = net->edge_buf;
 
 			//For each hidden layer do:
-			for(int k = 0; k < net.hidden_layer_count; ++k)
+			for(int k = 0; k < net->hidden_layer_count; ++k)
 			{
-				int neurons = net.neurons_per_hidden_layer;
+				int neurons = net->neurons_per_hidden_layer;
 
 				//For each output value do:
 				for(int l = 0; l < output_size; ++l)
@@ -57,11 +58,11 @@ float* backpropagation(neuralnet_t* net, int board_size, float threshold)
 			}
 			
 			//Replace old net with a new one using the updated weights
-			net = create_neural_net_buffer(net.input_count, net.hidden_layer_count, net.neurons_per_hidden_layer, net.output_count, edges);
+			net = create_neural_net_buffer(net->input_count, net->hidden_layer_count, net->neurons_per_hidden_layer, net->output_count, edges);
 		}
-	}
-
-	return net.edge_buf;
+	}	
+	
+	return net->edge_buf;
 }
 
 int** generate_data(int size)
@@ -71,14 +72,13 @@ int** generate_data(int size)
 	DIR * dirp;
 	struct dirent * entry;
 
+	char path[100];
 	sprintf(path, "%d", size);
 	dirp = opendir(path); 
 	if(dirp != NULL)
 	{
 		while ((entry = readdir(dirp)) != NULL) {
-		    if (entry->d_type == DT_REG) { /* If the entry is a regular file */
 		         file_count++;
-		    }
 		}
 		closedir(dirp);
 	}
@@ -97,15 +97,15 @@ int** generate_data(int size)
 	for(int i = 1; i <= file_count; ++i)
 	{
 		sprintf(fn,"%d/game[%d].bmp", size, i);
-		fp=fopen(fn, "rb");
-		data[i]=read_file(fn);
-		fclose();
+		FILE* fp=fopen(fn, "rb");
+		data[i]=read_file(fp, size);
+		fclose(fp);
 	}
 }
 
 int* read_file(FILE* fp, int size)
 {
-	int x, y;
+	int x, y, position;
 	int* game = calloc(size*size, sizeof(int*));
 	char c;
 
