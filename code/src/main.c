@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "neuralnet/neuralnet.h"
-#inlcude "go/game_controller.h"
+#include "go/game_controller.h"
 
-int main (int argc, char* argv)
+int main (int argc, char** argv)
 {
 	if(argc < 5 )
 		printf("Please start again with the following parameters: \n <number of nets> <number of generations> <board_size> <hidden layers> <neurons per hidden layer> \n optional: <preexisting population> <komi>\n");
@@ -22,10 +22,10 @@ int main (int argc, char* argv)
 		if(argc == 7)
 			komi = atof(argv[4]);
 		else
-			komi = 4,5;
+			komi = 4.5;
 					
 		//Create as many nets as specified or take the given population
-		neuralnet_t* population = malloc(sizeof(neuralnet_t) * nets);
+		neuralnet_t** population = malloc(sizeof(neuralnet_t*) * nets);
 		int input_count = board_size * board_size;
 		int output_count = input_count +1;
 
@@ -37,7 +37,7 @@ int main (int argc, char* argv)
 		{
 			for(int i = 0; i < nets; ++i)
 			{
-				population[i]= create_neural_net_random(input_count, hidden_layers, neurons_per_layer, output count);
+				population[i] = create_neural_net_random(input_count, hidden_layers, neurons_per_layer, output_count);
 			}
 		}
 	
