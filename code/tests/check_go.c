@@ -312,6 +312,7 @@ Suite* make_go_suite (void)
 
     /* Test case for game_controller */
     tc_game = tcase_create ("Game Controller");
+    tcase_add_checked_fixture (tc_game, setup, teardown);
 
     tcase_add_test (tc_game, test_genmove);
     tcase_add_test (tc_game, test_result_init);

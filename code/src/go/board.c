@@ -280,6 +280,7 @@ void board_capture (board_t* board, uint8_t x, uint8_t y)
 }
 
 int board_score(const board_t *board, uint8_t size, uint8_t komi) {
+    return 0;
   int final_score;
 
   for (int i = 0; i < board->size; i++) {
