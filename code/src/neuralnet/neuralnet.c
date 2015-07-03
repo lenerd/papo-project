@@ -184,7 +184,7 @@ neuralnet_t* create_neural_net_buffer (uint32_t input_count,
     neuralnet_t* net =
         allocate_neural_net (input_count, hidden_layer_count,
                              neurons_per_hidden_layer, output_count);
-    memcpy (net->edge_buf, edges, net->edges_count);
+    memcpy (net->edge_buf, edges, net->edges_count * sizeof(float));
     return net;
 }
 

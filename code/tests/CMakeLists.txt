@@ -28,6 +28,11 @@ if (CHECK_FOUND)
     target_link_libraries (check_neuralnet ${LIBS})
     add_test (check_neuralnet ${CMAKE_CURRENT_BINARY_DIR}/check_neuralnet)
 
+    #training test
+    add_executable (check_training check_training.c)
+    target_link_libraries (check_training ${LIBS})
+    add_test (check_training ${CMAKE_CURRENT_BINARY_DIR}/check_training)	
+
     # feel free to add more tests :)
 
 endif (CHECK_FOUND)

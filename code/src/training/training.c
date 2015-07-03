@@ -4,27 +4,22 @@
 #include "neuralnet/neuralnet.h"
 #include "training.h"
 
-float* backpropagation(neuralnet_t* net, int board_size, float threshold)
+float* backpropagation(neuralnet_t* net, int board_size, float threshold, uint8_t** data, uint8_t data_size, float* wanted)
 {
 	float error = 1000;
-
-	//Get training data for board size
-	int** data = generate_data(board_size);
-	
-	int data_size = data [0];	
 
 	//Do until error is small enough:
 	while(error > threshold)
 	{		
 		//For each data point
-		for(int i = 1; i <= data_size; ++i)
+		for(int i = 0; i < data_size; ++i)
 		{
 			//calculate output
-			float* output = calculate_output_from_int(net, data[i]);			
-			int output_size = board_size * board_size +1;
 
-			//calculate difference matrix between output and desired result (can probably be used as error)
-			float* wanted = data[i];			
+			float* output = calculate_output(net, data[i], UINT8);			
+			int output_size = board_size * board_size +2;
+
+			//calculate difference matrix between output and desired result (can probably be used as error)			
 			float* delta = malloc(output_size *sizeof(float));
 			
 			for(int j = 0; j < output_size; ++j)
@@ -73,7 +68,7 @@ int** generate_data(int size)
 	struct dirent * entry;
 
 	char path[100];
-	sprintf(path, "%d", size);
+	sprintf(path, "data/%d", size);
 	dirp = opendir(path); 
 	if(dirp != NULL)
 	{
@@ -96,7 +91,7 @@ int** generate_data(int size)
 	char fn[100];
 	for(int i = 1; i <= file_count; ++i)
 	{
-		sprintf(fn,"%d/game[%d].bmp", size, i);
+		sprintf(fn,"data/%d/game[%d].bmp", size, i);
 		FILE* fp=fopen(fn, "rb");
 		data[i]=read_file(fp, size);
 		fclose(fp);
@@ -109,15 +104,15 @@ int* read_file(FILE* fp, int size)
 	int* game = calloc(size*size, sizeof(int*));
 	char c;
 
-	while(c = (fgetc(fp)) != EOF)
+	while((c = fgetc(fp)) != EOF)
 	{
 		if(c == 'B')
 		{
 			c = fgetc(fp);
 			c = fgetc(fp);
-			x = ((int) c) - 97;
+			x = c - 'a';
 			c = fgetc(fp);
-			y = ((int) c) - 97;
+			y = c - 'a';
 			position = x*size + y;
 			game[position] = 1;
 		}
@@ -125,9 +120,9 @@ int* read_file(FILE* fp, int size)
 		{
 			c = fgetc(fp);
 			c = fgetc(fp);
-			x = ((int) c) - 97;
+			x = c - 'a';
 			c = fgetc(fp);
-			y = ((int) c) - 97;
+			y = c - 'a';
 			position = x*size + y;
 			game[position] = 2;
 		}
