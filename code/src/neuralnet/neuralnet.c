@@ -1,4 +1,4 @@
-#include "neuralnet/neuralnet.h"
+#include "neuralnet.h"
 
 #include "math_extend/math_ext.h"
 #include <assert.h>

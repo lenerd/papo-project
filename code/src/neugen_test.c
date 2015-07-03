@@ -12,8 +12,8 @@ int main(int argc, char** argv){
 	uint32_t hidden_layer_count = 1;
 	uint32_t neurons_per_hidden_layer = 1;
 
-	uint32_t generations = 10;
-	uint32_t tests_per_genome = 100;
+	uint32_t generations = 1000000000;
+	uint32_t tests_per_genome = 1;
 
 	neuralnet_t** nnets = malloc(population_size * sizeof(neuralnet_t*));
 	if (nnets == NULL)
@@ -43,10 +43,10 @@ int main(int argc, char** argv){
 		for (uint32_t j = 0; j < pop->size; ++j)
 		{
 			float sum_err = 0.0f;
-			for (uint32_t k = 0; k < tests_per_genome; ++k)
+			for (uint32_t k = 1; k < tests_per_genome + 1; ++k)
 			{
 				float ins[] = { (float)k, (float)k };
-				float* out = calculate_output(nnets[j], ins);
+				float* out = calculate_output(nnets[j], ins, FLOAT);
 				float err = out[0] - 2 * k;
 				float sqr_err = err * err;
 				sum_err += sqr_err;

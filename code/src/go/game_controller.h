@@ -29,6 +29,13 @@ typedef struct
 
 } result_t;
 
+typedef struct
+{
+    int8_t x;
+    int8_t y;
+    uint16_t count;
+} move_t;
+
 /**
 * \brief Sets up and plays a game with two nets.
 */
@@ -38,7 +45,7 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 /**
 * \brief Generates a move from a neuralnet output
 */
-int* genmove(board_t* board, result_t result);
+move_t genmove(board_t* board, result_t result);
 
 /**
 * \brief Initializes the result datatype.

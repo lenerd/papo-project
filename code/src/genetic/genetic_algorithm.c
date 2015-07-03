@@ -4,8 +4,8 @@
 #include "math_extend/math_ext.h"
 #include "genetic_algorithm.h"
 
-float mutation_crossover_ratio = 0.3f;
-float gene_mutation_chance = 0.3f;
+float mutation_crossover_ratio = 1.0f;
+float gene_mutation_chance = 0.01f;
 
 genome_t* create_genome (uint32_t genes_count, float** genes,
                          genes_update_fun update_fun, void* update_arg)
@@ -93,7 +93,7 @@ genome_t* select_individual (population_t* pop)
             break;
         }
     }
-    return pop->individuals[(i < pop->size - 1) ? i : pop->size - 1];
+    return pop->individuals[i];//pop->individuals[(i < pop->size - 1) ? i : pop->size - 1];
 }
 
 void next_generation (population_t* pop)
