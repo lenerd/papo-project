@@ -33,7 +33,7 @@ typedef struct
 {
     int8_t x;
     int8_t y;
-    int8_t count;
+    uint16_t count;
 } move_t;
 
 /**

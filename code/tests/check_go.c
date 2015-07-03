@@ -266,7 +266,6 @@ START_TEST (test_genmove)
 	ck_assert(test_move.x < 11);
 	ck_assert(test_move.y > -2);
 	ck_assert(test_move.y < 10);
-	ck_assert(test_move.count > -1);
 }
 END_TEST
 

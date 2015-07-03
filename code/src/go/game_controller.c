@@ -11,7 +11,6 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 	bool game_over = false;
     int8_t passed  = 0;
 	result_t final = result_init(black, white);
-    int ret;
 
 	//Game loop
 	while(game_over == false)
@@ -38,8 +37,8 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 			//Placement
 			else
 			{
-				write_move(record, board->turn, move.x, move.y);
-				board_place(board, move.x, move.y);
+				write_move(record, board->turn, (uint8_t)move.x, (uint8_t)move.y);
+				board_place(board, (uint8_t)move.x, (uint8_t)move.y);
 				passed = 0;
 			}
 	}
@@ -55,9 +54,9 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 move_t genmove(board_t* board, result_t result)
 {
 	float* output;
-	int x1, y1, x2, y2;
+	uint8_t x1, y1, x2, y2;
     x1 = x2 = y1 = y2 = 0;
-    int count = 0;
+    uint16_t count = 0;
 	int size = board->size * board->size +1; 
 	//Holds x and y positions as well as number of tried illegal moves
     move_t move;
@@ -74,28 +73,28 @@ move_t genmove(board_t* board, result_t result)
 	while(count < size)
 	{	
 		//Finds two highest ranked placements
- 		for(int i = 0; i < size; ++i)
+ 		for(uint16_t i = 0; i < size; ++i)
 		{
 			if(output[i] > output[x1*board->size+y1])
 			{
 				x2 = x1;		
 				y2 = y1;
-				x1 =  i/board->size;
-				y1 = i % board->size;
+				x1 = (uint8_t) i / board->size;
+				y1 = (uint8_t) i % board->size;
 			}
 		}
 		
 		//Checks if one of them is legal
 		if(board_legal_placement(board, x1, y1, board->turn))
 		{
-			move.x = x1;
-			move.y = y1;
+			move.x = (int8_t)x1;
+			move.y = (int8_t)y1;
 			break;
 		}
 		else if(board_legal_placement(board, x1, y1, board->turn))
 		{
-			move.x = x2;
-			move.y = y2;
+			move.x = (int8_t)x2;
+			move.y = (int8_t)y2;
 			++count;
 			break;
 		}
@@ -104,7 +103,8 @@ move_t genmove(board_t* board, result_t result)
 		{
 			output[x1*board->size+y1] = - 5000;
 			output[x2*board->size+y2] = - 5000;
-			count += 2;
+            ++count;
+            ++count;
 		}
 	}
 	
