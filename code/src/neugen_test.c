@@ -11,7 +11,7 @@ int main(int argc, char** argv){
 	uint32_t input_count = 2;
 	uint32_t output_count = 1;
 	uint32_t hidden_layer_count = 1;
-	uint32_t neurons_per_hidden_layer = 5;
+	uint32_t neurons_per_hidden_layer = 3;
 
 	uint32_t generations = 100000000;
 	uint32_t tests_per_genome = 10;
