@@ -136,7 +136,7 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
                  __LINE__);
         exit (EXIT_FAILURE);
     }
-    net->output_edges = calloc (hidden_layer_count + 1, sizeof (float**));
+    net->output_edges = calloc (neurons_per_hidden_layer, sizeof (float*));
     if (net->output_edges == NULL)
     {
         fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
