@@ -10,8 +10,8 @@ static void initialize_input_weights_random(neuralnet_t* net){
 	net->input_weights = SAFE_MALLOC(float**, 1);
 	*net->input_weights = SAFE_MALLOC(float*, net->neurons_per_hidden_layer);
 	for(uint32_t to = 0; to < neurons_per_hidden_layer; ++to){
-		*net->input_weights[to] = SAFE_MALLOC(float, net->input_count + 1); // +1 for bias
-		for(uint32_t from = 0; from < net->input_count + 1; ++from){
+		*net->input_weights[to] = SAFE_MALLOC(float, net->input_count);
+		for(uint32_t from = 0; from < net->input_count; ++from){
 			*net->input_weights[to][from] = random_value_mm(-1.0f, 1.0f);
 		}
 	}
@@ -24,8 +24,8 @@ static void initialize_hidden_weights_random(neuralnet_t* net){
 	for(uint32_t gap = 0; gap < net->hidden_layer_count - 1; ++gap){
 		*net->hidden_layer[gap] = SAFE_MALLOC(float*, net->neurons_per_hidden_layer);
 		for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-			*net->hidden_layer[gap][to] = SAFE_MALLOC(float, net->neurons_per_hidden_layer + 1); // +1 for bias
-			for(uint32_t from = 0; from < net->neurons_per_hidden_layer + 1; ++from){
+			*net->hidden_layer[gap][to] = SAFE_MALLOC(float, net->neurons_per_hidden_layer);
+			for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
 				*net->hidden_layer_weights[gap][to][from] = random_value_mm(-1.0f, 1.0f);
 			}
 		}
@@ -102,7 +102,7 @@ void destroy_neural_net(neuralnet_t* net){
 	
 }
 
-float** calculate_output(const neuralnet_t* net, const float* input){
+float* calculate_output(const neuralnet_t* net, const float* input){
 	
 	float* current_result_1 = SAFE_MALLOC(float, net->neurons_per_hidden_layer);
 	float* current_result_2 = SAFE_MALLOC(float, net->neurons_per_hidden_layer);
@@ -110,10 +110,11 @@ float** calculate_output(const neuralnet_t* net, const float* input){
 	// Check sigmoid function!!
 	for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
 		for(uint32_t from = 0; from < net->input_count; ++from){
-			current_result_1[to] += input[from] * (*net->input_weights)[to][from];
+			current_result_2[to] += input[from] * (*net->input_weights)[to][from];
 		}
-		current_result_2[to] = sigmoid(current_result_1);
+		current_result_2[to] = sigmoid(current_result_2);
 	}
+	swap_buffer(current_result_1, current_result_2);
 	
 	// Check sigmoid function!!
 	for(uint32_t gap = 0; gap < net->hidden_layer_count - 1; ++gap){
@@ -121,9 +122,28 @@ float** calculate_output(const neuralnet_t* net, const float* input){
 			for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
 				current_result_2[to] += current_result_1[from] * (*net->hidden_layer_weights)[gap][to][from]; 
 			}
+			current_result_2 = sigmoid(current_result_2);
+			
 		}
 		swap_buffer(current_result_1, current_result_2);
 	}
+	
+	for(uint32_t to = 0; to < net->output_count; ++to){
+		for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
+			current_result_2[to] += current_result_1[from] * (*net->output_weights)[to][from];
+		}
+	}
+	swap_buffer(current_result_1, current_result_2);
+	
+	free(current_result_2);
+	
+	return current_result_1;
+	
+}
+
+void backpropagate(neuralnet_t* net, float** input, float** target_output){
+	
+	
 	
 }
 
