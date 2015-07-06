@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "neuralnet/neuralnet.h"
 #include "genetic/genetic_algorithm.h"
+#include "math_extend/math_ext.h"
 
 int main(int argc, char** argv){
 
@@ -10,10 +11,10 @@ int main(int argc, char** argv){
 	uint32_t input_count = 2;
 	uint32_t output_count = 1;
 	uint32_t hidden_layer_count = 1;
-	uint32_t neurons_per_hidden_layer = 1;
+	uint32_t neurons_per_hidden_layer = 5;
 
-	uint32_t generations = 500000;
-	uint32_t tests_per_genome = 1;
+	uint32_t generations = 100000000;
+	uint32_t tests_per_genome = 10;
 
 	neuralnet_t** nnets = malloc(population_size * sizeof(neuralnet_t*));
 	if (nnets == NULL)
@@ -43,34 +44,30 @@ int main(int argc, char** argv){
 		for (uint32_t j = 0; j < pop->size; ++j)
 		{
 			float sum_err = 0.0f;
-			for (uint32_t k = 1; k < tests_per_genome + 1; ++k)
+			for (uint32_t k = 0; k < tests_per_genome; ++k)
 			{
-				float ins[] = { (float)k, (float)k };
+				float ins[2] = { random_value_0m(10.0f), random_value_0m(10.0f)};
 				float* out = calculate_output(nnets[j], ins, FLOAT);
-				float err = out[0] - 2 * k;
-				float sqr_err = err * err;
-				sum_err += sqr_err;
+				float err = out[0] - (ins[0] + ins[1]);
+				sum_err += err * err;
 			}
-			float fit = 1.0f / sum_err;
+			float fit = tests_per_genome / sum_err;
 			pop->individuals[j]->fitness = fit;
 			pop->total_fitness += fit;
 		}
 		pop->avg_fitness = pop->total_fitness / pop->size;
-		printf("Generation: %d\n\tTotal Fitness: %f\n\tAverage Fitness: %f\n\n", i, pop->total_fitness, pop->avg_fitness);
+		if(pop->generation % 10000 == 9999)
+			printf("Generation: %d\n\tTotal Fitness: %f\n\tAverage Fitness: %f\n\n", i, pop->total_fitness, pop->avg_fitness);
 		next_generation(pop);
 	}
-    char* name = "netx";
-    for (uint32_t i = 0; i < pop->size; ++i){
-        name[3] = '0' + i;
-        neural_net_to_file(nnets[i], name, false);
-        destroy_neural_net(nnets[i]);
-    }
-    free(nnets);
-    for (uint32_t i = 0; i < pop->size; ++i)
-        free(pop->individuals[i]);
-    free(pop->individuals);
-    free(pop);
-
+	for (uint32_t i = 0; i < pop->size; ++i){
+ 		destroy_neural_net(nnets[i]);
+	}
+	free(nnets);
+	for (uint32_t i = 0; i < pop->size; ++i)
+    		free(pop->individuals[i]);
+	free(pop->individuals);
+ 	free(pop);
 
 	return 0;
 
