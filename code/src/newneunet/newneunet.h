@@ -84,4 +84,12 @@ float** calculate_output(neuralnet_t* net, float* input);
  */
 void backpropagate(neuralnet_t* net, float** input, float** target_output);
 
+/**
+ * \brief Print the edge weights to console. TH stands for threashold, EWs are
+ * the edge weights. Each row stands for one receiving neuron with it's TH and
+ * receiving EWs.
+ * \pre net != NULL
+ */
+void print_neural_net (const neuralnet_t* net);
+
 #endif
