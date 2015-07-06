@@ -14,7 +14,8 @@ neuralnet_t* create_neural_net_random(uint32_t input_count, uint32_t hidden_laye
 	net->output_count = output_count;
 
 	//Input to hidden layers, edge weights
-	net->input_weights = malloc(input_count * sizeof(float*));
+	net->input_weights = malloc(sizeof float**)
+	*net->input_weights = malloc(input_count * sizeof(float*));
 	for(uint32_t i = 0; i < input_count; ++i){
 		net->input_weights[i] = malloc(neurons_per_hidden_layer * sizeof(float));
 		for(uint32_t j = 0; j < neurons_per_hidden_layer; ++j){

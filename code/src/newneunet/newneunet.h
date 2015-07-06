@@ -10,9 +10,9 @@ typedef struct{
 	uint32_t neurons_per_hidden_layer;	
 	uint32_t output_count;
 
-	float** input_weights;
-	float*** hidden_layer_weights;
-	float** output_weights;
+	float* input_weights[][];
+	float* hidden_layer_weights[][][];
+	float* output_weights[][];
 
 } neuralnet_t;
 
