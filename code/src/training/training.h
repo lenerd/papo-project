@@ -9,11 +9,6 @@
 */
 
 /**
-* \brief Executes a backpropagation algorithm to train the nets.
-*/
-float* backpropagation(neuralnet_t* net, int board_size, float threshold, uint8_t** data, uint8_t data_size, float* wanted);
-
-/**
 * \brief Reads all .sgf files for the specified board size and returns them as one data set
 */
 int** generate_data(int size);
