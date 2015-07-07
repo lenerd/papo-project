@@ -332,8 +332,23 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 
 int main(int argc, char** argv){
 
-	float* chwupp = malloc(10 * sizeof(float)); 
-	CHECK_MALLOC(chwupp);
+	uint32_t input_count = 2;
+	uint32_t hidden_layer_count = 1;
+	uint32_t neurons_per_hidden_layer = 1;
+	uint32_t output_count = 1;
+
+	uint32_t trainings = 1000;
+
+	neuralnet_t* net = create_neural_net_random_new(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
+
+	for(uint32_t i = 0; i < trainings; ++i){
+		
+		float ins[] = { random_value_mm(-100.0f, 100.0f), random_value_mm(-100.0f, 100.0f) };
+		float target[] = { ins[0] + ins[1] };
+		printf("Error: %f\n", target[0] - calculate_output_new(net, ins)[0]);
+		backpropagate(net, ins, target);
+
+	}
 
 	return 0;
 
