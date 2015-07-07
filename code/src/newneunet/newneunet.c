@@ -250,16 +250,13 @@ static full_output_t* calculate_full_output(const neuralnet_t* net, const float*
 	free(current_result_1);
 	free(current_result_2);
 	
-	free_full_output(full_output);
-	
 	return full_output;
 	
 }
 
 void backpropagate(neuralnet_t* net, const float* input, const float* target_output){
 	
-	full_output_t* full_output = allocate_full_output(net);
-	full_output = calculate_full_output(net, input);
+	full_output_t* full_output = calculate_full_output(net, input);
 	
 	// Error calculation
 	
@@ -349,6 +346,8 @@ int main(int argc, char** argv){
 		backpropagate(net, ins, target);
 
 	}
+
+	destroy_neural_net_new(net);
 
 	return 0;
 
