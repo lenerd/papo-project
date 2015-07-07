@@ -1,5 +1,7 @@
 #include "board.h"
 
+#include "util/util.h"
+
 #include <assert.h>
 #include <math.h>
 #include <stddef.h>
@@ -27,12 +29,7 @@ void board_print (board_t* board)
 board_t *board_create(uint8_t size) {
   board_t *board = NULL;
 
-  board = malloc(sizeof(board_t));
-  if (board == NULL) {
-    fprintf(stderr, "malloc() failed in file %s at line # %d", __FILE__,
-            __LINE__);
-    exit(EXIT_FAILURE);
-  }
+  board = SAFE_MALLOC (sizeof(board_t));
 
   board->size = size;
   board->buf_size = (uint16_t)(size * size);
@@ -40,70 +37,19 @@ board_t *board_create(uint8_t size) {
   board->black_captured = 0;
   board->white_captured = 0;
 
-  board->buffer = calloc((size_t)board->buf_size, sizeof(uint8_t));
-  if (board->buffer == NULL) {
-    fprintf(stderr, "calloc() failed in file %s at line # %d", __FILE__,
-            __LINE__);
-    free(board);
-    exit(EXIT_FAILURE);
-  }
+  board->buffer = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint8_t));
 
-  board->grid = calloc((size_t)size, sizeof(int8_t *));
-  if (board->grid == NULL) {
-    fprintf(stderr, "calloc() failed in file %s at line # %d", __FILE__,
-            __LINE__);
-    free(board);
-    free(board->buffer);
-    exit(EXIT_FAILURE);
-  }
+  board->grid = SAFE_CALLOC((size_t)size, sizeof(int8_t *));
 
-  board->group_next = malloc((size_t)board->buf_size * sizeof(uint16_t *));
-  if (board->group_next == NULL) {
-    fprintf(stderr, "calloc() failed in file %s at line # %d", __FILE__,
-            __LINE__);
-    free(board);
-    free(board->buffer);
-    free(board->grid);
-    exit(EXIT_FAILURE);
-  }
+  board->group_next = SAFE_MALLOC((size_t)board->buf_size * sizeof(uint16_t *));
   memset(board->group_next, 0xFF, board->buf_size * sizeof(uint16_t));
 
-  board->group_id = malloc((size_t)board->buf_size * sizeof(uint16_t *));
-  if (board->group_id == NULL) {
-    fprintf(stderr, "calloc() failed in file %s at line # %d", __FILE__,
-            __LINE__);
-    free(board);
-    free(board->buffer);
-    free(board->grid);
-    free(board->group_next);
-    exit(EXIT_FAILURE);
-  }
+  board->group_id = SAFE_MALLOC((size_t)board->buf_size * sizeof(uint16_t *));
   memset(board->group_id, 0xFF, board->buf_size * sizeof(uint16_t));
 
-  board->group_liberties = calloc((size_t)board->buf_size, sizeof(uint16_t *));
-  if (board->group_liberties == NULL) {
-    fprintf(stderr, "calloc() failed in file %s at line # %d", __FILE__,
-            __LINE__);
-    free(board);
-    free(board->buffer);
-    free(board->grid);
-    free(board->group_next);
-    free(board->group_id);
-    exit(EXIT_FAILURE);
-  }
+  board->group_liberties = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint16_t *));
 
-  board->mark_buf = calloc((size_t)board->buf_size, sizeof(uint8_t *));
-  if (board->group_liberties == NULL) {
-    fprintf(stderr, "calloc() failed in file %s at line # %d", __FILE__,
-            __LINE__);
-    free(board);
-    free(board->buffer);
-    free(board->grid);
-    free(board->group_next);
-    free(board->group_id);
-    free(board->group_liberties);
-    exit(EXIT_FAILURE);
-  }
+  board->mark_buf = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint8_t *));
 
   for (uint8_t i = 0; i < size; ++i) {
     board->grid[i] = board->buffer + i * size;

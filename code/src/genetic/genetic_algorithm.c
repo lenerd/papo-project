@@ -1,8 +1,11 @@
+#include "genetic_algorithm.h"
+
+#include "math_extend/math_ext.h"
+#include "util/util.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "math_extend/math_ext.h"
-#include "genetic_algorithm.h"
 
 float mutation_crossover_ratio = 1.0f;
 float gene_mutation_chance = 0.01f;
@@ -10,13 +13,8 @@ float gene_mutation_chance = 0.01f;
 genome_t* create_genome (uint32_t genes_count, float** genes,
                          genes_update_fun update_fun, void* update_arg)
 {
-    genome_t* genome = malloc (sizeof (genome_t));
-    if (genome == NULL)
-    {
-        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    genome_t* genome = SAFE_MALLOC (sizeof (genome_t));
+
     genome->genes_count = genes_count;
     genome->genes = genes;
     genome->fitness = 0.0f;
@@ -28,13 +26,8 @@ genome_t* create_genome (uint32_t genes_count, float** genes,
 population_t* create_population (uint32_t population_size, genome_t** genomes,
                                  float base_fitness)
 {
-    population_t* pop = malloc (sizeof (population_t));
-    if (pop == NULL)
-    {
-        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    population_t* pop = SAFE_MALLOC (sizeof (population_t));
+
     pop->size = population_size;
     pop->individuals = genomes;
     pop->generation = 0;
@@ -99,25 +92,12 @@ genome_t* select_individual (population_t* pop)
 void next_generation (population_t* pop)
 {
     float** new_genes;
-    new_genes = calloc (pop->size, sizeof (float*));
-
-    if (new_genes == NULL)
-    {
-        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    new_genes = SAFE_CALLOC (pop->size, sizeof (float*));
 
     for (uint32_t i = 0; i < pop->size; ++i)
     {
         size_t buf_len = pop->individuals[i]->genes_count * sizeof (float);
-        new_genes[i] = malloc (buf_len);
-        if (new_genes[i] == NULL)
-        {
-            fprintf (stderr, "calloc() failed in file %s at line # %d\n",
-                     __FILE__, __LINE__);
-            exit (EXIT_FAILURE);
-        }
+        new_genes[i] = SAFE_MALLOC (buf_len);
         memcpy (new_genes[i], *(select_individual(pop)->genes), buf_len);
     }
 

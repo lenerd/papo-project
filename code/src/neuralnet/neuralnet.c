@@ -1,6 +1,8 @@
 #include "neuralnet.h"
 
 #include "math_extend/math_ext.h"
+#include "util/util.h"
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -80,69 +82,26 @@ static neuralnet_t* allocate_neural_net (uint32_t input_count,
     assert (output_count > 0);
 
     neuralnet_t* net = NULL;
-    net = malloc (sizeof (neuralnet_t));
-    if (net == NULL)
-    {
-        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    net = SAFE_MALLOC (sizeof (neuralnet_t));
 
     net->input_count = input_count;
     net->hidden_layer_count = hidden_layer_count;
     net->neurons_per_hidden_layer = neurons_per_hidden_layer;
 
     net->output_count = output_count;
-    net->output = calloc (output_count, sizeof (float));
-    if (net->output == NULL)
-    {
-        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    net->output = SAFE_CALLOC (output_count, sizeof (float));
 
     net->edges_count = edge_count (input_count, hidden_layer_count,
                                    neurons_per_hidden_layer, output_count);
-    net->edge_buf = malloc (sizeof (float) * (net->edges_count));
-    if (net->edge_buf == NULL)
-    {
-        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    net->edge_buf = SAFE_MALLOC (sizeof (float) * (net->edges_count));
 
-    net->input_edges = calloc (input_count + 1, sizeof (float*));
-    if (net->input_edges == NULL)
-    {
-        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
-    net->hidden_edges = calloc (hidden_layer_count - 1, sizeof (float**));
-    if (net->hidden_edges == NULL)
-    {
-        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-
-        exit (EXIT_FAILURE);
-    }
+    net->input_edges = SAFE_CALLOC (input_count + 1, sizeof (float*));
+    net->hidden_edges = SAFE_CALLOC (hidden_layer_count - 1, sizeof (float**));
     net->edge_helper_buf =
-        calloc ((hidden_layer_count - 1) * (neurons_per_hidden_layer + 1),
+        SAFE_CALLOC ((hidden_layer_count - 1) * (neurons_per_hidden_layer + 1),
                 sizeof (float*));
 
-    if (net->edge_helper_buf == NULL)
-    {
-        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
-    net->output_edges = calloc (neurons_per_hidden_layer, sizeof (float*));
-    if (net->output_edges == NULL)
-    {
-        fprintf (stderr, "calloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    net->output_edges = SAFE_CALLOC (neurons_per_hidden_layer, sizeof (float*));
 
     build_pointer (net);
 
@@ -439,21 +398,8 @@ float* calculate_output (neuralnet_t* net, void* input, type_t type)
     float* ires1 = NULL;
     float* ires2 = NULL;
 
-    ires1 = malloc (sizeof (float) * net->neurons_per_hidden_layer);
-    if (ires1 == NULL)
-    {
-        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
-
-    ires2 = malloc (sizeof (float) * net->neurons_per_hidden_layer);
-    if (ires2 == NULL)
-    {
-        fprintf (stderr, "malloc() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    ires1 = SAFE_MALLOC (sizeof (float) * net->neurons_per_hidden_layer);
+    ires2 = SAFE_MALLOC (sizeof (float) * net->neurons_per_hidden_layer);
 
     float sum = 0.0f;
 
