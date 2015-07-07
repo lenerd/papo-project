@@ -73,7 +73,7 @@ static void destroy_output_weights(neuralnet_t* net){
 	
 }
 
-neuralnet_t* create_neural_net_random(const uint32_t input_count, const uint32_t hidden_layer_count, const uint32_t neurons_per_hidden_layer, const uint32_t output_count){
+neuralnet_t* create_neural_net_random_new(const uint32_t input_count, const uint32_t hidden_layer_count, const uint32_t neurons_per_hidden_layer, const uint32_t output_count){
 	
 	neuralnet_t* net = SAFE_MALLOC(neuralnet_t, 1);
 
@@ -89,7 +89,7 @@ neuralnet_t* create_neural_net_random(const uint32_t input_count, const uint32_t
 	return net;
 } 
 
-void destroy_neural_net(neuralnet_t* net){
+void destroy_neural_net_new(neuralnet_t* net){
 	
 	destroy_output_weights(net);
 	destroy_hidden_weights(net);
@@ -101,7 +101,7 @@ void destroy_neural_net(neuralnet_t* net){
 
 // Calculation #########################################################
 
-float* calculate_output(const neuralnet_t* net, const float* input){
+float* calculate_output_new(const neuralnet_t* net, const float* input){
 	
 	float* current_result_1 = SAFE_MALLOC(float, net->neurons_per_hidden_layer);
 	float* current_result_2 = SAFE_MALLOC(float, net->neurons_per_hidden_layer);
@@ -307,11 +307,4 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 	}
 	free(hidden_errors);
 	
-}
-
-int main(int argc, char** argv){
-	
-	test();
-	return 0;
-
 }

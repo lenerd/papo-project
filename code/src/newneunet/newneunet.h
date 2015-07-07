@@ -54,7 +54,7 @@ typedef struct{
  * \pre neurons_per_hidden_layer > 0
  * \pre output_count > 0
  */
-neuralnet_t* create_neural_net_random(const uint32_t input_count, const uint32_t hidden_layer_count, const uint32_t neurons_per_hidden_layer, const uint32_t output_count);
+neuralnet_t* create_neural_net_random_new(const uint32_t input_count, const uint32_t hidden_layer_count, const uint32_t neurons_per_hidden_layer, const uint32_t output_count);
 
 /**
  * \brief Destroys a neuralnet and frees all used resources.
@@ -62,7 +62,7 @@ neuralnet_t* create_neural_net_random(const uint32_t input_count, const uint32_t
  * \pre net != NULL
  * \post All used memory is freed.
  */
-void destroy_neural_net(neuralnet_t* net);
+void destroy_neural_net_new(neuralnet_t* net);
 
 /**
  * \brief Calculates the output of a given neuralnet and input.
@@ -72,7 +72,7 @@ void destroy_neural_net(neuralnet_t* net);
  * \pre input != NULL
  * \pre length(input) = net->input_count
  */
-float* calculate_output(const neuralnet_t* net, const float* input);
+float* calculate_output_new(const neuralnet_t* net, const float* input);
 
 /**
  * \brief Trains the neuralnet through backpropagation.

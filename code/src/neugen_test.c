@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "neuralnet/neuralnet.h"
 #include "genetic/genetic_algorithm.h"
-#include "math_extend/math_ext.h"
+#include "util/math_ext.h"
 
 int main(int argc, char** argv){
 

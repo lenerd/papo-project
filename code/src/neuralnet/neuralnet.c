@@ -1,6 +1,6 @@
 #include "neuralnet.h"
 
-#include "math_extend/math_ext.h"
+#include "util/math_ext.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>

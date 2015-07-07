@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "math_extend/math_ext.h"
+#include "util/math_ext.h"
 #include "genetic_algorithm.h"
 
 float mutation_crossover_ratio = 1.0f;
