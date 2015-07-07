@@ -7,7 +7,7 @@
 
 void* safe_malloc (size_t size, const char* file, unsigned long line)
 {
-    assert (n != 0);
+    assert (size != 0);
 
     void* p = malloc (size);
     if (p == NULL)
@@ -23,7 +23,8 @@ void* safe_malloc (size_t size, const char* file, unsigned long line)
 void* safe_calloc (size_t nmemb, size_t size, const char* file,
                    unsigned long line)
 {
-    assert (n != 0);
+    assert (nmemb != 0);
+    assert (size != 0);
 
     void* p = calloc (nmemb, size);
     if (p == NULL)

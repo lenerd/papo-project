@@ -35,6 +35,7 @@ void* safe_malloc (size_t size, const char* file, unsigned long line);
  * \param size Length of one element.
  * \param file Filename to display in error message.
  * \param line Line to display in error message.
+ * \pre nmemb != 0
  * \pre size != 0
  * \return Pointer to allocated buffer.
  * \post Allocation successfull or exit with error message.
