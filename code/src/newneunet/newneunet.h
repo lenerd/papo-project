@@ -27,15 +27,15 @@ typedef struct{
 	/**
 	* \brief Buffer containing all input to first hidden layer weights.
 	*/
-	float* input_weights[][];
+	float** input_weights;
 	/**
 	* \brief Buffer containing all internal hidden layer weights.
 	*/
-	float* hidden_layer_weights[][][];
+	float*** hidden_weights;
 	/**
 	* \brief Buffer containing all last hidden to output layer weights.
 	*/
-	float* output_weights[][];
+	float** output_weights;
 
 } neuralnet_t;
 
@@ -72,7 +72,7 @@ void destroy_neural_net(neuralnet_t* net);
  * \pre input != NULL
  * \pre length(input) = net->input_count
  */
-float** calculate_output(neuralnet_t* net, float* input);
+float* calculate_output(neuralnet_t* net, float* input);
 
 /**
  * \brief Trains the neuralnet through backpropagation.
