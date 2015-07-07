@@ -54,7 +54,7 @@ typedef struct{
  * \pre neurons_per_hidden_layer > 0
  * \pre output_count > 0
  */
-neuralnet_t* create_neural_net_random(uint32_t input_count, uint32_t hidden_layer_count, uint32_t neurons_per_hidden_layer, uint32_t output_count);
+neuralnet_t* create_neural_net_random(const uint32_t input_count, const uint32_t hidden_layer_count, const uint32_t neurons_per_hidden_layer, const uint32_t output_count);
 
 /**
  * \brief Destroys a neuralnet and frees all used resources.
@@ -72,7 +72,7 @@ void destroy_neural_net(neuralnet_t* net);
  * \pre input != NULL
  * \pre length(input) = net->input_count
  */
-float* calculate_output(neuralnet_t* net, float* input);
+float* calculate_output(const neuralnet_t* net, const float* input);
 
 /**
  * \brief Trains the neuralnet through backpropagation.
@@ -82,7 +82,7 @@ float* calculate_output(neuralnet_t* net, float* input);
  * \pre length(*input) = net->input_count
  * \pre length(*target_output) = net->output_count
  */
-void backpropagate(neuralnet_t* net, float** input, float** target_output);
+void backpropagate(neuralnet_t* net, const float* input, const float* target_output);
 
 /**
  * \brief Print the edge weights to console. TH stands for threashold, EWs are
