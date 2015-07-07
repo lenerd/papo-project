@@ -43,4 +43,20 @@ void* safe_malloc (size_t size, const char* file, unsigned long line);
 void* safe_calloc (size_t nmemb, size_t size, const char* file,
                    unsigned long line);
 
+
+/**
+ * \brief Shortcut for safe_malloc().
+ * \param size Length of requested memory in bytes.
+ */
+#define SAFE_MALLOC(size) safe_malloc(size, __FILE__, __LINE__)
+
+
+/**
+ * \brief Shortcut for safe_calloc().
+ * \param nmemb Number of elements.
+ * \param size Length of one element.
+ */
+#define SAFE_CALLOC(nmemb, size) safe_calloc(nmemb, size, __FILE__, __LINE__)
+
+
 #endif /* UTIL_H */
