@@ -310,7 +310,8 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 }
 
 int main(int argc, char** argv){
-
+	
+	test();
 	return 0;
 
 }
