@@ -51,11 +51,8 @@ board_t *board_create(uint8_t size) {
 
   board->mark_buf = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint8_t *));
 
-  board->mark_grid = SAFE_CALLOC((size_t)size, sizeof(int8_t *));
-
   for (uint8_t i = 0; i < size; ++i) {
     board->grid[i] = board->buffer + i * size;
-    board->mark_grid[i] = board->mark_buf + i * size;
   }
 
   return board;
