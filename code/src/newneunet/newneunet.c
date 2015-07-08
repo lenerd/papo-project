@@ -111,10 +111,10 @@ void destroy_neural_net_new(neuralnet_t* net){
 
 float* calculate_output_new(const neuralnet_t* net, const float* input){
 	
-	float* current_result_1 = malloc(net->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(current_result_1)
-	float* current_result_2 = malloc(net->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(current_result_2)
+	float* current_result_1 = calloc(net->neurons_per_hidden_layer, sizeof(float*));
+	//CHECK_MALLOC(current_result_1)
+	float* current_result_2 = calloc(net->neurons_per_hidden_layer, sizeof(float*));
+	//CHECK_MALLOC(current_result_2)
 	
 	for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
 		current_result_2[to] = 0.0f;
@@ -175,18 +175,19 @@ static full_output_t* allocate_full_output(const neuralnet_t* net){
 	full_output->neurons_per_hidden_layer = net->neurons_per_hidden_layer;
 	full_output->output_count = net->output_count;
 	
-	full_output->input_values = malloc(net->input_count * sizeof(float));
-	CHECK_MALLOC(full_output->input_values)
+	full_output->input_values = calloc(net->input_count, sizeof(float*));
+	//CHECK_MALLOC(full_output->input_values)
 	
-	full_output->hidden_values = malloc(net->hidden_layer_count * sizeof(float*));
-	CHECK_MALLOC(full_output->hidden_values)
+	full_output->hidden_values = calloc(net->hidden_layer_count, sizeof(float**));
+
+	//CHECK_MALLOC(full_output->hidden_values)
 	for(uint32_t hl = 0; hl < net->hidden_layer_count; ++hl){
-		full_output->hidden_values[hl] = malloc(net->neurons_per_hidden_layer * sizeof(float));
-		CHECK_MALLOC(full_output->hidden_values[hl])
+		full_output->hidden_values[hl] = calloc(net->neurons_per_hidden_layer, sizeof(float*));
+		//CHECK_MALLOC(full_output->hidden_values[hl])
 	}
 	
-	full_output->output_values = malloc(net->output_count * sizeof(float));
-	CHECK_MALLOC(full_output->output_values)
+	full_output->output_values = calloc(net->output_count,  sizeof(float*));
+	//CHECK_MALLOC(full_output->output_values)
 	
 	return full_output;
 

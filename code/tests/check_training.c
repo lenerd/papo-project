@@ -6,9 +6,9 @@
 
 START_TEST (test_generate_data)
 {
-	//int** test1 = generate_data(0);
-	int** test2 = generate_data(1);
-	int** test3 = generate_data(2);
+	int** test1 = generate_data(0);
+	//int** test2 = generate_data(1);
+	//int** test3 = generate_data(2);
 	
 	//ck_assert(test1[0] == NULL);
 
