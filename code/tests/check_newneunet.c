@@ -57,7 +57,7 @@ START_TEST (test_backpropagation)
 		*/
 		for(uint32_t j = 0; j < 10; ++j)
 		{
-			float* ins = {j, j};
+			float ins[] = {j, j};
 			float target[] = {j + j};
 			printf("Error: %0.2f + %0.2f = %0.2f \n", target[0], calculate_output_new(net, ins)[0], target[0] - calculate_output_new(net, ins)[0]);
 			backpropagate(net, ins, target);
@@ -65,9 +65,9 @@ START_TEST (test_backpropagation)
 
 	}
 
-	const float* input1 = {2, 2};
-	const float* input2 = {2, 3};
-	const float* input3 = {5, 12};
+	const float input1[] = {2, 2};
+	const float input2[] = {2, 3};
+	const float input3[] = {5, 12};
 
 	float* test1 = calculate_output_new(net, input1);
 	float* test2 = calculate_output_new(net, input2);
