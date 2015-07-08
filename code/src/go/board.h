@@ -82,6 +82,9 @@ typedef struct
 
     /** \brief Helper buffer to mark positions. */
     uint8_t* mark_buf;
+
+    /** \brief 2D interface to mark_buf */
+    uint8_t** mark_grid;
 } board_t;
 
 
@@ -195,7 +198,7 @@ uint16_t board_capture_group (board_t* board, uint16_t group);
 /**
 * \brief Returns the final score from black's perspective including komi.
 */
-int board_score(const board_t* board, uint8_t size, uint8_t komi);
+int board_score(const board_t* board);
 
 /**
  * \brief Merges all groups of one color connecting with the stone on the given

@@ -44,7 +44,7 @@ result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_
 	}
 	
 	//Scoring
-	int score_val = board_score(board, board_size, komi);
+	int score_val = board_score(board);
 	final.score_black = score_val;
 	final.score_white = - score_val;
 

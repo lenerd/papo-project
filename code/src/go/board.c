@@ -51,8 +51,11 @@ board_t *board_create(uint8_t size) {
 
   board->mark_buf = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint8_t *));
 
+  board->mark_grid = SAFE_CALLOC((size_t)size, sizeof(int8_t *));
+
   for (uint8_t i = 0; i < size; ++i) {
     board->grid[i] = board->buffer + i * size;
+    board->mark_grid[i] = board->mark_buf + i * size;
   }
 
   return board;
@@ -225,59 +228,55 @@ void board_capture (board_t* board, uint8_t x, uint8_t y)
             (uint16_t)(board->black_captured + stones_captured);
 }
 
-int board_score(const board_t *board, uint8_t size, uint8_t komi) {
-    return 0;
-  int final_score;
+uint16_t flood_fill (const board_t* board, uint16_t index, uint8_t* owner)
+{
+    uint16_t cnt = 1;
+    uint16_t next[4];
+    board->mark_buf[index] = ps_marked;
+    *owner |= board->buffer[index];
 
-  for (int i = 0; i < board->size; i++) {
-    for (int j = 0; j < board->size; j++) {
-      if (board_position_state(board, i, j) == ps_empty) {
-        int *group = board_get_group(board, i, j);
-	pos_state_t state;	
-	uint8_t top, bottom, a, b;
-	uint8_t left = group[1]-1;
-	uint8_t right = group[1]+1;
-	bool stop_count = false;
-
-	if(left < board->size && left >= 0)
-			state = board_position_state(board, left, group[2]);
-	else if(right < board->size && right >= 0)
-			state = board_position_state(board, right, group[2]);	
-	
-	for(int a = 1; a <= group[0]; a+=2)
-	{
-		board->grid[group[a]][group[a+1]]=ps_marked;
-		
-		if(!stop_count)
-		{
-		a = group[a];
-  		  b = group[a + 1];
-  		  left = a - 1;
-  		  right = a + 1;
-  		  top = b - 1;
-  		  bottom = b + 1;
-		
-		if(left < board->size && left >= 0 && board_position_state(board, left, b) != state)
-			stop_count = true;
-		if(right < board->size && right >= 0 && board_position_state(board, right, b) != state)
-			stop_count = true;
-		if(top < board->size && top >= 0 && board_position_state(board, a, top) != state)
-			stop_count = true;
-		if(bottom < board->size && bottom >= 0 && board_position_state(board, a, bottom) != state)	
-			stop_count = true;
-		}
-	}       
-	
-	if(state=ps_black)
-		final_score += group[0];
-	else
-		final_score -= group[0];
-
-      }
+    next[0] = board_1d_top(board, index);
+    next[1] = board_1d_right(board, index);
+    next[2] = board_1d_bot(board, index);
+    next[3] = board_1d_left(board, index);
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        if (next[i] == invalid_1d)
+            continue;
+        if (board->mark_buf[next[i]] & ps_marked)
+            continue;
+        if (board->buffer[next[i]])
+            *owner |= board->buffer[next[i]];
+        else
+        {
+            cnt = (uint16_t) (cnt + flood_fill(board, next[i], owner));
+        }
     }
-  }
+    
+    return cnt;
+}
 
-  return final_score;
+int board_score (const board_t* board)
+{
+    int score = 0;
+    int tmp;
+    uint8_t owner;
+    for (uint16_t index = 0; index < board->buf_size; ++index)
+    {
+        if (board->buffer[index] == ps_empty &&
+            board->mark_buf[index] != ps_marked)
+        {
+            owner = ps_empty;
+            tmp = flood_fill (board, index, &owner);
+            if (!(owner & ~ps_black))
+                score += tmp;
+            else if (!(owner & ~ps_white))
+                score -= tmp;
+        }
+    }
+    memset (board->mark_buf, 0, board->buf_size);
+    score += board->black_captured - board->white_captured;
+    return score;
 }
 
 uint16_t board_2d_to_1d (const board_t* board, uint8_t x, uint8_t y)
