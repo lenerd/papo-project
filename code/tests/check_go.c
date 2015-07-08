@@ -209,6 +209,11 @@ START_TEST (test_board_score)
     board_place (board, 1, 0);
     board_place (board, 2, 0);
     board_place (board, 0, 1);
+    // 0WB00
+    // W0000
+    // 00000
+    // 00000
+    // 00000
     score = board_score(board);
     ck_assert_msg(score == -2, "calculated score ist %d", score);
     board_place (board, 1, 1);
@@ -216,8 +221,38 @@ START_TEST (test_board_score)
     board_place (board, 0, 2);
     board_pass (board);
     board_place (board, 0, 0);
+    // B0B00
+    // 0B000
+    // B0000
+    // 00000
+    // 00000
     score = board_score(board);
     ck_assert_msg(score == 22, "calculated score ist %d", score);
+    board_place (board, 4, 0);
+    // B0B0W
+    // 0B000
+    // B0000
+    // 00000
+    // 00000
+    score = board_score(board);
+    ck_assert_msg(score == 3, "calculated score ist %d", score);
+    board_pass (board);
+    board_place (board, 0, 3);
+    board_pass (board);
+    board_place (board, 1, 2);
+    board_pass (board);
+    board_place (board, 1, 2);
+    board_pass (board);
+    board_place (board, 2, 1);
+    board_pass (board);
+    board_place (board, 3, 0);
+    // B0BWW
+    // 0BW00
+    // BW000
+    // W0000
+    // 00000
+    score = board_score(board);
+    ck_assert_msg(score == -11, "calculated score ist %d", score);
 }
 END_TEST
 
