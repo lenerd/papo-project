@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <check.h>
+#include "math.h"
 #include "newneunet/newneunet.h"		
 
 START_TEST(test_construction)
@@ -22,7 +23,7 @@ START_TEST(test_output)
 {
 	neuralnet_t* net = create_neural_net_random_new(2, 2, 3, 1);
 
-	float* input = {1, 2};
+	float input[] = {1, 2};
 	float* output = calculate_output_new(net, input);
 
 	ck_assert(output[0] >= 0);
