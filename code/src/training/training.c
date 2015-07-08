@@ -12,15 +12,19 @@ int** generate_data(int size)
 	DIR * dirp;
 	struct dirent * entry;
 
+	/*
 	char path[100];
-	sprintf(path, "data/%d", size);
-	printf(path);
-	dirp = opendir(path); 
+	sprintf(path, "/data/%i", size);
+	const char* path1 = path;
+	printf("%s \n", path);
+	*/
+	dirp = opendir("/home/ted/git/papo-project/code/src/training/data/0"); 
 	if(dirp != NULL)
 	{
-		while ((entry = readdir(dirp)) != NULL) {
-		         file_count++;
+		while (entry = readdir(dirp)) {
+		         ++file_count;
 		}
+
 		closedir(dirp);
 	}
 	else
@@ -36,10 +40,16 @@ int** generate_data(int size)
 	char fn[100];
 	for(int i = 0; i < file_count; ++i)
 	{
-		sprintf(fn,"data/%d/%d.sgf", size, i);
-		FILE* fp=fopen(fn, "rb");
-		data[i]=read_file(fp, size);
-		fclose(fp);
+		sprintf(fn,"/data/0/0.sgf", size, i);		
+		FILE* fp=fopen(fn, "a+");
+
+		if(fp != NULL)
+		{
+			data[i]=read_file(fp, size);
+			fclose(fp);
+		}
+		else
+			printf("Null \n");
 	}
 
 }
