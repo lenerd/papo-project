@@ -307,58 +307,37 @@ void print_neuralnet(const neuralnet_t* net){
 
 }
 
+static float zoo(){ // Zero or one
+	return random_value_01() > 0.5f ? 1.0f : 0.0f;
+}
+
 int main(int argc, char** argv){
 
-	uint32_t nphl[] = {2, 5, 5, 1};
-	neuralnet_t* net = create_neural_net_random_new(4, nphl);
+	uint32_t nphl[] = {5, 5};
+	neuralnet_t* net = create_neural_net_random_new(2, nphl);
 
-	learn_rate = 1.0f;
+	learn_rate = 10.0f;
 
 	print_neuralnet(net);
 
-	for(uint32_t i = 0; i < 1000000; ++i){
+	for(uint32_t i = 0; i < 10000; ++i){
 
-		float ins[2] = { random_value_mm(0.0f, 0.5f), random_value_mm(0.0f, 0.5f) };
-		float target[1] = { ins[0] + ins[1] };
+		float ins[5] = { zoo(), zoo(), zoo(), zoo(), zoo() }; 	// Input of zeros and ones
+		float* target = ins;					// This neural net should give the same binary sequence it got as input
 
-		if(i%10000 == 0){
+		if(i%100 == 0){
 			float* out = calculate_output_new(net, ins);
-			printf("Error: %f\n", target[0] - out[0]);
+			printf("Error: %f %f %f %f %f\n", target[0] - out[0], target[1] - out[1], target[2] - out[2], target[3] - out[3], target[4] - out[4]);
 			free(out);
 		}
 		backpropagate(net, ins, target);
 	}
 
 	printf("\n");
-	print_neuralnet(net);
+	print_neuralnet(net); // It works!
 
 	destroy_neural_net_new(net);
 
-	/*
-	uint32_t input_count = 2;
-	uint32_t hidden_layer_count = 1;
-	uint32_t neurons_per_hidden_layer = 1;
-	uint32_t output_count = 1;
-
-	uint32_t trainings = 1000;
-
-	neuralnet_t* net = create_neural_net_random_new(input_count, hidden_layer_count, neurons_per_hidden_layer, output_count);
-
-	for(uint32_t i = 0; i < trainings; ++i){
-		
-		float ins[] = { random_value_mm(-100.0f, 100.0f), random_value_mm(-100.0f, 100.0f) };
-
-		float target[] = { ins[0] + ins[1] };
-
-		float* output = calculate_output_new(net, ins);
-		printf("Error: %f\n", target[0] - output[0]);
-
-		backpropagate(net, ins, target);
-
-	}
-
-	destroy_neural_net_new(net);
-	*/
 	return 0;
 
 }
