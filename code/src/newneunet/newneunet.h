@@ -15,28 +15,16 @@
  */
 typedef struct{
 	
-	/** \brief Number of input neurons.*/
-	uint32_t input_count;
-	/** \brief Number of hidden layers.*/
-	uint32_t hidden_layer_count;
-	/** \brief Number of neurons each hidden layer has.*/
-	uint32_t neurons_per_hidden_layer;
-	/** \brief Number of output neurons.*/
-	uint32_t output_count;
+	/** \brief Number of layers.*/
+	uint32_t layer_count;
+	/** \brief Number of neurons each layer has.*/
+	uint32_t* neurons_per_layer_count;
 
 	/**
-	* \brief Buffer containing all input to first hidden layer weights.
+	* \brief Buffer containing all weights.
 	*/
-	float** input_weights;
-	/**
-	* \brief Buffer containing all internal hidden layer weights.
-	*/
-	float*** hidden_weights;
-	/**
-	* \brief Buffer containing all last hidden to output layer weights.
-	*/
-	float** output_weights;
-
+	float*** weights;
+	
 } neuralnet_t;
 
 /**
@@ -44,17 +32,13 @@ typedef struct{
  * preferences.
  *
  * This allocates and initializes a new neural net with the given preferences.
- * \param input_count              Number of input neurons.
- * \param hidden_layer_count       Number of hidden layers.
- * \param neurons_per_hidden_layer Number of neurons in each hidden layer.
- * \param output_count             Number of output neurons.
+ * \param layer_count       		Number of hidden layers.
+ * \param neurons_per_layer_count 	Number of neurons in each hidden layer.
  * \return Pointer to the new neural network.
- * \pre input_count > 0
- * \pre hidden_layer_count > 0
- * \pre neurons_per_hidden_layer > 0
- * \pre output_count > 0
+ * \pre layer_count > 1
+ * \pre neurons_per_layer_count[x] > 0, where 0 < x < layer_count
  */
-neuralnet_t* create_neural_net_random_new(const uint32_t input_count, const uint32_t hidden_layer_count, const uint32_t neurons_per_hidden_layer, const uint32_t output_count);
+neuralnet_t* create_neural_net_random_new(const uint32_t layer_count, uint32_t* neurons_per_layer_count);
 
 /**
  * \brief Destroys a neuralnet and frees all used resources.

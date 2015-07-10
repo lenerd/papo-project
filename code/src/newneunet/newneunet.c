@@ -8,95 +8,66 @@
 
 // Construction and Destruction ########################################
 
-static void initialize_input_weights_random(neuralnet_t* net){
-	
-	net->input_weights = malloc(net->neurons_per_hidden_layer * sizeof(float*));
-	CHECK_MALLOC(net->input_weights)
-	for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-		net->input_weights[to] = malloc(net->input_count * sizeof(float));
-		CHECK_MALLOC(net->input_weights[to])
-		for(uint32_t from = 0; from < net->input_count; ++from){
-			net->input_weights[to][from] = random_value_mm(-1.0f, 1.0f);
-		}
-	}
-	
-}
-static void initialize_hidden_weights_random(neuralnet_t* net){
-	
-	net->hidden_weights = malloc((net->hidden_layer_count - 1) * sizeof(float**));
-	CHECK_MALLOC(net->hidden_weights)
-	for(uint32_t gap = 0; gap < net->hidden_layer_count - 1; ++gap){
-		net->hidden_weights[gap] = malloc(net->neurons_per_hidden_layer * sizeof(float*));
-		CHECK_MALLOC(net->hidden_weights[gap])
-		for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-			net->hidden_weights[gap][to] = malloc(net->neurons_per_hidden_layer * sizeof(float));
-			CHECK_MALLOC(net->hidden_weights[gap][to])
-			for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-				net->hidden_weights[gap][to][from] = random_value_mm(-1.0f, 1.0f);
+static void initialize_weights_random(neuralnet_t* net){
+
+	net->weights = malloc((net->layer_count - 1) * sizeof(float**));
+	CHECK_MALLOC(net->weights)
+
+	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
+		
+		net->weights[gap] = malloc(net->neurons_per_layer_count[gap + 1] * sizeof(float*));
+		CHECK_MALLOC(net->weights[gap]);
+
+		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+
+			net->weights[gap][to] = malloc(net->neurons_per_layer_count[gap] * sizeof(float));
+			CHECK_MALLOC(net->weights[gap][to])
+
+			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
+
+				net->weights[gap][to][from] = random_value_mm(-1.0f, 1.0f);
+
 			}
+
 		}
+
 	}
+
 }
-static void initialize_output_weights_random(neuralnet_t* net){
-	
-	net->output_weights = malloc(net->output_count * sizeof(float*));
-	CHECK_MALLOC(net->output_weights)
-	for(uint32_t to = 0; to < net->output_count; ++to){
-		net->output_weights[to] = malloc(net->neurons_per_hidden_layer * sizeof(float));
-		CHECK_MALLOC(net->output_weights[to])
-		for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-			net->output_weights[to][from] = random_value_mm(-1.0f, 1.0f);
+static void destroy_weights(neuralnet_t* net){
+
+	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
+
+		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+
+			free(net->weights[gap][to]);
+
 		}
+
+		free(net->weights[gap]);
+
 	}
+
+	free(net->weights);
+
 }
 
-static void destroy_input_weights(neuralnet_t* net){
-	
-	for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-		free(net->input_weights[to]);
-	}
-	free(net->input_weights);
-}
-static void destroy_hidden_weights(neuralnet_t* net){
-	
-	for(uint32_t gap = 0; gap < net->hidden_layer_count - 1; ++gap){
-		for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-			free(net->hidden_weights[gap][to]);
-		}
-		free(net->hidden_weights[gap]);
-	}
-	free(net->hidden_weights);
-}
-static void destroy_output_weights(neuralnet_t* net){
-	
-	for(uint32_t to = 0; to < net->output_count; ++to){
-		free(net->output_weights[to]);
-	}
-	free(net->output_weights);
-}
-
-neuralnet_t* create_neural_net_random_new(const uint32_t input_count, const uint32_t hidden_layer_count, const uint32_t neurons_per_hidden_layer, const uint32_t output_count){
+neuralnet_t* create_neural_net_random_new(const uint32_t layer_count, uint32_t* neurons_per_layer_count){
 	
 	neuralnet_t* net = malloc(sizeof(neuralnet_t));
 	CHECK_MALLOC(net);
 
-	net->input_count = input_count;
-	net->hidden_layer_count = hidden_layer_count;
-	net->neurons_per_hidden_layer = neurons_per_hidden_layer;
-	net->output_count = output_count;
-
-	initialize_input_weights_random(net);
-	initialize_hidden_weights_random(net);
-	initialize_output_weights_random(net);
+	net->layer_count = layer_count;
+	net->neurons_per_layer_count = neurons_per_layer_count;
+	
+	initialize_weights_random(net);
 	
 	return net;
 } 
 
 void destroy_neural_net_new(neuralnet_t* net){
 	
-	destroy_output_weights(net);
-	destroy_hidden_weights(net);
-	destroy_input_weights(net);
+	destroy_weights(net);
 	
 	free(net);
 	
@@ -128,156 +99,111 @@ static float* desigmoidize(const float* array, const uint32_t size){
 }
 
 float* calculate_output_new(const neuralnet_t* net, const float* input){
-	
-	float* current_result_1 = malloc(net->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(current_result_1)
-	float* current_result_2 = malloc(net->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(current_result_2)
-	
-	float* ins = sigmoidize(input, net->input_count);
 
-	for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-		current_result_2[to] = 0.0f;
-		for(uint32_t from = 0; from < net->input_count; ++from){
-			current_result_2[to] += ins[from] * net->input_weights[to][from];
-		}
-		current_result_2[to] = sigmoid(current_result_2[to]);
-	}
-	swap_float_buffer(&current_result_1, &current_result_2);
-	
-	for(uint32_t gap = 0; gap < net->hidden_layer_count - 1; ++gap){
-		for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-			current_result_2[to] = 0.0f; 
-			for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-				current_result_2[to] += current_result_1[from] * net->hidden_weights[gap][to][from];
+ 	float* current_result_1 = sigmoidize(input, net->neurons_per_layer_count[0]);
+
+	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
+
+		float* current_result_2 = malloc(net->neurons_per_layer_count[gap + 1] * sizeof(float));
+		CHECK_MALLOC(current_result_2)
+
+		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+
+			current_result_2[to] = 0.0f;
+
+			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
+
+				current_result_2[to] += current_result_1[from] * net->weights[gap][to][from];
+
 			}
-			current_result_2[to] = sigmoid(current_result_2[to]);
-			
-		}
-		swap_float_buffer(&current_result_1, &current_result_2);
-	}
-	
-	for(uint32_t to = 0; to < net->output_count; ++to){
-		current_result_2[to] = 0.0f;
-		for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-			current_result_2[to] += current_result_1[from] * net->output_weights[to][from];
-		}
-		current_result_2[to] = sigmoid(current_result_2[to]);
-	}
-	swap_float_buffer(&current_result_1, &current_result_2);
-	
-	free(current_result_2);
-	free(ins);
 
-	return current_result_1;
-	
+			current_result_2[to] = sigmoid(current_result_2[to]);
+
+		}
+
+		swap_float_buffer(&current_result_1, &current_result_2);
+		free(current_result_2);
+
+	}
+
+	return desigmoidize(current_result_1, net->neurons_per_layer_count[net->layer_count - 1]);
+
 }
 
 // Backpropagation #####################################################
 
+float learn_rate = 1.0f;
+
 typedef struct{
-	
-	uint32_t input_count;
-	uint32_t hidden_layer_count;
-	uint32_t neurons_per_hidden_layer;
-	uint32_t output_count;
-	
-	float* input_values;
-	float** hidden_values;
-	float* output_values;
-	
+
+	uint32_t layer_count;
+	uint32_t* neurons_per_layer_count;	
+
+	float** values;
+
 } full_output_t;
+
 static full_output_t* allocate_full_output(const neuralnet_t* net){
 	
 	full_output_t* full_output = malloc(sizeof(full_output_t));
 	CHECK_MALLOC(full_output);
 	
-	full_output->input_count = net->input_count;
-	full_output->hidden_layer_count = net->hidden_layer_count;
-	full_output->neurons_per_hidden_layer = net->neurons_per_hidden_layer;
-	full_output->output_count = net->output_count;
+	full_output->layer_count = net->layer_count;
+	full_output->neurons_per_layer_count = net->neurons_per_layer_count;
 	
-	full_output->input_values = malloc(net->input_count * sizeof(float));
-	CHECK_MALLOC(full_output->input_values)
-	
-	full_output->hidden_values = malloc(net->hidden_layer_count * sizeof(float*));
-	CHECK_MALLOC(full_output->hidden_values)
+	full_output->values = malloc(net->layer_count * sizeof(float*));
+	CHECK_MALLOC(full_output->values)
+	for(uint32_t layer = 0; layer < net->layer_count; ++layer){
 
-	for(uint32_t hl = 0; hl < net->hidden_layer_count; ++hl){
-		full_output->hidden_values[hl] = malloc(net->neurons_per_hidden_layer * sizeof(float));
-		CHECK_MALLOC(full_output->hidden_values[hl])
+		full_output->values[layer] = malloc(net->neurons_per_layer_count[layer] * sizeof(float));
+		CHECK_MALLOC(full_output->values[layer])
+
 	}
-	
-	full_output->output_values = malloc(net->output_count *  sizeof(float));
-	CHECK_MALLOC(full_output->output_values)
-	
+
 	return full_output;
 
 }
 static void free_full_output(full_output_t* full_output){
 	
-	free(full_output->output_values);
-	
-	for(uint32_t hl = 0; hl < full_output->hidden_layer_count; ++hl){
-		free(full_output->hidden_values[hl]);
+	for(uint32_t layer = 0; layer < full_output->layer_count; ++layer){
+		free(full_output->values[layer]);
 	}
-	free(full_output->hidden_values);
-	
-	free(full_output->input_values);
+	free(full_output->values);
 	
 	free(full_output);
 	
 }
 static full_output_t* calculate_full_output(const neuralnet_t* net, const float* input){
-	
-	full_output_t* full_output = allocate_full_output(net);
-	
-	memcpy(full_output->input_values, input, net->input_count * sizeof(float));
 
-	float* current_result_1 = malloc(net->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(current_result_1)
-	float* current_result_2 = malloc(net->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(current_result_2)
+	full_output_t* fout = allocate_full_output(net);
 
-	float* ins = sigmoidize(input, net->input_count);
+	float* ins = sigmoidize(input, net->neurons_per_layer_count[0]);
 
-	for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-		current_result_2[to] = 0.0f;
-		for(uint32_t from = 0; from < net->input_count; ++from){
-			current_result_2[to] += ins[from] * net->input_weights[to][from];
-		}
-		full_output->hidden_values[0][to] = sigmoid(current_result_2[to]);
-	}
-	swap_float_buffer(&current_result_1, &current_result_2);
-	
-	for(uint32_t gap = 0; gap < net->hidden_layer_count - 1; ++gap){
-		for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-			current_result_2[to] = 0.0f;
-			for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-				current_result_2[to] += current_result_1[from] * net->hidden_weights[gap][to][from];
+	memcpy(fout->values[0], ins, net->neurons_per_layer_count[0] * sizeof(float));
+
+	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
+
+		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+
+			fout->values[gap + 1][to] = 0.0f;
+
+			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
+
+				fout->values[gap + 1][to] += fout->values[gap][from] * net->weights[gap][to][from];
+
 			}
-			full_output->hidden_values[gap + 1][to] = sigmoid(current_result_2[to]);
+
+			fout->values[gap + 1][to] = sigmoid(fout->values[gap + 1][to]);
+		
 		}
-		swap_float_buffer(&current_result_1, &current_result_2);
+
 	}
-	
-	for(uint32_t to = 0; to < net->output_count; ++to){
-		current_result_2[to] = 0.0f;
-		for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-			current_result_2[to] += current_result_1[from] * net->output_weights[to][from];
-		}
-		full_output->output_values[to] = sigmoid(current_result_2[to]);
-	}
-	
-	free(current_result_1);
-	free(current_result_2);
+
 	free(ins);
 
-	return full_output;
-	
+	return fout;
+
 }
-
-
 
 static float calculate_sigmoid_error_term(float a){
 	return a * (1.0f - a);
@@ -287,269 +213,120 @@ static float calculate_sigmoid_error(float target, float actual){
 	return calculate_sigmoid_error_term(actual) * (target - actual);
 }
 
-//Fallunterscheidung: 0 hiidden layer, 1 hidden layer, mehrere hidden layer
+void backpropagate(neuralnet_t* net, const float* input, const float* target_output){
 
-void backprop(neuralnet_t* net, const float* input, const float* target_output){
-
-	// Sigmoidizing input and target_output
-	float* ins = sigmoidize(input, net->input_count);
-	float* tout = sigmoidize(target_output, net->output_count);
-
-	// Calculate output of all neurons
 	full_output_t* fout = calculate_full_output(net, input);
 
-	// Correcting hidden to output layer edge weights
-	float* output_errors = malloc(net->output_count * sizeof(float));
-	CHECK_MALLOC(output_errors)
+	float* ins = sigmoidize(input, net->neurons_per_layer_count[0]);
+	float* touts = sigmoidize(target_output, net->neurons_per_layer_count[net->layer_count - 1]);
 
-	for(uint32_t to = 0; to < net->output_count; ++to){
-		
-		output_errors[to] = calculate_sigmoid_error(tout[to], fout->output_values[to]);
-		
-		for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-			
-			net->output_weights[to][from] += output_errors[to] * fout->hidden_values[fout->hidden_layer_count - 1][from];
+	float** errors = malloc(net->layer_count * sizeof(float*));
+	CHECK_MALLOC(errors)
+
+	// Calculating direct errors of last layer
+	uint32_t last = net->layer_count - 1;
 	
+	errors[last] = malloc(net->neurons_per_layer_count[last] * sizeof(float));
+	CHECK_MALLOC(errors[last]);
+
+	for(uint32_t to = 0; to < net->neurons_per_layer_count[last]; ++to){
+
+		errors[last][to] = calculate_sigmoid_error(touts[to], fout->values[last][to]);
+
+		// Correcting edge weights of gap right before the last layer of neurons
+		for(uint32_t from = 0; from < net->neurons_per_layer_count[last - 1]; ++from){
+
+			net->weights[last - 1][to][from] += learn_rate * errors[last][to] * fout->values[last - 1][from];
+
 		}
 
 	}
 
-	// Correcting hidden layer internal edge weights
-	float** hidden_errors = malloc(net->hidden_layer_count * sizeof(float*));
-	CHECK_MALLOC(hidden_errors);
+	// Calculating intermediate errors of all remaining layers
+	for(uint32_t layer = net->layer_count - 2; layer > 0; --layer){
 
-	// Last gap
-	if(net->hidden_layer_count > 1)
-	uint32_t last = net->hidden_layer_count - 1;
+		errors[layer] = malloc(net->neurons_per_layer_count[layer] * sizeof(float));
+		CHECK_MALLOC(errors[layer]);
 
-	hidden_errors[last] = malloc(net->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(hidden_errors[last])
+		for(uint32_t current = 0; current < net->neurons_per_layer_count[layer]; ++current){
 
-	for(uint32_t cnil = 0; cnil < net->neurons_per_hidden_layer; ++cnil){ // cnil = "Current neuron in layer"
+			errors[layer][current] = 0.0f;
 
-		hidden_errors[last][cnil] = 0.0f;
+			for(uint32_t right = 0; right < net->neurons_per_layer_count[layer + 1]; ++right){
 
-		for(uint32_t right = 0; right < net->output_count; ++right){
-
-			hidden_errors[last][cnil] += output_errors[right] * net->output_weights[right][cnil];
-
-		}
-
-		hidden_errors[last][cnil] *= calculate_sigmoid_error_term(fout->hidden_values[last][cnil]);
-
-		for(uint32_t left = 0; left < net->neurons_per_hidden_layer; ++left){
-
-			net->hidden_weights[last - 1][cnil][left] = 0.5f;
-			net->hidden_weights[last - 1][cnil][left] += hidden_errors[last][cnil] * fout->hidden_values[last - 1][left];
-
-		}
-	}
-
-	// Other gaps in hidden layer
-	for(uint32_t gap = last - 1; gap > 0; --gap){
-
-		hidden_errors[gap] = malloc(net->neurons_per_hidden_layer * sizeof(float));
-		CHECK_MALLOC(hidden_errors[gap]);
-
-		for(uint32_t cnil; cnil < net->neurons_per_hidden_layer; ++cnil){ // cnil = "Current neuron in layer"
-
-			hidden_errors[gap][cnil] = 0.0f;
-
-			for(uint32_t right = 0; right < net->neurons_per_hidden_layer; ++right){
-
-				hidden_errors[gap][cnil] += hidden_errors[gap + 1][right] * net->hidden_weights[gap][right][cnil];			
+				errors[layer][current] += learn_rate * errors[layer + 1][right] * net->weights[layer][right][current];
 
 			}
 
-			hidden_errors[gap][cnil] *= calculate_sigmoid_error_term(fout->hidden_values[gap][cnil]);
+			errors[layer][current] *= calculate_sigmoid_error_term(fout->values[layer][current]);
 
-			for(uint32_t left = 0; left < net->neurons_per_hidden_layer; ++left){
+			// Correcting edge weights of gap right before the present layer of neurons
+			for(uint32_t left = 0; left < net->neurons_per_layer_count[layer - 1]; ++left){
 
-				net->hidden_weights[gap - 1][cnil][left] += hidden_errors[gap][cnil] * fout->hidden_values[gap - 1][left];
+				net->weights[layer - 1][current][left] += errors[layer][current] * fout->values[layer - 1][left];
 
 			}
-
-		}
-
-	}
-
-	// Correcting input to hidden layer edge weights
-	hidden_errors[0] = malloc(net->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(hidden_errors[0])
-
-	for(uint32_t cnil = 0; cnil < net->neurons_per_hidden_layer; ++cnil){
-
-		hidden_errors[0][cnil] = 0.0f;
-
-		for(uint32_t right = 0; right < net->neurons_per_hidden_layer; ++right){
-
-			hidden_errors[0][cnil] += hidden_errors[1][right] * net->hidden_weights[0][right][cnil];
-
-		}	
-
-		hidden_errors[0][cnil] *= calculate_sigmoid_error_term(fout->hidden_values[0][cnil]);
-
-		for(uint32_t left = 0; left < net->input_count; ++left){
-
-			net->input_weights[cnil][left] += hidden_errors[0][cnil] * fout->input_values[left];
 
 		}
 
 	}
 
 	// Clean up
-	free(ins);
-	free(tout);
 	free_full_output(fout);
-	free(output_errors);
-	for(uint32_t i = 0; i < net->hidden_layer_count; ++i){
-		free(hidden_errors[i]);
-	}
-	free(hidden_errors);
+	free(ins);
+	free(touts);
+	for(uint32_t layer = 1; layer < net->layer_count; ++layer)
+		free(errors[layer]);
+	free(errors);
 
 }
-/*
-void backpropagate(neuralnet_t* net, const float* input, const float* target_output){
-	
-	full_output_t* full_output = calculate_full_output(net, input);
 
-	float* tout = malloc(net->output_count * sizeof(float));
-	CHECK_MALLOC(tout)
-	for(uint32_t i = 0; i < net->output_count; ++i){
-		tout[i] = sigmoid(target_output[i]);
-	}
-
-
-	// Correction of hidden to output layer edge weights
-	float* output_errors = malloc(full_output->output_count * sizeof(float));
-	CHECK_MALLOC(output_errors);
-
-	for(uint32_t to = 0; to < net->output_count; ++to){
-		
-		output_errors[to] = full_output->output_values[to] * (1.0f - full_output->output_values[to]) * (tout[to] - full_output->output_values[to]);
-		
-		for(uint32_t from = 0; from < net->output_count; ++from){
-			net->output_weights[to][from] += output_errors[to] * full_output->hidden_values[full_output->hidden_layer_count - 1][from];
-		}
-	}
-
-	// Correction of hidden layer intern edge weights
-	float** hidden_errors = malloc(full_output->hidden_layer_count * sizeof(float*));
-	CHECK_MALLOC(hidden_errors)
-
-	hidden_errors[full_output->hidden_layer_count - 1] = malloc(full_output->neurons_per_hidden_layer * sizeof(float));
-	CHECK_MALLOC(hidden_errors[full_output->hidden_layer_count - 1])
-	
-	for(uint32_t from = 0; from < full_output->neurons_per_hidden_layer; ++from){
-		hidden_errors[full_output->hidden_layer_count - 1][from] = 0.0f;
-		for(uint32_t to = 0; to < full_output->output_count; ++to){
-			hidden_errors[full_output->hidden_layer_count - 1][from] += output_errors[to] * net->output_weights[to][from];
-		}
-		hidden_errors[full_output->hidden_layer_count - 1][from] *= full_output->hidden_values[full_output->hidden_layer_count - 1][from] * (1.0f - full_output->hidden_values[full_output->hidden_layer_count - 1][from]);
-	}
-
-	for(uint32_t to = 0; to < net->output_count; ++to){
-		for(uint32_t from = 0; from < net->output_count; ++from){
-			net->hidden_weights[gap][to][from] += hidden_errors[full_output->hidden_layer_count - 1][to] * full_output->hidden_values[full_output->hidden_layer_count - 1][from];
-		}
-	}
-
-	for(int gap = net->hidden_layer_count - 2; gap > -1; --gap){
-		for(uint32_t to = 0; to < net->output_count; ++to){
-			for(uint32_t from = 0; from < net->output_count; ++from){
-				net->hidden_weights[gap][to][from] += hidden_errors[gap + 1][to] * full_output->hidden_values[gap][from];
-			}
-		}
-	}
-
-
-	// Hidden layer error calculation
-	
-
-	
-	for(int layer = full_output->hidden_layer_count - 2; layer > -1; --layer){
-		hidden_errors[layer] = malloc(full_output->neurons_per_hidden_layer * sizeof(float));
-		CHECK_MALLOC(hidden_errors[layer])
-		for(uint32_t from = 0; from < full_output->neurons_per_hidden_layer; ++from){
-			hidden_errors[layer][from] = 0.0f;
-			for(uint32_t to = 0; to < full_output->output_count; ++to){
-				hidden_errors[layer][from] += hidden_errors[layer + 1][to] * net->hidden_weights[layer][to][from];
-			}
-			hidden_errors[layer][from] *= full_output->hidden_values[layer][from] * (1.0f - full_output->hidden_values[layer][from]);
-		}
-	}
-	
-	// Edge weight correction
-	
-	
-	
-	// Hidden layer internal edge weights
-
-	
-	// Input to hidden layer edge weights
-	for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-		for(uint32_t from = 0; from < net->input_count; ++from){
-			net->input_weights[to][from] += hidden_errors[0][to] * full_output->input_values[from];
-		}
-	}
-	
-	free_full_output(full_output);
-	free(output_errors);
-	for(uint32_t i = 0; i < net->hidden_layer_count; ++i){
-		free(hidden_errors[i]);
-	}
-	free(hidden_errors);
-	
-}
-*/
 void print_neuralnet(const neuralnet_t* net){
 
-	printf("Input to hidden layer edge weights:");
-	for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-		printf("\n\tNeuron %d: ", to);
-		for(uint32_t from = 0; from < net->input_count; ++from){
-			printf("%f ", net->input_weights[to][from]);
-		}
-	}
+	printf("\nNeural network at Adress x:");
 
-	printf("\n\nHidden layer internal edge weights:");
-	for(uint32_t gap = 0; gap < net->hidden_layer_count - 1; ++gap){
+	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
+
 		printf("\n\tGap %d:", gap);
-		for(uint32_t to = 0; to < net->neurons_per_hidden_layer; ++to){
-			printf("\n\tNeuron %d: ", to);
-			for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-				printf("%f ", net->hidden_weights[gap][to][from]);
+
+		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+
+			printf("\n\t\tTo Neuron %d:", to);
+
+			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
+
+				printf(" %f", net->weights[gap][to][from]);
+
 			}
+
 		}
+
 	}
 
-	printf("\n\nHidden to output layer edge weights:");
-	for(uint32_t to = 0; to < net->output_count; ++to){
-		printf("\n\tNeuron %d: ", to);
-		for(uint32_t from = 0; from < net->neurons_per_hidden_layer; ++from){
-			printf("%f ", net->output_weights[to][from]);
-		}
-	}
-	printf("\n\n");
+	printf("\n");
+
 }
 
 int main(int argc, char** argv){
 
-	neuralnet_t* net = create_neural_net_random_new(2, 1, 1, 1);
-	
+	uint32_t nphl[] = {2, 5, 5, 1};
+	neuralnet_t* net = create_neural_net_random_new(4, nphl);
+
+	learn_rate = 1.0f;
+
 	print_neuralnet(net);
 
-	for(uint32_t i = 0; i < 10000; ++i){
+	for(uint32_t i = 0; i < 1000000; ++i){
 
-		float ins[2] = { random_value_mm(-10.0f, 10.0f), random_value_mm(-10.0f, 10.0f) };
+		float ins[2] = { random_value_mm(0.0f, 0.5f), random_value_mm(0.0f, 0.5f) };
 		float target[1] = { ins[0] + ins[1] };
 
-		if(i%1 == 0){
+		if(i%10000 == 0){
 			float* out = calculate_output_new(net, ins);
 			printf("Error: %f\n", target[0] - out[0]);
 			free(out);
 		}
-		backprop(net, ins, target);
+		backpropagate(net, ins, target);
 	}
 
 	printf("\n");
