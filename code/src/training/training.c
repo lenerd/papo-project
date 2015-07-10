@@ -1,67 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
-#include "neuralnet/neuralnet.h"
+#include "go/board.h"
 #include "training.h"
 
-float* backpropagation(neuralnet_t* net, int board_size, float threshold, uint8_t** data, uint8_t data_size, float* wanted)
+struct dataset* generate_data(int size, color_t color)
 {
-	float error = 1000;
+	struct dataset* set = malloc(sizeof(struct dataset));
 
-	//Do until error is small enough:
-	while(error > threshold)
-	{		
-		//For each data point
-		for(int i = 0; i < data_size; ++i)
-		{
-			//calculate output
-
-			float* output = calculate_output(net, data[i], UINT8);			
-			int output_size = board_size * board_size +2;
-
-			//calculate difference matrix between output and desired result (can probably be used as error)			
-			float* delta = malloc(output_size *sizeof(float));
-			
-			for(int j = 0; j < output_size; ++j)
-			{
-				delta[j] = wanted[j]-output[j];	
-			}
-			
-			float* edges = net->edge_buf;
-
-			//For each hidden layer do:
-			for(int k = 0; k < net->hidden_layer_count; ++k)
-			{
-				int neurons = net->neurons_per_hidden_layer;
-
-				//For each output value do:
-				for(int l = 0; l < output_size; ++l)
-				{
-					//Split difference between output and result evenly
-					float difference = delta[l] / neurons;
-
-					//Distribute the difference between the edge weights
-					for(int m = 0; m < neurons; ++m)
-					{
-						int position = l + m;
-				
-						edges[m] += difference;
-					}
-
-					
-				}
-			}
-			
-			//Replace old net with a new one using the updated weights
-			net = create_neural_net_buffer(net->input_count, net->hidden_layer_count, net->neurons_per_hidden_layer, net->output_count, edges);
-		}
-	}	
-	
-	return net->edge_buf;
-}
-
-int** generate_data(int size)
-{
 	//Sees how many files there are in this directory
 	int file_count = 0;
 	DIR * dirp;
@@ -83,19 +29,60 @@ int** generate_data(int size)
      		exit(EXIT_FAILURE);
 	}
 
+	set->dataset_size = file_count;
+
 	//Allocates pointer
 	int** data = calloc(file_count * size * size, sizeof(int**));
-	data[0] = file_count;
+	int** expected = calloc(file_count * size * size, sizeof(int**));
 
 	//Opens all files and saves their contents in data
 	char fn[100];
 	for(int i = 1; i <= file_count; ++i)
 	{
-		sprintf(fn,"data/%d/game[%d].bmp", size, i);
-		FILE* fp=fopen(fn, "rb");
+		sprintf(fn,"data/%d/%d.sgf", size, i);
+		FILE* fp=fopen(fn, "a+");
 		data[i]=read_file(fp, size);
+		expected[i] = generate_expected_values(data[i], size, color);
 		fclose(fp);
 	}
+
+	set->input_values = data;
+	set->expected_values = expected;
+
+	return set;
+}
+
+int* generate_expected_values(int* positions, int size, color_t color)
+{
+	int* expected = malloc(size*size*sizeof(int));	
+	board_t* board = board_create(size);
+	
+	//Sets given positions as the grid
+	for(int a = 0; a < size; ++a)
+	{
+		for(int b = 0; b<size; ++b)
+		{
+			board->grid[a][b]=positions[a*size+b];	
+		}
+	}
+
+	//If position is occupied anyway, no need to check twice
+	//If not, the legal placement has to be checked
+	for(int i = 0; i < size*size; ++i)
+	{
+		if(positions[i] != 0)
+			expected[i] = 0;
+		else
+		{
+			int x = i / size;
+			int y = i % size;
+
+			if(board_legal_placement(board, x, y, color))	
+				expected[i]=1;
+		}
+	}
+
+	return expected;
 }
 
 int* read_file(FILE* fp, int size)

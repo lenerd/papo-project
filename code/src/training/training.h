@@ -8,15 +8,23 @@
 * \ingroup training
 */
 
-/**
-* \brief Executes a backpropagation algorithm to train the nets.
-*/
-float* backpropagation(neuralnet_t* net, int board_size, float threshold, uint8_t** data, uint8_t data_size, float* wanted);
+struct dataset{
+	int dataset_size;
+
+	int** input_values;
+
+	int** expected_values;
+}dataset;
 
 /**
-* \brief Reads all .sgf files for the specified board size and returns them as one data set
+* \brief Reads all .sgf files for the specified board size and returns them as one data set including the expected values for the color
 */
-int** generate_data(int size);
+struct dataset* generate_data(int size, color_t color);
+
+/**
+* \brief Generates the expected values for this color. If the position is somehow illegal, expected will be zero, else one.
+*/
+int* generate_expected_values(int* positions, int size, color_t color);
 
 /**
 * \brief Converts .sgf to int*
