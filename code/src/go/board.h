@@ -116,6 +116,12 @@ pos_state_t board_position_state (const board_t* board, uint8_t x, uint8_t y);
 
 /**
  * \brief Checks if a placement is legal.
+ *
+ * Conditions for  legal placement:
+ * * coordinates on the board
+ * * specified position is empty
+ * * no suicide
+ *
  * \pre board != NULL
  */
 bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
