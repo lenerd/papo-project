@@ -241,8 +241,6 @@ START_TEST (test_board_score)
     board_pass (board);
     board_place (board, 1, 2);
     board_pass (board);
-    board_place (board, 1, 2);
-    board_pass (board);
     board_place (board, 2, 1);
     board_pass (board);
     board_place (board, 3, 0);
