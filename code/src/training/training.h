@@ -8,6 +8,9 @@
 * \ingroup training
 */
 
+#include "go/board.h"
+#include <stdio.h>
+
 struct dataset{
 	int dataset_size;
 
