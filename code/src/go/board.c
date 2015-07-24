@@ -76,8 +76,6 @@ bool board_legal_placement(const board_t *board, uint8_t x, uint8_t y,
                            color_t color) {
   if (x >= board->size || y >= board->size)
     return false;
-  if (board->turn != color)
-    return false;
   if (board->grid[x][y] != ps_empty)
     return false;
   if (board_test_suicide(board, x, y, color))
@@ -85,11 +83,11 @@ bool board_legal_placement(const board_t *board, uint8_t x, uint8_t y,
   return true;
 }
 
-void board_place (board_t* board, uint8_t x, uint8_t y)
+void board_place_color (board_t* board, uint8_t x, uint8_t y, color_t color)
 {
-    assert (x < board->size);
-    assert (y < board->size);
-    board->grid[x][y] = (pos_state_t) board->turn;
+    assert (board_legal_placement(board, x, y, color));
+
+    board->grid[x][y] = (pos_state_t) color;
     uint16_t pos = board_2d_to_1d (board, x, y);
     board->group_next[pos] = pos;
     board->group_id[pos] = pos;
@@ -97,6 +95,13 @@ void board_place (board_t* board, uint8_t x, uint8_t y)
     board_join_groups (board, x, y);
     /* capture stones */
     board_capture(board, x, y);
+}
+
+void board_place (board_t* board, uint8_t x, uint8_t y)
+{
+    assert (board_legal_placement(board, x, y, board->turn));
+
+    board_place_color (board, x, y, board->turn);
     board->turn = (board->turn == c_black) ? c_white : c_black;
 }
 

@@ -141,8 +141,19 @@ bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
  * \pre board != NULL
  * \post turn != color
  * \post board_legal_placement(board, x, y, color) == false
+ * \post board->grid[x][y] == color
  */
 void board_place (board_t* board, uint8_t x, uint8_t y);
+
+/**
+ * \brief Places a stone with given color on given position.
+ * \pre board_legal_placement(board, x, y, color) == true
+ * \pre board != NULL
+ * \post turn does not change
+ * \post board_legal_placement(board, x, y, color) == false
+ * \post board->grid[x][y] == color
+ */
+void board_place_color (board_t* board, uint8_t x, uint8_t y, color_t color);
 
 /**
  * \brief Don't place a stone and change turn.
