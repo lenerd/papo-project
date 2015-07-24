@@ -126,8 +126,10 @@ bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
     uint16_t n[4] = {left, right, top, bot};
 
     bool last_lib = false;
+    bool other_lib = false;
     bool last_lib_enemy = false;
     uint8_t enemy_cnt = 0;
+    uint16_t libs = UINT16_MAX;
 
     for (uint8_t x = 0; x < 4; ++x)
     {
@@ -146,14 +148,18 @@ bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
             if (board->group_liberties[board->group_id[n[x]]] == 1)
                 last_lib_enemy = true;
         }
-        else if (board->buffer[n[x]] == color &&
-            board->group_liberties[board->group_id[n[x]]] == 1)
+        else if (board->buffer[n[x]] == color)
         {
-            last_lib = true;
+            libs = board->group_liberties[board->group_id[n[x]]];
+            if (libs == 1)
+                last_lib = true;
+            else
+                other_lib = true;
         }
     }
 
-    return ((enemy_cnt == 4) || last_lib) && !last_lib_enemy;
+    return !other_lib && !last_lib_enemy &&
+           (last_lib || (!last_lib && (enemy_cnt == 4)));
 }
 
 uint16_t board_get_group (const board_t* board, uint8_t x, uint8_t y)
