@@ -91,7 +91,7 @@ START_TEST (test_board_suicide)
     board_pass(board);
     board_place (board, 1, 1);
     board_pass(board);
-    board_place (board, 3, 0);
+    board_place (board, 2, 0);
     /* Board:
      *  0123
      * 0 BW 
