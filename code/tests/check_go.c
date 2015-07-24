@@ -59,13 +59,13 @@ START_TEST (test_board_placement)
     ck_assert (!board_legal_placement (board, 6, 0, c_black));
     ck_assert (!board_legal_placement (board, 6, 6, c_black));
     ck_assert (board_legal_placement (board, 0, 0, c_black));
-    ck_assert (!board_legal_placement (board, 0, 0, c_white));
+    ck_assert (!(board->turn == c_white));
     board_place (board, 0, 0);
 	ck_assert(board_position_state(board, 0, 0) == ps_black);
     ck_assert (board->turn == c_white);
     ck_assert (!board_legal_placement (board, 0, 0, c_black));
     ck_assert (!board_legal_placement (board, 0, 0, c_white));
-    ck_assert (!board_legal_placement (board, 1, 0, c_black));
+    ck_assert (!(board->turn == c_black));
     ck_assert (board_legal_placement (board, 1, 0, c_white));
     board_place (board, 1, 0);
 	ck_assert(board_position_state(board, 1, 0) == ps_white);
