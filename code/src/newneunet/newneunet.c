@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
+#include <sys/time.h>
 
 #include <omp.h>
 
@@ -332,7 +332,7 @@ static float zoo(){ // Zero or one
 int main(int argc, char** argv){
 
 	uint32_t h_lays = 2;
-	uint32_t nphl[] = {100, 100};
+	uint32_t nphl[] = {10, 10};
 
 	learn_rate = 10.0f;
 
@@ -349,8 +349,8 @@ int main(int argc, char** argv){
 
 	printf("\n\nStarting test...\n");
 	
-	clock_t start, stop;
-	start = clock();
+	struct timeval start, stop;
+	gettimeofday(&start, NULL);
 
 	float* ins = malloc(100 * sizeof(float));
 	CHECK_MALLOC(ins)
@@ -370,11 +370,11 @@ int main(int argc, char** argv){
 	//printf("\n");
 	//print_neuralnet(net); // It works!
 
-	stop = clock();
+	gettimeofday(&stop, NULL);
 
 	destroy_neural_net_new(net);
 
-	printf("Time in milliseconds for %d backpropagations: %f\n", iters, 1000.0f * ((float)stop - (float)start) / CLOCKS_PER_SEC); 
+	printf("Time in milliseconds for %d backpropagations: %f\n", iters, (stop.tv_sec - start.tv_sec)*1000.0f + (stop.tv_usec - start.tv_usec) / 1000.0f); 
 
 	return 0;
 
