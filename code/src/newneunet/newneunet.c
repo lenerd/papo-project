@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include <omp.h>
 
@@ -330,30 +331,50 @@ static float zoo(){ // Zero or one
 
 int main(int argc, char** argv){
 
-	uint32_t nphl[] = {5, 5};
-	neuralnet_t* net = create_neural_net_random_new(2, nphl);
+	uint32_t h_lays = 2;
+	uint32_t nphl[] = {100, 100};
 
 	learn_rate = 10.0f;
 
-	print_neuralnet(net);
+	uint32_t iters = 10000;
 
-	for(uint32_t i = 0; i < 10000; ++i){
+	printf("Testing performance for a neuralnet with following neuron per hidden layer counts:\n\t");
+	for(uint32_t i = 0; i < h_lays; ++i){
 
-		float ins[5] = { zoo(), zoo(), zoo(), zoo(), zoo() }; 	// Input of zeros and ones
-		float* target = ins;					// This neural net should give the same binary sequence it got as input
+		printf("%d, ", nphl[i]);
 
-		if(i%100 == 0){
+	}
+
+	neuralnet_t* net = create_neural_net_random_new(h_lays, nphl);
+
+	printf("\n\nStarting test...\n");
+	
+	clock_t start, stop;
+	start = clock();
+
+	float* ins = malloc(100 * sizeof(float));
+	CHECK_MALLOC(ins)
+
+	float* target = ins;
+
+	for(uint32_t i = 0; i < iters; ++i){
+
+		/*if(i%100 == 0){
 			float* out = calculate_output_new(net, ins);
 			printf("Error: %f %f %f %f %f\n", target[0] - out[0], target[1] - out[1], target[2] - out[2], target[3] - out[3], target[4] - out[4]);
 			free(out);
-		}
+		}*/
 		backpropagate(net, ins, target);
 	}
 
-	printf("\n");
-	print_neuralnet(net); // It works!
+	//printf("\n");
+	//print_neuralnet(net); // It works!
+
+	stop = clock();
 
 	destroy_neural_net_new(net);
+
+	printf("Time in milliseconds for %d backpropagations: %d\n", iters, 1000 * (stop - start) / CLOCKS_PER_SEC); 
 
 	return 0;
 
