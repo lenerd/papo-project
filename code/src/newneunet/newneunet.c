@@ -357,7 +357,7 @@ int main(int argc, char** argv){
 
 	destroy_neural_net_new(net);
 
-	printf("Time in milliseconds for %d backpropagations: %d\n", iters, 1000 * (stop - start) / CLOCKS_PER_SEC); 
+	printf("Time in milliseconds for %d backpropagations: %f\n", iters, 1000.0f * ((float)stop - (float)start) / CLOCKS_PER_SEC); 
 
 	return 0;
 
