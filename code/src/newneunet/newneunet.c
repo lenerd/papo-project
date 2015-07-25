@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <omp.h>
+
 // Construction and Destruction ########################################
 
 static void initialize_weights_random(neuralnet_t* net){
@@ -13,16 +15,19 @@ static void initialize_weights_random(neuralnet_t* net){
 	net->weights = malloc((net->layer_count - 1) * sizeof(float**));
 	CHECK_MALLOC(net->weights)
 
+	#pragma omp parallel for
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
 		
 		net->weights[gap] = malloc(net->neurons_per_layer_count[gap + 1] * sizeof(float*));
 		CHECK_MALLOC(net->weights[gap]);
-
+		
+		#pragma omp parallel for
 		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
 
 			net->weights[gap][to] = malloc(net->neurons_per_layer_count[gap] * sizeof(float));
 			CHECK_MALLOC(net->weights[gap][to])
-
+			
+			#pragma omp parallel for
 			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
 
 				net->weights[gap][to][from] = random_value_mm(-1.0f, 1.0f);
@@ -36,8 +41,10 @@ static void initialize_weights_random(neuralnet_t* net){
 }
 static void destroy_weights(neuralnet_t* net){
 
+	#pragma omp parallel for
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
-
+		
+		#pragma omp parallel for
 		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
 
 			free(net->weights[gap][to]);
@@ -78,7 +85,8 @@ static float* sigmoidize(const float* array, const uint32_t size){
 	
 	float* result = malloc(size * sizeof(float));
 	CHECK_MALLOC(result);
-	
+
+	#pragma omp parallel for	
 	for(uint32_t i = 0; i < size; ++i){
 		result[i] = sigmoid(array[i]);
 	}
@@ -91,6 +99,7 @@ static float* desigmoidize(const float* array, const uint32_t size){
 	float* result = malloc(size * sizeof(float));
 	CHECK_MALLOC(result);
 	
+	#pragma omp parallel for
 	for(uint32_t i = 0; i < size; ++i){
 		result[i] = inverse_sigmoid(array[i]);
 	}
@@ -107,6 +116,7 @@ float* calculate_output_new(const neuralnet_t* net, const float* input){
 		float* current_result_2 = malloc(net->neurons_per_layer_count[gap + 1] * sizeof(float));
 		CHECK_MALLOC(current_result_2)
 
+		#pragma omp parallel for
 		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
 
 			current_result_2[to] = 0.0f;
@@ -153,6 +163,8 @@ static full_output_t* allocate_full_output(const neuralnet_t* net){
 	
 	full_output->values = malloc(net->layer_count * sizeof(float*));
 	CHECK_MALLOC(full_output->values)
+
+	#pragma omp parallel for
 	for(uint32_t layer = 0; layer < net->layer_count; ++layer){
 
 		full_output->values[layer] = malloc(net->neurons_per_layer_count[layer] * sizeof(float));
@@ -165,6 +177,7 @@ static full_output_t* allocate_full_output(const neuralnet_t* net){
 }
 static void free_full_output(full_output_t* full_output){
 	
+	#pragma omp parallel for
 	for(uint32_t layer = 0; layer < full_output->layer_count; ++layer){
 		free(full_output->values[layer]);
 	}
@@ -182,7 +195,8 @@ static full_output_t* calculate_full_output(const neuralnet_t* net, const float*
 	memcpy(fout->values[0], ins, net->neurons_per_layer_count[0] * sizeof(float));
 
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
-
+		
+		#pragma omp parallel for
 		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
 
 			fout->values[gap + 1][to] = 0.0f;
@@ -229,6 +243,7 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 	errors[last] = malloc(net->neurons_per_layer_count[last] * sizeof(float));
 	CHECK_MALLOC(errors[last]);
 
+	#pragma omp parallel for
 	for(uint32_t to = 0; to < net->neurons_per_layer_count[last]; ++to){
 
 		errors[last][to] = calculate_sigmoid_error(touts[to], fout->values[last][to]);
@@ -248,6 +263,7 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 		errors[layer] = malloc(net->neurons_per_layer_count[layer] * sizeof(float));
 		CHECK_MALLOC(errors[layer]);
 
+		#pragma omp parallel for
 		for(uint32_t current = 0; current < net->neurons_per_layer_count[layer]; ++current){
 
 			errors[layer][current] = 0.0f;
@@ -275,6 +291,7 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 	free_full_output(fout);
 	free(ins);
 	free(touts);
+	#pragma omp parallel for
 	for(uint32_t layer = 1; layer < net->layer_count; ++layer)
 		free(errors[layer]);
 	free(errors);
