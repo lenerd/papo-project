@@ -32,8 +32,8 @@ struct dataset* generate_data(int size, color_t color)
 	set->dataset_size = file_count;
 
 	//Allocates pointer
-	int** data = calloc(file_count * size * size, sizeof(int**));
-	int** expected = calloc(file_count * size * size, sizeof(int**));
+	int** data = calloc(file_count, sizeof(int*));
+	int** expected = calloc(file_count, sizeof(int*));
 
 	//Opens all files and saves their contents in data
 	char fn[100];
@@ -41,8 +41,8 @@ struct dataset* generate_data(int size, color_t color)
 	{
 		sprintf(fn,"/home/ted/git/papo-project/code/src/training/data/%d/%d.sgf", size, i);
 		FILE* fp=fopen(fn, "a+");
-		data[i]=read_file(fp, size);
-		expected[i] = generate_expected_values(data[i], size, color);
+		data[i-1]=read_file(fp, size);
+		expected[i-1] = generate_expected_values(data[i-1], size, color);
 		fclose(fp);
 	}	
 
@@ -93,7 +93,7 @@ int* generate_expected_values(int* positions, int size, color_t color)
 int* read_file(FILE* fp, int size)
 {
 	int x, y, position;
-	int* game = calloc(size*size, sizeof(int*));
+	int* game = calloc(size*size, sizeof(int));
 	char c;
 
 	while((c = fgetc(fp)) != EOF)
