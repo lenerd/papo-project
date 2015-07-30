@@ -4,45 +4,50 @@
 #include "neuralnet/neuralnet.h"
 #include "training/training.h"
 
-START_TEST (test_backpropagation)
+START_TEST (test_expected_values)
 {
-	float* buffer = malloc(3*sizeof(float));
-	buffer[0] = 0.5;	
-	buffer[1] = 0.5;
-	buffer[2] = 0.5;
-	
-	neuralnet_t* net = create_neural_net_buffer(1, 1, 1, 1, buffer);
-	float threshold = 0.2;
+	int* board1 = malloc(sizeof(int));
+	board1[0]=1;
 
-	uint8_t* value1 = malloc(sizeof(uint8_t)); 
-	uint8_t* value2 = malloc(sizeof(uint8_t));
-	uint8_t* value3 = malloc(sizeof(uint8_t));
-		
-	value1[0] = 6;
-	value2[0] = 4;
-	value3[0] = 2;
+	int* board2 = malloc(4*sizeof(int));
+	board2[0] = 0;
+	board2[1] = 1;
+	board2[2] = 2;
+	board2[3] = 0;
 
-	uint8_t* data[] = {value1, value2, value3};
+	int* test1 = generate_expected_values(board1, 1, c_black);
+	int* test2 = generate_expected_values(board2, 2, c_black);
 
-	float* wanted = malloc(3* sizeof(float));
+	ck_assert(test1[0] == 0);
 
-	wanted[0]=12;
-	wanted[1]=8;
-	wanted[2]=4;
-
-	int data_size = 3;
-
-	float* result = backpropagation(net, 1, threshold, data, data_size, wanted);	
-
-	ck_assert(result[0] > 1.5);
-	ck_assert(result[0] < 2.5);
+	ck_assert(test2[0] == 1);
+	ck_assert(test2[1] == 0);
+	ck_assert(test2[2] == 0);
+	ck_assert(test2[3] == 1);
 }
 END_TEST
 
 START_TEST (test_generate_data)
 {
+	struct dataset* test1 = generate_data(1, c_black);
+	struct dataset* test2 = generate_data(2, c_black);
 
+	ck_assert(test1->dataset_size >= 0);
+	ck_assert(test2->dataset_size >= 0);
+
+	ck_assert(test1->input_values[0][0] >= 0);
+	ck_assert(test1->input_values[0][0] >= 0);
 	
+	ck_assert(test1->input_values[0][0] <= 2);
+	ck_assert(test1->input_values[0][0] <= 2);
+	
+	ck_assert(test1->expected_values[0][0] <= 2);
+	ck_assert(test1->expected_values[0][0] <= 2);
+
+	ck_assert(test1->expected_values[0][0] >= 0);
+	ck_assert(test1->expected_values[0][0] >= 0);
+
+		
 }
 END_TEST
 
@@ -99,7 +104,7 @@ Suite* make_suite (void)
 
     tcase_add_test (tc_core, test_read_file);
 	tcase_add_test (tc_core, test_generate_data);
-	tcase_add_test (tc_core, test_backpropagation);
+	tcase_add_test (tc_core, test_expected_values);
     suite_add_tcase (s, tc_core);
 
     return s;
@@ -114,7 +119,7 @@ int main (void)
     sr = srunner_create (make_suite ());
 
    //Uncomment if needed for debugging with gdb:
-   srunner_set_fork_status (sr, CK_NOFORK);
+   //srunner_set_fork_status (sr, CK_NOFORK);
 
     srunner_run_all (sr, CK_NORMAL);
 

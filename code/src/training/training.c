@@ -44,7 +44,7 @@ struct dataset* generate_data(int size, color_t color)
 		data[i]=read_file(fp, size);
 		expected[i] = generate_expected_values(data[i], size, color);
 		fclose(fp);
-	}
+	}	
 
 	set->input_values = data;
 	set->expected_values = expected;
@@ -54,7 +54,7 @@ struct dataset* generate_data(int size, color_t color)
 
 int* generate_expected_values(int* positions, int size, color_t color)
 {
-	int* expected = malloc(size*size*sizeof(int));	
+	int* expected = calloc(size*size, sizeof(int));	
 	board_t* board = board_create(size);
 	
 	//Sets given positions as the grid
@@ -62,7 +62,10 @@ int* generate_expected_values(int* positions, int size, color_t color)
 	{
 		for(int b = 0; b<size; ++b)
 		{
-			board->grid[a][b]=positions[a*size+b];	
+			if(positions[a*size+b] == 1 && board_legal_placement(board, a, b, c_black))
+				board_place_color(board, a, b, c_black);
+			else if(positions[a*size+b] == 2 && board_legal_placement(board, a, b, c_white))
+				board_place_color(board, a, b, c_white);
 		}
 	}
 
@@ -79,6 +82,8 @@ int* generate_expected_values(int* positions, int size, color_t color)
 
 			if(board_legal_placement(board, x, y, color))	
 				expected[i]=1;
+			else
+				expected[i]=0;
 		}
 	}
 
