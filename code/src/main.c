@@ -6,7 +6,7 @@
 int main (int argc, char** argv)
 {
 	if(argc < 5 )
-		printf("Please start again with the following parameters: \n <number of nets> <number of generations> <board_size> <hidden layers> <neurons per hidden layer> \n optional: <preexisting population> <komi>\n");
+		printf("Please start again with the following parameters: \n <number of nets> <number of generations> <board_size> <hidden layers> <neurons per hidden layer> \n optional: <komi> <preexisting population>\n");
 	else
 	{
 		//Setup
@@ -55,24 +55,30 @@ int main (int argc, char** argv)
 				{
 					if(b != a)
 					{
-						char name[4] = {(char) a, (char) b, '.c', '\0'};
-						FILE* record = fopen(name, "a+");
-						result_t result = play(board_size, population[a], population[b], komi, record);
+						//char name[4] = {(char) a, (char) b, '.c', '\0'};
+						FILE* record = fopen("0.sgf", "a+");
+						result_t* result = play(board_size, population[a], population[b], komi, record);
 						fclose(record);
-						scores[a] += result.score_black;
-						scores[b] += result.score_black;
+						scores[a] += result->score_black;
+						scores[b] += result->score_black;
 					}		
 				}
 			}
+			
+			for(int a = 0; a < nets; ++a)
+			{
+				printf("Score Netz %d: %d \n", a, scores[a]);
+			}
+			remove("0.sgf");
 
 			//Save best two nets
 			//Create next generation
 		}
-	
+
 		//At the end save all nets
 	}
 
-    printf("Hello World\n");
+    //printf("Hello World\n");
 
     return EXIT_SUCCESS;
 }

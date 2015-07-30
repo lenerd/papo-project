@@ -300,24 +300,43 @@ END_TEST
 
 
 // Tests for game_controller.c
+START_TEST(test_play)
+{	
+	neuralnet_t* black = create_neural_net_random(4, 2, 2, 2);
+	neuralnet_t* white = create_neural_net_random(4, 2, 2, 2);
+	
+	FILE* test = create_file ("1");
+
+	result_t* result = play(2, black, white, 4.5, test);
+
+	ck_assert_msg(result->score_black == -result->score_white, "%d", result->score_black); 
+
+	destroy_neural_net(black);
+	destroy_neural_net(white);
+
+	fclose(test);
+	//remove("1");
+}
+END_TEST
+
 START_TEST (test_genmove)
 {
-    result_t test_result = result_init (net1, net2);
-	move_t test_move = genmove(board, test_result);
-	ck_assert(test_move.x > -2);
-	ck_assert(test_move.x < 11);
-	ck_assert(test_move.y > -2);
-	ck_assert(test_move.y < 10);
+    result_t* test_result = result_init (net1, net2);
+	move_t* test_move = genmove(board, test_result);
+	ck_assert(test_move->x > -2);
+	ck_assert(test_move->x < 11);
+	ck_assert(test_move->y > -2);
+	ck_assert(test_move->y < 10);
 }
 END_TEST
 
 START_TEST (test_result_init)
 {
-    result_t test_result = result_init (net1, net2);
-    ck_assert (test_result.black == net1);
-    ck_assert (test_result.white == net2);
-    ck_assert (test_result.score_black == 0);
-    ck_assert (test_result.score_white == 0);
+    result_t* test_result = result_init (net1, net2);
+    ck_assert (test_result->black == net1);
+    ck_assert (test_result->white == net2);
+    ck_assert (test_result->score_black == 0);
+    ck_assert (test_result->score_white == 0);
 }
 END_TEST
 
@@ -355,6 +374,7 @@ Suite* make_go_suite (void)
     tc_game = tcase_create ("Game Controller");
     tcase_add_checked_fixture (tc_game, setup, teardown);
 
+    tcase_add_test (tc_game, test_play);
     tcase_add_test (tc_game, test_genmove);
     tcase_add_test (tc_game, test_result_init);
     suite_add_tcase (s, tc_game);

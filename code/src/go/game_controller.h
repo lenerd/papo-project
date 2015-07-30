@@ -40,16 +40,16 @@ typedef struct
 * \brief Sets up and plays a game with two nets.
 */
 
-result_t play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* record);
+result_t* play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* record);
 
 /**
 * \brief Generates a move from a neuralnet output
 */
-move_t genmove(board_t* board, result_t result);
+move_t* genmove(board_t* board, result_t* result);
 
 /**
 * \brief Initializes the result datatype.
 */
-result_t result_init(neuralnet_t* black, neuralnet_t* white);
+result_t* result_init(neuralnet_t* black, neuralnet_t* white);
 
 #endif /* GAME_CONTROLLER_H */
