@@ -315,7 +315,7 @@ START_TEST(test_play)
 	destroy_neural_net(white);
 
 	fclose(test);
-	//remove("1");
+	remove("1");
 }
 END_TEST
 

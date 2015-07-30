@@ -6,15 +6,13 @@
 
 struct dataset* generate_data(int size, color_t color)
 {
-	struct dataset* set = malloc(sizeof(struct dataset));
-
 	//Sees how many files there are in this directory
 	int file_count = 0;
 	DIR * dirp;
 	struct dirent * entry;
 
 	char path[100];
-	sprintf(path, "data/%d", size);
+	sprintf(path, "/home/ted/git/papo-project/code/src/training/data/%d", size);
 	dirp = opendir(path); 
 	if(dirp != NULL)
 	{
@@ -28,7 +26,9 @@ struct dataset* generate_data(int size, color_t color)
 		perror("Error while opening directory.\n");
      		exit(EXIT_FAILURE);
 	}
-
+		
+	struct dataset* set = malloc((file_count*size*size*2 + 1) * sizeof(int));
+	
 	set->dataset_size = file_count;
 
 	//Allocates pointer
@@ -39,7 +39,7 @@ struct dataset* generate_data(int size, color_t color)
 	char fn[100];
 	for(int i = 1; i <= file_count; ++i)
 	{
-		sprintf(fn,"data/%d/%d.sgf", size, i);
+		sprintf(fn,"/home/ted/git/papo-project/code/src/training/data/%d/%d.sgf", size, i);
 		FILE* fp=fopen(fn, "a+");
 		data[i]=read_file(fp, size);
 		expected[i] = generate_expected_values(data[i], size, color);
