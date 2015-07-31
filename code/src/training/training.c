@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <sys/types.h>
 #include "go/board.h"
 #include "training.h"
 
@@ -12,12 +13,16 @@ struct dataset* generate_data(int size, color_t color)
 	struct dirent * entry;
 
 	char path[100];
-	sprintf(path, "/home/ted/git/papo-project/code/src/training/data/%d", size);
+	sprintf(path, "../../src/training/data/%d", size);
 	dirp = opendir(path); 
 	if(dirp != NULL)
 	{
 		while ((entry = readdir(dirp)) != NULL) {
-		         file_count++;
+
+			if(isdigit(entry->d_name[0]))
+			{
+		         	++file_count;
+			}
 		}
 		closedir(dirp);
 	}
@@ -27,6 +32,8 @@ struct dataset* generate_data(int size, color_t color)
      		exit(EXIT_FAILURE);
 	}
 		
+	printf("%d", file_count);
+
 	struct dataset* set = malloc((file_count*size*size*2 + 1) * sizeof(int));
 	
 	set->dataset_size = file_count;
@@ -37,12 +44,12 @@ struct dataset* generate_data(int size, color_t color)
 
 	//Opens all files and saves their contents in data
 	char fn[100];
-	for(int i = 1; i <= file_count; ++i)
+	for(int i = 0; i < file_count; ++i)
 	{
-		sprintf(fn,"/home/ted/git/papo-project/code/src/training/data/%d/%d.sgf", size, i);
-		FILE* fp=fopen(fn, "a+");
-		data[i-1]=read_file(fp, size);
-		expected[i-1] = generate_expected_values(data[i-1], size, color);
+		sprintf(fn,"../../src/training/data/%d/%d.sgf", size, i);
+		FILE* fp=fopen(fn, "r");
+		data[i]=read_file(fp, size);
+		expected[i] = generate_expected_values(data[i], size, color);
 		fclose(fp);
 	}	
 
