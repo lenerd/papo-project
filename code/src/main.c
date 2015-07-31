@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "neuralnet/neuralnet.h"
 #include "go/game_controller.h"
+#include "training/training.h"
 
 int main (int argc, char** argv)
 {
@@ -42,7 +43,10 @@ int main (int argc, char** argv)
 		}
 	
 		//Train nets
-				
+		struct dataset* data = generate_data(board_size, c_black);
+		//TODO Backpropagation 	
+		
+			
 		//For as many times as specified
 		for(int i = 0; i < generations; ++i)
 		{	
@@ -55,8 +59,9 @@ int main (int argc, char** argv)
 				{
 					if(b != a)
 					{
-						//char name[4] = {(char) a, (char) b, '.c', '\0'};
-						FILE* record = fopen("0.sgf", "a+");
+						char name[4];
+						sprintf(name, "%c%c.sgf", a, b);
+						FILE* record = fopen(name, "a+");
 						result_t* result = play(board_size, population[a], population[b], komi, record);
 						fclose(record);
 						scores[a] += result->score_black;
@@ -69,16 +74,13 @@ int main (int argc, char** argv)
 			{
 				printf("Score Netz %d: %d \n", a, scores[a]);
 			}
-			remove("0.sgf");
 
 			//Save best two nets
 			//Create next generation
 		}
 
-		//At the end save all nets
+		//At the end save all nets of the last generation
 	}
-
-    //printf("Hello World\n");
 
     return EXIT_SUCCESS;
 }
