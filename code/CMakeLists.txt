@@ -25,6 +25,9 @@ add_subdirectory (src)
 enable_testing ()
 add_subdirectory (tests)
 
+# build benchmarks
+add_subdirectory (bench)
+
 # documentation
 find_package (Doxygen)
 if (DOXYGEN_FOUND)
