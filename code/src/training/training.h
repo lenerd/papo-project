@@ -27,6 +27,7 @@ struct dataset* generate_data(int size, color_t color);
 /**
 * \brief Generates the expected values for this color. If the position is somehow illegal, expected will be zero, else one.
 */
+
 int* generate_expected_values(int* positions, int size, color_t color);
 
 /**

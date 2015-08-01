@@ -2,7 +2,7 @@
 #include <check.h>
 #include <math.h>
 #include <stdlib.h>
-#include "math_extend/math_ext.h"
+#include "util/math_ext.h"
 
 const unsigned int seed = 0xDEADBEEF;
 

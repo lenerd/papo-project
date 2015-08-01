@@ -24,6 +24,7 @@ struct dataset* generate_data(int size, color_t color)
 		         	++file_count;
 			}
 		}
+
 		closedir(dirp);
 	}
 	else

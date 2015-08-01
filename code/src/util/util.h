@@ -58,5 +58,7 @@ void* safe_calloc (size_t nmemb, size_t size, const char* file,
  */
 #define SAFE_CALLOC(nmemb, size) safe_calloc(nmemb, size, __FILE__, __LINE__)
 
+void swap_int_buffer(int** buf1, int** buf2);
+void swap_float_buffer(float** buf1, float** buf2);
 
-#endif /* UTIL_H */
+#endif
