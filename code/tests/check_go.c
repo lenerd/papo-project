@@ -1,6 +1,5 @@
 #include <check.h>
 #include <stdlib.h>
-#include "util/math_ext.h"
 #include "go/board.h"
 #include "go/record.h"
 #include "go/game_controller.h"

@@ -8,6 +8,7 @@ set (PROJECT_SOURCES
     go/game_controller.c
     go/record.c
     util/util.c
+    util/math_ext.c
     newneunet/newneunet.c
     training/training.c
     example/example.c

@@ -11,7 +11,7 @@ START_TEST(test_backpropagation)
 	layers[1] = 4;
 	layers[2] = 2;
 
-	neuralnet_t* net = create_neural_net_random_new(3, layers);
+	neuralnet_t* net = create_neural_net_random(3, layers);
 
 	struct dataset* t_back = generate_data(2, c_black);
 
@@ -23,7 +23,7 @@ START_TEST(test_backpropagation)
 	test_input[2] = 0;
 	test_input[3] = 0;
 
-	float* test_output = calculate_output_new(net, test_input);
+	float* test_output = calculate_output(net, test_input);
 
 	ck_assert(test_output[3] < 0.25);
 	ck_assert(test_output[2] < 0.25);	
