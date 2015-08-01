@@ -50,26 +50,31 @@ START_TEST (test_expected_values)
 }
 END_TEST
 
-START_TEST (test_generate_data)
+START_TEST (test_generate_training_data)
 {
-	// dataset_t* test1 = generate_training_data("../../src/training/data/1", 1, c_black);
 	dataset_t* test2 = generate_training_data("../../src/training/data/2", 2, c_black);
 
-	// ck_assert(test1->size >= 0);
-	ck_assert(test2->size >= 0);
+	ck_assert(test2->size == 2);
 
-    // always true
-	// ck_assert(test1->data[0].input->buffer[0] >= 0);
-	// ck_assert(test2->data[0].input->buffer[0] >= 0);
-	
-	// ck_assert(test1->data[0].input->buffer[0] <= 2);
-	ck_assert(test2->data[0].input->buffer[0] <= 2);
-	
-	// ck_assert(test1->data[0].expected[0] <= 2);
-	ck_assert(test2->data[0].expected[0] <= 2);
+    ck_assert(test2->data[0].input->grid[0][0] == ps_empty);
+    ck_assert(test2->data[0].input->grid[0][1] == ps_black);
+    ck_assert(test2->data[0].input->grid[1][0] == ps_white);
+    ck_assert(test2->data[0].input->grid[1][1] == ps_empty);
 
-	// ck_assert(test1->data[0].expected[0] >= 0);
-	ck_assert(test2->data[0].expected[0] >= 0);
+    ck_assert(test2->data[0].expected[0] == 1);
+    ck_assert(test2->data[0].expected[1] == 0);
+    ck_assert(test2->data[0].expected[2] == 0);
+    ck_assert(test2->data[0].expected[3] == 1);
+
+    ck_assert(test2->data[1].input->grid[0][0] == ps_black);
+    ck_assert(test2->data[1].input->grid[0][1] == ps_empty);
+    ck_assert(test2->data[1].input->grid[1][0] == ps_empty);
+    ck_assert(test2->data[1].input->grid[1][1] == ps_white);
+
+    ck_assert(test2->data[1].expected[0] == 0);
+    ck_assert(test2->data[1].expected[1] == 1);
+    ck_assert(test2->data[1].expected[2] == 1);
+    ck_assert(test2->data[1].expected[3] == 0);
 
     destroy_dataset(test2);
 }
@@ -132,7 +137,7 @@ Suite* make_suite (void)
 
     tcase_add_test(tc_core, test_backpropagation);
     tcase_add_test (tc_core, test_read_file);
-	tcase_add_test (tc_core, test_generate_data);
+	tcase_add_test (tc_core, test_generate_training_data);
 	tcase_add_test (tc_core, test_expected_values);
     suite_add_tcase (s, tc_core);
 
