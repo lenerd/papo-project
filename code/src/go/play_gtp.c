@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include "play_gtp.h"
-#include "gtp.h"
 #include "neuralnet/neuralnet.h"
 #include "board.h"
-#include "game_controller"
+#include "game_controller.c"
 
 //State of the game/engine
 float komi_value;
 board_t* board;
-neuralnet_t* net = load_net_from_file();
+//TODO: Fix initialisation, needs a trained net
+neuralnet_t* net = create_neural_net_random(5, 4, 4, 2);
 
 #define DECLARE(func) static int func(char* s, int id)
 
@@ -97,7 +97,7 @@ static int gtp_boardsize(char* s, int id)
 	return gtp_success(id, " ");
 }
 
-static int gtp_clear_board()
+static int gtp_clear_board(char* s, int id)
 {
 	board_t* board = board_create(gtp_boardsize);
 	return GTP_OK; 
@@ -124,7 +124,7 @@ static int gtp_play(char* s, int id)
 		return gtp_success(id, " ");
 	}	
 
-	if(!gtp_decode_move(s, &c, &x, &y)
+	if(!gtp_decode_move(s, &c, &x, &y))
 		return gtp_failure(id, "not a valid move");
 	
 	if(c == 1)
@@ -141,28 +141,28 @@ static int gtp_play(char* s, int id)
 
 static int gtp_genmove(char* s, int id)
 {
-	int* output = calculate_output(board->grid);
+	int* output = calculate_output(net, board->grid, UINT8);
 	
 	int c = 0;
-	while(c < gtp_boardsize * gtp_boardsize)
+	while(c < board->size * board->size)
 	{	
 		int max = -500;
 		int max_p = -1;
 
-		for(int i = 0; i < gtp_boardsize * gtp_boardsize; ++i)
+		for(int i = 0; i < board->size * board->size; ++i)
 		{
 			if(output[i] > max)
 				max_p = i;			
 		}
 
-		if(!board_legal_placement(board, i / gtp_boardsize, i % gtp_boardsize, board->turn)
+		if(!board_legal_placement(board, max_p / board->size, max_p % board->size, board->turn))
 			++c;
 		else
 		{
-			if((i / gtp_boardsize) == 10)
+			if((max_p / board->size) == 10)
 				board_pass(board);
 			else
-				board_place_color(board, i / gtp_boardsize, i % gtp_boardsize, board->turn);
+				board_place_color(board, max_p / board->size, max_p % board->size, board->turn);
 
 			return gtp_success(id, " ");
 		}	
@@ -184,5 +184,5 @@ static int gtp_is_legal(char* s, int id)
 	else
 		color = c_black;
 
-	return gtp_success(id, "d", board_legal_placement(board, x, y, color);	
+	return gtp_success(id, "d", board_legal_placement(board, x, y, color));	
 }

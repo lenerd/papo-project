@@ -1,61 +1,66 @@
 #include <stdio.h>
 #include <stdio.h>
-#include "play_gtp.h"
-#include "gtp.h"
+#include "go/play_gtp.h"
+#include "go/gtp.h"
 #include "neuralnet/neuralnet.h"
-#include "board.h"
+#include "go/board.h"
 
 /*
 * /brief Prints out GTP version
 */
-static int protocol_version();
+static int gtp_protocol_version(char* s, int id);
 
 /*
 * /brief Prints out name of the engine
 */
-static int name();
+static int gtp_name(char* s, int id);
 
 /*
 * /brief Prints out the engine version
 */
-static int version();
+static int gtp_version(char* s, int id);
 
 /*
 * /brief Confirms if command is known or not
 */
-static int known_command(char* command_name);
+static int gtp_known_command(char* s, int id);
 
 /*
 * /brief Lists all known commands
 */
-static int list_commands();
+static int gtp_list_commands(char* s, int id);
 
 /*
 * /brief Ends session
 */
-static int quit();
+static int gtp_quit(char* s, int id);
 
 /*
 * /brief Changes board size, clears board
 */
-static int boardsize(int size);
+static int gtp_boardsize(char* s, int id);
 
 /*
 * /brief Clears board
 */
-static int clear_board();
+static int gtp_clear_board(char* s, int id);
 
 /*
 * /brief Komi is changed
 */
-static int komi(float new_komi);
+static int gtp_komi(char* s, int id);
 
 /*
 * /brief Executes move
 */
-static int play(move);
+static int gtp_playmove(char* s, int id);
 
 /*
 * /brief Generates move for color given
 */
-static int genmove(color);
+static int gtp_genmove(char* s, int id);
+
+/*
+ * /brief Tests if move is legal
+ */
+static int gtp_is_legal(char* s, int id);
