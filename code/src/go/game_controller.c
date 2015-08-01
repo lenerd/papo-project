@@ -1,7 +1,7 @@
 #include "board.h"
 #include "record.h"
 #include "game_controller.h"
-#include "neuralnet/neuralnet.h"
+#include "newneunet/newneunet.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -63,9 +63,9 @@ move_t* genmove(board_t* board, result_t* result)
 
 	//Get output of neural net
 	if(board->turn == c_black)
-		output = calculate_output(result->black, board->buffer, UINT8);
+		output = calculate_output(result->black, board->buffer);
 	else
-		output = calculate_output(result->white, board->buffer, UINT8);
+		output = calculate_output(result->white, board->buffer);
 
 
 	//If count is equal or bigger than size, the whole board has been checked without finding

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "neuralnet/neuralnet.h"
+#include "newneunet/newneunet.h"
 
 
 START_TEST (test_file)

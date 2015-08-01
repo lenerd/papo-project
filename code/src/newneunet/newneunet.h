@@ -9,6 +9,7 @@
 */
 
 #include <stdint.h>
+#include "util/math_ext.h"
 
 /**
  * \brief Represents a neural network.
@@ -38,7 +39,7 @@ typedef struct{
  * \pre layer_count > 1
  * \pre neurons_per_layer_count[x] > 0, where 0 < x < layer_count
  */
-neuralnet_t* create_neural_net_random_new(const uint32_t layer_count, uint32_t* neurons_per_layer_count);
+neuralnet_t* create_neural_net_random(const uint32_t layer_count, uint32_t* neurons_per_layer_count);
 
 /**
  * \brief Destroys a neuralnet and frees all used resources.
@@ -46,7 +47,7 @@ neuralnet_t* create_neural_net_random_new(const uint32_t layer_count, uint32_t* 
  * \pre net != NULL
  * \post All used memory is freed.
  */
-void destroy_neural_net_new(neuralnet_t* net);
+void destroy_neural_net(neuralnet_t* net);
 
 /**
  * \brief Calculates the output of a given neuralnet and input.
@@ -56,7 +57,7 @@ void destroy_neural_net_new(neuralnet_t* net);
  * \pre input != NULL
  * \pre length(input) = net->input_count
  */
-float* calculate_output_new(const neuralnet_t* net, const float* input);
+float* calculate_output(const neuralnet_t* net, const float* input);
 
 /**
  * \brief Trains the neuralnet through backpropagation.

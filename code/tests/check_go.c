@@ -1,9 +1,10 @@
 #include <check.h>
 #include <stdlib.h>
+#include "util/math_ext.h"
 #include "go/board.h"
 #include "go/record.h"
 #include "go/game_controller.h"
-#include "neuralnet/neuralnet.h"
+#include "newneunet/newneunet.h"
 
 board_t* board;
 neuralnet_t* net1;
@@ -13,9 +14,15 @@ void setup (void)
 {
     board = board_create (5);
 
+    int* layers = malloc(4 * sizeof(int));
+    layers[0] = board->buf_size;
+    layers[1] = 5;
+    layers[2] = 5;
+    layers[3] = 2;
+
     // TODO: use a deterministic initialition
-    net1 = create_neural_net_random (board->buf_size, 5, 5, (uint32_t) board->buf_size + 1);
-    net2 = create_neural_net_random (board->buf_size, 5, 5, (uint32_t) board->buf_size + 1);
+    net1 = create_neural_net_random (4, layers);
+    net2 = create_neural_net_random (4, layers);
 }
 
 void teardown (void)
@@ -302,8 +309,14 @@ END_TEST
 // Tests for game_controller.c
 START_TEST(test_play)
 {	
-	neuralnet_t* black = create_neural_net_random(4, 2, 2, 2);
-	neuralnet_t* white = create_neural_net_random(4, 2, 2, 2);
+	    int* layers = malloc(4 * sizeof(int));
+	    layers[0] = board->buf_size;
+	    layers[1] = 5;
+	    layers[2] = 5;
+	    layers[3] = 2;
+
+	neuralnet_t* black = create_neural_net_random(4, layers);
+	neuralnet_t* white = create_neural_net_random(4, layers);
 	
 	FILE* test = create_file ("1");
 

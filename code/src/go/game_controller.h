@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "board.h"
 #include "record.h"
-#include "neuralnet/neuralnet.h"
+#include "newneunet/newneunet.h"
 
 /**
 * \brief Data type for result: two nets and their changes of fitness.

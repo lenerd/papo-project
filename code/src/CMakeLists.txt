@@ -7,7 +7,6 @@ set (PROJECT_SOURCES
     go/board.c
     go/game_controller.c
     go/record.c
-    neuralnet/neuralnet.c
     util/util.c
     newneunet/newneunet.c
     training/training.c

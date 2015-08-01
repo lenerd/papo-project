@@ -1,10 +1,35 @@
 #include <check.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "neuralnet/neuralnet.h"
+#include "newneunet/newneunet.h"
 #include "training/training.h"
 
-<<<<<<< HEAD
+START_TEST(test_backpropagation)
+{
+	int* layers = malloc(3*sizeof(int));
+	layers[0] = 4;
+	layers[1] = 4;
+	layers[2] = 2;
+
+	neuralnet_t* net = create_neural_net_random_new(3, layers);
+
+	struct dataset* t_back = generate_data(2, c_black);
+
+	backpropagate(net, t_back->input_values, t_back->expected_values);
+
+	int* test_input = malloc(4*sizeof(int));
+	test_input[0] = 2;
+	test_input[1] = 1;
+	test_input[2] = 0;
+	test_input[3] = 0;
+
+	float* test_output = calculate_output_new(net, test_input);
+
+	ck_assert(test_output[3] < 0.25);
+	ck_assert(test_output[2] < 0.25);	
+}
+END_TEST
+
 START_TEST (test_expected_values)
 {
 	int* board1 = malloc(sizeof(int));
@@ -47,24 +72,6 @@ START_TEST (test_generate_data)
 
 	ck_assert(test1->expected_values[0][0] >= 0);
 	ck_assert(test1->expected_values[0][0] >= 0);
-
-		
-=======
-START_TEST (test_generate_data)
-{
-	int** test1 = generate_data(0);
-	//int** test2 = generate_data(1);
-	//int** test3 = generate_data(2);
-	
-	//ck_assert(test1[0] == NULL);
-
-	//ck_assert(test2[0] == 1);
-
-	//ck_assert(test3[0] == 2);
-	//ck_assert(test3[1] == 0);
-	//ck_assert(test3[2] == 1);
-	//ck_assert(test3[3] == 0);
->>>>>>> armins_branch
 }
 END_TEST
 
@@ -119,12 +126,10 @@ Suite* make_suite (void)
 
     tc_core = tcase_create ("Core");
 
+    tcase_add_test(tc_core, test_backpropagation);
     tcase_add_test (tc_core, test_read_file);
 	tcase_add_test (tc_core, test_generate_data);
-<<<<<<< HEAD
 	tcase_add_test (tc_core, test_expected_values);
-=======
->>>>>>> armins_branch
     suite_add_tcase (s, tc_core);
 
     return s;
@@ -139,7 +144,7 @@ int main (void)
     sr = srunner_create (make_suite ());
 
    //Uncomment if needed for debugging with gdb:
-   srunner_set_fork_status (sr, CK_NOFORK);
+   //srunner_set_fork_status (sr, CK_NOFORK);
 
     srunner_run_all (sr, CK_NORMAL);
 

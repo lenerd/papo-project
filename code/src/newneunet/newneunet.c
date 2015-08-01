@@ -1,6 +1,6 @@
 #include "newneunet.h"
-#include "../util/util.h"
-#include "../util/math_ext.h"
+#include "util/util.h"
+#include "util/math_ext.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,7 +11,7 @@
 static void initialize_weights_random(neuralnet_t* net){
 
 	net->weights = malloc((net->layer_count - 1) * sizeof(float**));
-	CHECK_MALLOC(net->weights)
+	CHECK_MALLOC(net->weights);
 
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
 		
@@ -21,7 +21,7 @@ static void initialize_weights_random(neuralnet_t* net){
 		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
 
 			net->weights[gap][to] = malloc(net->neurons_per_layer_count[gap] * sizeof(float));
-			CHECK_MALLOC(net->weights[gap][to])
+			CHECK_MALLOC(net->weights[gap][to]);
 
 			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
 
@@ -52,7 +52,7 @@ static void destroy_weights(neuralnet_t* net){
 
 }
 
-neuralnet_t* create_neural_net_random_new(const uint32_t layer_count, uint32_t* neurons_per_layer_count){
+neuralnet_t* create_neural_net_random(const uint32_t layer_count, uint32_t* neurons_per_layer_count){
 	
 	neuralnet_t* net = malloc(sizeof(neuralnet_t));
 	CHECK_MALLOC(net);
@@ -65,7 +65,7 @@ neuralnet_t* create_neural_net_random_new(const uint32_t layer_count, uint32_t* 
 	return net;
 } 
 
-void destroy_neural_net_new(neuralnet_t* net){
+void destroy_neural_net(neuralnet_t* net){
 	
 	destroy_weights(net);
 	
@@ -98,14 +98,14 @@ static float* desigmoidize(const float* array, const uint32_t size){
 	return result;
 }
 
-float* calculate_output_new(const neuralnet_t* net, const float* input){
+float* calculate_output(const neuralnet_t* net, const float* input){
 
  	float* current_result_1 = sigmoidize(input, net->neurons_per_layer_count[0]);
 
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
 
 		float* current_result_2 = malloc(net->neurons_per_layer_count[gap + 1] * sizeof(float));
-		CHECK_MALLOC(current_result_2)
+		CHECK_MALLOC(current_result_2);
 
 		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
 
@@ -152,11 +152,11 @@ static full_output_t* allocate_full_output(const neuralnet_t* net){
 	full_output->neurons_per_layer_count = net->neurons_per_layer_count;
 	
 	full_output->values = malloc(net->layer_count * sizeof(float*));
-	CHECK_MALLOC(full_output->values)
+	CHECK_MALLOC(full_output->values);
 	for(uint32_t layer = 0; layer < net->layer_count; ++layer){
 
 		full_output->values[layer] = malloc(net->neurons_per_layer_count[layer] * sizeof(float));
-		CHECK_MALLOC(full_output->values[layer])
+		CHECK_MALLOC(full_output->values[layer]);
 
 	}
 
@@ -221,7 +221,7 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 	float* touts = sigmoidize(target_output, net->neurons_per_layer_count[net->layer_count - 1]);
 
 	float** errors = malloc(net->layer_count * sizeof(float*));
-	CHECK_MALLOC(errors)
+	CHECK_MALLOC(errors);
 
 	// Calculating direct errors of last layer
 	uint32_t last = net->layer_count - 1;
@@ -311,6 +311,7 @@ static float zoo(){ // Zero or one
 	return random_value_01() > 0.5f ? 1.0f : 0.0f;
 }
 
+/*
 int main(int argc, char** argv){
 
 	uint32_t nphl[] = {5, 5};
@@ -340,4 +341,4 @@ int main(int argc, char** argv){
 
 	return 0;
 
-}
+}*/
