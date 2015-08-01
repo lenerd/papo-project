@@ -11,28 +11,56 @@
 #include "go/board.h"
 #include <stdio.h>
 
-struct dataset{
-	int dataset_size;
+typedef struct
+{
+    /* board size */
+    int size;
+    color_t color;
+    board_t* input;
+    int* expected;
+} training_data_t;
 
-	int** input_values;
-
-	int** expected_values;
-}dataset;
+typedef struct
+{
+    /* length of data */
+	int size;
+    training_data_t* data;
+} dataset_t;
 
 /**
 * \brief Reads all .sgf files for the specified board size and returns them as one data set including the expected values for the color
 */
-struct dataset* generate_data(int size, color_t color);
+dataset_t* generate_training_data(const char* path, int size, color_t color);
 
 /**
 * \brief Generates the expected values for this color. If the position is somehow illegal, expected will be zero, else one.
 */
-
-int* generate_expected_values(int* positions, int size, color_t color);
+void generate_expected_values(training_data_t* data);
 
 /**
 * \brief Converts .sgf to int*
 */
-int* read_file(FILE* fp, int size);
+// TODO: replace with generic load_game function
+void input_from_file(training_data_t* data, FILE* fp);
+
+/**
+ * Create dataset.
+ */
+dataset_t* create_dataset (int size);
+
+/**
+ * Destroy dataset.
+ */
+void destroy_dataset (dataset_t* set);
+
+/**
+ * Initialize training data.
+ */
+void create_training_data (training_data_t* data, int size, color_t color);
+
+/**
+ * Destroy training data.
+ */
+void destroy_training_data (training_data_t* data);
 
 #endif /* TRAINING_H */

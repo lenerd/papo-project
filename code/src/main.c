@@ -62,11 +62,14 @@ int main (int argc, char** argv)
 		}
 	
 		//Train nets
-		struct dataset* data = generate_data(board_size, c_black);
+		dataset_t* dataset = generate_training_data("path", board_size, c_black);
 		//Backpropagation 	
 		for(int j = 0; j < net_count; ++j)
 		{
-			backpropagate(current_nets[j]->net, data->input_values, data->expected_values);	
+            for (int i = 0; i < dataset->size; ++i)
+            {
+                backpropagate(current_nets[j]->net, dataset->data[i].input->buffer, dataset->data[i].expected);	
+            }
 		}	
 			
 		//For as many times as specified

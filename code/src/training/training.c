@@ -1,82 +1,164 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include "go/board.h"
+#define _DEFAULT_SOURCE
+
 #include "training.h"
 
-struct dataset* generate_data(int size, color_t color)
+#include "go/board.h"
+#include "util/util.h"
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <linux/limits.h>
+
+
+dataset_t* create_dataset (int size)
+{
+    dataset_t* set = SAFE_CALLOC(1, sizeof(dataset_t));
+    set->size = size;
+    set->data = SAFE_CALLOC(size, sizeof(training_data_t));
+    return set;
+}
+
+void destroy_dataset (dataset_t* set)
+{
+    for (int i = 0; i < set->size; ++i)
+        if (set->data[i].size != 0)
+            destroy_training_data(&set->data[i]);
+    free(set->data);
+    free(set);
+}
+
+void create_training_data (training_data_t* data, int size, color_t color)
+{
+    data->size = size;
+    data->color = color;
+    data->input = board_create(size);
+    data->expected = SAFE_CALLOC(size * size, sizeof(int));
+}
+
+void destroy_training_data (training_data_t* data)
+{
+    board_destroy(data->input);
+    free(data->expected);
+}
+
+dataset_t* generate_training_data(const char* path, int size, color_t color)
 {
 	//Sees how many files there are in this directory
 	int file_count = 0;
-	DIR * dirp;
-	struct dirent * entry;
+	DIR* dirp = NULL;
+	struct dirent* entry = NULL;
 
-	char path[100];
-	sprintf(path, "../../src/training/data/%d", size);
+    size_t path_len = strlen(path);
+    size_t fn_max_len = PATH_MAX - path_len - 2;
+	char* complete_path;
+    char* fn_start;
+    dataset_t* set;
+
+    assert (path_len < PATH_MAX);
+
+    complete_path = SAFE_MALLOC(PATH_MAX);
+
+    strcpy(complete_path, path);
+    fn_start = complete_path + path_len;
+    *fn_start++ = '/';
+    *fn_start = '\0';
+    
 	dirp = opendir(path); 
-	if(dirp != NULL)
-	{
-		while ((entry = readdir(dirp)) != NULL) {
 
-			if(isdigit(entry->d_name[0]))
-			{
-		         	++file_count;
-			}
-		}
-
-		closedir(dirp);
-	}
-	else
-	{
+    if (dirp == NULL)
+    {
 		perror("Error while opening directory.\n");
      		exit(EXIT_FAILURE);
-	}
-		
-	printf("%d", file_count);
+    }
 
-	struct dataset* set = malloc((file_count*size*size*2 + 1) * sizeof(int));
-	
-	set->dataset_size = file_count;
+    /* count files in directory */
+    while ((entry = readdir(dirp)) != NULL)
+    {
+        /* count only regular files */
+        if (entry->d_type == DT_REG)
+            file_count++;
 
-	//Allocates pointer
-	int** data = calloc(file_count, sizeof(int*));
-	int** expected = calloc(file_count, sizeof(int*));
+        size_t entry_len = strlen(entry->d_name);
+        /* count only *.sgf files */
+        if (strncmp(entry->d_name + entry_len - 4, ".sgf", 4) != 0)
+            continue;
+        /* filename too long */
+        if (entry_len > fn_max_len)
+            continue;
+    }
 
-	//Opens all files and saves their contents in data
-	char fn[100];
-	for(int i = 0; i < file_count; ++i)
-	{
-		sprintf(fn,"../../src/training/data/%d/%d.sgf", size, i);
-		FILE* fp=fopen(fn, "r");
-		data[i]=read_file(fp, size);
-		expected[i] = generate_expected_values(data[i], size, color);
-		fclose(fp);
-	}	
+    /* abort if no files are found */
+    if (!file_count)
+    {
+        closedir(dirp);
+        return NULL;
+    }
 
-	set->input_values = data;
-	set->expected_values = expected;
+    /* allocate dataset */
+    set = create_dataset(file_count);
+
+    /* go back to start of dir */
+    rewinddir(dirp);
+
+    int i = 0;
+
+    /* load data from files */
+    while ((entry = readdir(dirp)) != NULL && i < file_count)
+    {
+        /* open only regular files */
+        if (entry->d_type != DT_REG)
+            continue;
+
+        size_t entry_len = strlen(entry->d_name);
+
+        /* open only *.sgf files */
+        if (strncmp(entry->d_name + entry_len - 4, ".sgf", 4) != 0)
+            continue;
+
+        /* filename too long */
+        if (entry_len > fn_max_len)
+        {
+            fprintf(stderr, "skipped %s, filename too long\n", entry->d_name);
+            continue;
+        }
+
+        strncpy(fn_start, entry->d_name, fn_max_len);
+
+        FILE* fp = fopen(complete_path, "r");
+        if (fp == NULL)
+        {
+            fprintf(stderr, "fopen failed, continuing\n");
+            continue;
+        }
+
+        create_training_data(&set->data[i], size, color);
+        input_from_file(&set->data[i], fp);
+        generate_expected_values(&set->data[i]);
+
+        fclose(fp);
+        *fn_start = '\0';
+
+        ++i;
+    }
+
+    /* cleanup */
+    closedir(dirp);
+    free(complete_path);
 
 	return set;
 }
 
-int* generate_expected_values(int* positions, int size, color_t color)
+void generate_expected_values(training_data_t* data)
 {
-	int* expected = calloc(size*size, sizeof(int));	
-	board_t* board = board_create(size);
+    int size = data->size;
+    color_t color = data->color;
+	board_t* board = data->input;
+    uint8_t* positions = board->buffer;
+    int* expected = data->expected;
 	
-	//Sets given positions as the grid
-	for(int a = 0; a < size; ++a)
-	{
-		for(int b = 0; b<size; ++b)
-		{
-			if(positions[a*size+b] == 1 && board_legal_placement(board, a, b, c_black))
-				board_place_color(board, a, b, c_black);
-			else if(positions[a*size+b] == 2 && board_legal_placement(board, a, b, c_white))
-				board_place_color(board, a, b, c_white);
-		}
-	}
-
 	//If position is occupied anyway, no need to check twice
 	//If not, the legal placement has to be checked
 	for(int i = 0; i < size*size; ++i)
@@ -94,15 +176,13 @@ int* generate_expected_values(int* positions, int size, color_t color)
 				expected[i]=0;
 		}
 	}
-
-	return expected;
 }
 
-int* read_file(FILE* fp, int size)
+void input_from_file (training_data_t* data, FILE* fp)
 {
-	int x, y, position;
-	int* game = calloc(size*size, sizeof(int));
-	char c;
+    board_t* board = data->input;
+	int x, y;
+	int c;
 
 	while((c = fgetc(fp)) != EOF)
 	{
@@ -113,8 +193,7 @@ int* read_file(FILE* fp, int size)
 			x = c - 'a';
 			c = fgetc(fp);
 			y = c - 'a';
-			position = x*size + y;
-			game[position] = 1;
+            board_place_color(board, x, y, c_black);
 		}
 		else if(c == 'W')
 		{
@@ -123,10 +202,7 @@ int* read_file(FILE* fp, int size)
 			x = c - 'a';
 			c = fgetc(fp);
 			y = c - 'a';
-			position = x*size + y;
-			game[position] = 2;
+            board_place_color(board, x, y, c_white);
 		}
 	}
-	
-	return game;
 }

@@ -13,9 +13,9 @@ START_TEST(test_backpropagation)
 
 	neuralnet_t* net = create_neural_net_random(3, layers);
 
-	struct dataset* t_back = generate_data(2, c_black);
+	dataset_t* t_back = generate_training_data("path", 2, c_black);
 
-	backpropagate(net, t_back->input_values, t_back->expected_values);
+	backpropagate(net, t_back->data[0].input->buffer, t_back->data[0].expected);
 
 	int* test_input = malloc(4*sizeof(int));
 	test_input[0] = 2;
@@ -32,89 +32,93 @@ END_TEST
 
 START_TEST (test_expected_values)
 {
-	int* board1 = malloc(sizeof(int));
-	board1[0]=1;
+    training_data_t data2;
 
-	int* board2 = malloc(4*sizeof(int));
-	board2[0] = 0;
-	board2[1] = 1;
-	board2[2] = 2;
-	board2[3] = 0;
+    create_training_data(&data2, 2, c_black);
+    board_place_color(data2.input, 0, 1, c_black);
+    board_place_color(data2.input, 1, 0, c_white);
 
-	int* test1 = generate_expected_values(board1, 1, c_black);
-	int* test2 = generate_expected_values(board2, 2, c_black);
+	// generate_expected_values(&data1);
+	generate_expected_values(&data2);
 
-	ck_assert(test1[0] == 0);
+	ck_assert(data2.expected[0] == 1);
+	ck_assert(data2.expected[1] == 0);
+	ck_assert(data2.expected[2] == 0);
+	ck_assert(data2.expected[3] == 1);
 
-	ck_assert(test2[0] == 1);
-	ck_assert(test2[1] == 0);
-	ck_assert(test2[2] == 0);
-	ck_assert(test2[3] == 1);
+    destroy_training_data(&data2);
 }
 END_TEST
 
 START_TEST (test_generate_data)
 {
-	struct dataset* test1 = generate_data(1, c_black);
-	struct dataset* test2 = generate_data(2, c_black);
+	// dataset_t* test1 = generate_training_data("../../src/training/data/1", 1, c_black);
+	dataset_t* test2 = generate_training_data("../../src/training/data/2", 2, c_black);
 
-	ck_assert(test1->dataset_size >= 0);
-	ck_assert(test2->dataset_size >= 0);
+	// ck_assert(test1->size >= 0);
+	ck_assert(test2->size >= 0);
 
-	ck_assert(test1->input_values[0][0] >= 0);
-	ck_assert(test1->input_values[0][0] >= 0);
+    // always true
+	// ck_assert(test1->data[0].input->buffer[0] >= 0);
+	// ck_assert(test2->data[0].input->buffer[0] >= 0);
 	
-	ck_assert(test1->input_values[0][0] <= 2);
-	ck_assert(test1->input_values[0][0] <= 2);
+	// ck_assert(test1->data[0].input->buffer[0] <= 2);
+	ck_assert(test2->data[0].input->buffer[0] <= 2);
 	
-	ck_assert(test1->expected_values[0][0] <= 2);
-	ck_assert(test1->expected_values[0][0] <= 2);
+	// ck_assert(test1->data[0].expected[0] <= 2);
+	ck_assert(test2->data[0].expected[0] <= 2);
 
-	ck_assert(test1->expected_values[0][0] >= 0);
-	ck_assert(test1->expected_values[0][0] >= 0);
+	// ck_assert(test1->data[0].expected[0] >= 0);
+	ck_assert(test2->data[0].expected[0] >= 0);
+
+    destroy_dataset(test2);
 }
 END_TEST
 
 START_TEST (test_read_file)
 {
-	FILE* fp = fopen("test.sgf", "a+");
-	int* out = read_file(fp, 9);
-	for(int i = 0; i < 81; ++i)
-	{ 
-		ck_assert_msg(out[i] == 0, "is %d", out[i]);
-	}
+    training_data_t data1, data2;
+    FILE* fp;
+    create_training_data(&data1, 9, c_black);
+    fp = tmpfile();
+    ck_assert(fp != NULL);
+    input_from_file(&data1, fp);
+   	for(int i = 0; i < 81; ++i)
+   	{ 
+   		ck_assert_msg(data1.input->buffer[i] == 0, "is %d", data1.input->buffer[i]);
+   	}
+   
+   	fclose(fp);
+    destroy_training_data(&data1);
+   
+    fp = tmpfile();
+   	const char* move1 = "B[ab]";
+   	const char* move2 = "W[ah]";
+   	const char* move3 = "B[ed]";
+   	
+   	fputs(move1, fp);
+   	fputs(move2, fp);
+   	fputs(move3, fp);
+   
+   	rewind(fp);
 
-	fclose(fp);
+    create_training_data(&data2, 9, c_black);
 
-	remove("test.sgf");
-	
-	FILE* fq = fopen("test.sgf", "a+");
-	const char* move1 = "B[ab]";
-	const char* move2 = "W[ah]";
-	const char* move3 = "B[ed]";
-	
-	fputs(move1, fq);
-	fputs(move2, fq);
-	fputs(move3, fq);
-
-	rewind(fq);
-
-	int* out2 = read_file(fq, 9);
-
-	for(int i = 0; i < 81; ++i)
-	{ 
-		if(i == 7)
-			ck_assert(out2[i] == 2);
-		else if(i == 1 || i == 39)
-			ck_assert(out2[i] == 1);
-		else
-			ck_assert(out2[i] == 0);
-	}
-
-	fclose(fq);
-	
-	remove("test.sgf");
-	
+    input_from_file(&data2, fp);
+   
+   	for(int i = 0; i < 81; ++i)
+   	{ 
+   		if(i == 7)
+   			ck_assert(data2.input->buffer[i] == 2);
+   		else if(i == 1 || i == 39)
+   			ck_assert(data2.input->buffer[i] == 1);
+   		else
+   			ck_assert(data2.input->buffer[i] == 0);
+   	}
+   
+   	fclose(fp);
+    destroy_training_data(&data2);
+   	
 }
 END_TEST
 
