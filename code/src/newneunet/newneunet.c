@@ -15,15 +15,15 @@ static void initialize_weights_random(neuralnet_t* net){
 
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
 		
-		net->weights[gap] = malloc(net->neurons_per_layer_count[gap + 1] * sizeof(float*));
+		net->weights[gap] = malloc(net->neurons_per_layer[gap + 1] * sizeof(float*));
 		CHECK_MALLOC(net->weights[gap]);
 
-		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+		for(uint32_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to){
 
-			net->weights[gap][to] = malloc(net->neurons_per_layer_count[gap] * sizeof(float));
+			net->weights[gap][to] = malloc(net->neurons_per_layer[gap] * sizeof(float));
 			CHECK_MALLOC(net->weights[gap][to]);
 
-			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
+			for(uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from){
 
 				net->weights[gap][to][from] = random_value_mm(-1.0f, 1.0f);
 
@@ -38,7 +38,7 @@ static void destroy_weights(neuralnet_t* net){
 
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
 
-		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+		for(uint32_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to){
 
 			free(net->weights[gap][to]);
 
@@ -52,13 +52,13 @@ static void destroy_weights(neuralnet_t* net){
 
 }
 
-neuralnet_t* create_neural_net_random(const uint32_t layer_count, uint32_t* neurons_per_layer_count){
+neuralnet_t* create_neural_net_random(const uint32_t layer_count, uint32_t* neurons_per_layer){
 	
 	neuralnet_t* net = malloc(sizeof(neuralnet_t));
 	CHECK_MALLOC(net);
 
 	net->layer_count = layer_count;
-	net->neurons_per_layer_count = neurons_per_layer_count;
+	net->neurons_per_layer = neurons_per_layer;
 	
 	initialize_weights_random(net);
 	
@@ -100,18 +100,18 @@ static float* desigmoidize(const float* array, const uint32_t size){
 
 float* calculate_output(const neuralnet_t* net, const float* input){
 
- 	float* current_result_1 = sigmoidize(input, net->neurons_per_layer_count[0]);
+ 	float* current_result_1 = sigmoidize(input, net->neurons_per_layer[0]);
 
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
 
-		float* current_result_2 = malloc(net->neurons_per_layer_count[gap + 1] * sizeof(float));
+		float* current_result_2 = malloc(net->neurons_per_layer[gap + 1] * sizeof(float));
 		CHECK_MALLOC(current_result_2);
 
-		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+		for(uint32_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to){
 
 			current_result_2[to] = 0.0f;
 
-			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
+			for(uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from){
 
 				current_result_2[to] += current_result_1[from] * net->weights[gap][to][from];
 
@@ -126,7 +126,7 @@ float* calculate_output(const neuralnet_t* net, const float* input){
 
 	}
 
-	return desigmoidize(current_result_1, net->neurons_per_layer_count[net->layer_count - 1]);
+	return desigmoidize(current_result_1, net->neurons_per_layer[net->layer_count - 1]);
 
 }
 
@@ -137,7 +137,7 @@ float learn_rate = 1.0f;
 typedef struct{
 
 	uint32_t layer_count;
-	uint32_t* neurons_per_layer_count;	
+	uint32_t* neurons_per_layer;	
 
 	float** values;
 
@@ -149,13 +149,13 @@ static full_output_t* allocate_full_output(const neuralnet_t* net){
 	CHECK_MALLOC(full_output);
 	
 	full_output->layer_count = net->layer_count;
-	full_output->neurons_per_layer_count = net->neurons_per_layer_count;
+	full_output->neurons_per_layer = net->neurons_per_layer;
 	
 	full_output->values = malloc(net->layer_count * sizeof(float*));
 	CHECK_MALLOC(full_output->values);
 	for(uint32_t layer = 0; layer < net->layer_count; ++layer){
 
-		full_output->values[layer] = malloc(net->neurons_per_layer_count[layer] * sizeof(float));
+		full_output->values[layer] = malloc(net->neurons_per_layer[layer] * sizeof(float));
 		CHECK_MALLOC(full_output->values[layer]);
 
 	}
@@ -177,17 +177,17 @@ static full_output_t* calculate_full_output(const neuralnet_t* net, const float*
 
 	full_output_t* fout = allocate_full_output(net);
 
-	float* ins = sigmoidize(input, net->neurons_per_layer_count[0]);
+	float* ins = sigmoidize(input, net->neurons_per_layer[0]);
 
-	memcpy(fout->values[0], ins, net->neurons_per_layer_count[0] * sizeof(float));
+	memcpy(fout->values[0], ins, net->neurons_per_layer[0] * sizeof(float));
 
 	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
 
-		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+		for(uint32_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to){
 
 			fout->values[gap + 1][to] = 0.0f;
 
-			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
+			for(uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from){
 
 				fout->values[gap + 1][to] += fout->values[gap][from] * net->weights[gap][to][from];
 
@@ -217,8 +217,8 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 
 	full_output_t* fout = calculate_full_output(net, input);
 
-	float* ins = sigmoidize(input, net->neurons_per_layer_count[0]);
-	float* touts = sigmoidize(target_output, net->neurons_per_layer_count[net->layer_count - 1]);
+	float* ins = sigmoidize(input, net->neurons_per_layer[0]);
+	float* touts = sigmoidize(target_output, net->neurons_per_layer[net->layer_count - 1]);
 
 	float** errors = malloc(net->layer_count * sizeof(float*));
 	CHECK_MALLOC(errors);
@@ -226,15 +226,15 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 	// Calculating direct errors of last layer
 	uint32_t last = net->layer_count - 1;
 	
-	errors[last] = malloc(net->neurons_per_layer_count[last] * sizeof(float));
+	errors[last] = malloc(net->neurons_per_layer[last] * sizeof(float));
 	CHECK_MALLOC(errors[last]);
 
-	for(uint32_t to = 0; to < net->neurons_per_layer_count[last]; ++to){
+	for(uint32_t to = 0; to < net->neurons_per_layer[last]; ++to){
 
 		errors[last][to] = calculate_sigmoid_error(touts[to], fout->values[last][to]);
 
 		// Correcting edge weights of gap right before the last layer of neurons
-		for(uint32_t from = 0; from < net->neurons_per_layer_count[last - 1]; ++from){
+		for(uint32_t from = 0; from < net->neurons_per_layer[last - 1]; ++from){
 
 			net->weights[last - 1][to][from] += learn_rate * errors[last][to] * fout->values[last - 1][from];
 
@@ -245,14 +245,14 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 	// Calculating intermediate errors of all remaining layers
 	for(uint32_t layer = net->layer_count - 2; layer > 0; --layer){
 
-		errors[layer] = malloc(net->neurons_per_layer_count[layer] * sizeof(float));
+		errors[layer] = malloc(net->neurons_per_layer[layer] * sizeof(float));
 		CHECK_MALLOC(errors[layer]);
 
-		for(uint32_t current = 0; current < net->neurons_per_layer_count[layer]; ++current){
+		for(uint32_t current = 0; current < net->neurons_per_layer[layer]; ++current){
 
 			errors[layer][current] = 0.0f;
 
-			for(uint32_t right = 0; right < net->neurons_per_layer_count[layer + 1]; ++right){
+			for(uint32_t right = 0; right < net->neurons_per_layer[layer + 1]; ++right){
 
 				errors[layer][current] += learn_rate * errors[layer + 1][right] * net->weights[layer][right][current];
 
@@ -261,7 +261,7 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 			errors[layer][current] *= calculate_sigmoid_error_term(fout->values[layer][current]);
 
 			// Correcting edge weights of gap right before the present layer of neurons
-			for(uint32_t left = 0; left < net->neurons_per_layer_count[layer - 1]; ++left){
+			for(uint32_t left = 0; left < net->neurons_per_layer[layer - 1]; ++left){
 
 				net->weights[layer - 1][current][left] += errors[layer][current] * fout->values[layer - 1][left];
 
@@ -289,11 +289,11 @@ void print_neuralnet(const neuralnet_t* net){
 
 		printf("\n\tGap %d:", gap);
 
-		for(uint32_t to = 0; to < net->neurons_per_layer_count[gap + 1]; ++to){
+		for(uint32_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to){
 
 			printf("\n\t\tTo Neuron %d:", to);
 
-			for(uint32_t from = 0; from < net->neurons_per_layer_count[gap]; ++from){
+			for(uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from){
 
 				printf(" %f", net->weights[gap][to][from]);
 
@@ -342,3 +342,12 @@ int main(int argc, char** argv){
 	return 0;
 
 }*/
+
+
+void neural_net_to_file (neuralnet_t* net, const char* path, bool binary)
+{
+}
+neuralnet_t* neural_net_from_file (const char* path, bool binary)
+{
+    return NULL;
+}
