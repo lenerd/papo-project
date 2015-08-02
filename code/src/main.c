@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "neuralnet/neuralnet.h"
+#include "newneunet/newneunet.h"
 #include "go/game_controller.h"
 #include "training/training.h"
 
@@ -38,7 +38,7 @@ int main (int argc, char** argv)
 		{
 			for(int i = 0; i < nets; ++i)
 			{
-				population[i] = create_neural_net_random(input_count, hidden_layers, neurons_per_layer, output_count);
+				population[i] = create_neural_net_random(0, NULL);
 			}
 		}
 	
