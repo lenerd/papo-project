@@ -2,6 +2,7 @@
 #include "util/util.h"
 #include "util/math_ext.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
