@@ -49,24 +49,29 @@ static void destroy_weights(neuralnet_t* net){
 
 }
 
-neuralnet_t* create_neural_net_random(const uint32_t layer_count, uint32_t* neurons_per_layer){
-	
-	neuralnet_t* net = SAFE_MALLOC(sizeof(neuralnet_t));
+neuralnet_t* create_neural_net_random (const uint32_t layer_count,
+                                       uint32_t* neurons_per_layer)
+{
+    assert (layer_count > 1);
+    assert (neurons_per_layer != NULL);
 
-	net->layer_count = layer_count;
-	net->neurons_per_layer = neurons_per_layer;
-	
-	initialize_weights_random(net);
-	
-	return net;
-} 
+    neuralnet_t* net = SAFE_MALLOC (sizeof (neuralnet_t));
 
-void destroy_neural_net(neuralnet_t* net){
-	
-	destroy_weights(net);
-	
-	free(net);
-	
+    net->layer_count = layer_count;
+    net->neurons_per_layer = neurons_per_layer;
+
+    initialize_weights_random (net);
+
+    return net;
+}
+
+void destroy_neural_net (neuralnet_t* net)
+{
+    assert (net != NULL);
+
+    destroy_weights (net);
+
+    free (net);
 }
 
 // Calculation #########################################################
@@ -93,6 +98,8 @@ static float* desigmoidize(const float* array, const uint32_t size){
 }
 
 float* calculate_output(const neuralnet_t* net, const float* input){
+    assert(net != NULL);
+    assert(input != NULL);
 
  	float* current_result_1 = sigmoidize(input, net->neurons_per_layer[0]);
 
@@ -204,6 +211,9 @@ static float calculate_sigmoid_error(float target, float actual){
 }
 
 void backpropagate(neuralnet_t* net, const float* input, const float* target_output){
+    assert (net != NULL);
+    assert (input != NULL);
+    assert (target_output != NULL);
 
 	full_output_t* fout = calculate_full_output(net, input);
 
@@ -269,6 +279,7 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 }
 
 void print_neuralnet(const neuralnet_t* net){
+    assert (net != NULL);
 
 	printf("\nNeural network at Adress x:");
 

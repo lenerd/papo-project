@@ -116,7 +116,7 @@ void destroy_neural_net (neuralnet_t* net);
  * \param input Buffer containing input values of a given type.
  * \pre net != NULL
  * \pre input != NULL
- * \pre length(input) = net->input_count
+ * \pre length(input) = net->neurons_per_layer[0]
  */
 float* calculate_output(const neuralnet_t* net, const float* input);
 
@@ -125,6 +125,8 @@ float* calculate_output(const neuralnet_t* net, const float* input);
  * \param net Network to be used
  * \param target_output Buffer containing target values the neuralnet should have computed. 
  * \pre net != NULL
+ * \pre input != NULL
+ * \pre target_output != NULL
  * \pre length(*input) = net->input_count
  * \pre length(*target_output) = net->output_count
  */
