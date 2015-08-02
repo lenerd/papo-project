@@ -32,7 +32,7 @@ int main (void)
 
     sr = srunner_create (make_example_suite ());
 
-    srunner_run_all (sr, CK_NORMAL);
+    srunner_run_all (sr, CK_VERBOSE);
 
     n = srunner_ntests_failed (sr);
     srunner_free (sr);

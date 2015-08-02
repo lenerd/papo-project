@@ -128,7 +128,7 @@ int main (void)
     sr = srunner_create (make_random_suite ());
     srunner_add_suite (sr, make_sigmoid_suite ());
 
-    srunner_run_all (sr, CK_NORMAL);
+    srunner_run_all (sr, CK_VERBOSE);
 
     n = srunner_ntests_failed (sr);
     srunner_free (sr);
