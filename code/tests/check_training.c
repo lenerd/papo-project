@@ -25,8 +25,8 @@ START_TEST(test_backpropagation)
 
 	float* test_output = calculate_output(net, test_input);
 
-	ck_assert(test_output[3] < 0.25);
-	ck_assert(test_output[2] < 0.25);	
+	ck_assert(test_output[0] < 0.25);
+	ck_assert(test_output[1] < 0.25);	
 }
 END_TEST
 
