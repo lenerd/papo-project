@@ -139,7 +139,7 @@ neuralnet_t* create_neural_net_buffer (const size_t layer_count,
  * \pre User is permitted to write in the path.
  * \post The state of the neural network is saved in the file.
  */
-void neural_net_to_file (neuralnet_t* net, const char* path, bool binary);
+void neural_net_to_file (const neuralnet_t* net, const char* path, bool binary);
 
 /**
  * \brief Creates and returns a neuralnet with edge-weights stored in a file.

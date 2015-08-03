@@ -127,7 +127,6 @@ END_TEST
 
 START_TEST (test_file)
 {
-#if 0
     neuralnet_t* net1 = NULL;
     neuralnet_t* net2 = NULL;
     neuralnet_t* net3 = NULL;
@@ -154,44 +153,44 @@ START_TEST (test_file)
     ck_assert (net1->layer_count == net2->layer_count);
     ck_assert (memcmp (net1->neurons_per_layer, net2->neurons_per_layer,
                        net1->layer_count * sizeof (uint32_t)) == 0);
-    // ck_assert (net1->edges_count == net2->edges_count);
-    // ck_assert (memcmp (net1->edge_buf, net2->edge_buf,
-    //                    net1->edges_count * sizeof (float)) == 0);
+    ck_assert (net1->edge_count == net2->edge_count);
+    ck_assert (memcmp (net1->edge_buf, net2->edge_buf,
+                       net1->edge_count * sizeof (float)) == 0);
 
     ck_assert (net1->layer_count == net3->layer_count);
     ck_assert (memcmp (net1->neurons_per_layer, net3->neurons_per_layer,
                        net1->layer_count * sizeof (uint32_t)) == 0);
-    // ck_assert (net1->edges_count == net3->edges_count);
-    // ck_assert (memcmp (net1->edge_buf, net3->edge_buf,
-    //                    net1->edges_count * sizeof (float)) == 0);
+    ck_assert (net1->edge_count == net3->edge_count);
+    ck_assert (memcmp (net1->edge_buf, net3->edge_buf,
+                       net1->edge_count * sizeof (float)) == 0);
 
     ck_assert (net1->layer_count == net4->layer_count);
     ck_assert (memcmp (net1->neurons_per_layer, net4->neurons_per_layer,
                        net1->layer_count * sizeof (uint32_t)) == 0);
-    // ck_assert (net1->edges_count == net4->edges_count);
-    // ck_assert (memcmp (net1->edge_buf, net4->edge_buf,
-    //                    net1->edges_count * sizeof (float)) == 0);
+    ck_assert (net1->edge_count == net4->edge_count);
+    ck_assert (memcmp (net1->edge_buf, net4->edge_buf,
+                       net1->edge_count * sizeof (float)) == 0);
 
     ck_assert (net1->layer_count == net5->layer_count);
     ck_assert (memcmp (net1->neurons_per_layer, net5->neurons_per_layer,
                        net1->layer_count * sizeof (uint32_t)) == 0);
-    // ck_assert (net1->edges_count == net5->edges_count);
-    // ck_assert (memcmp (net1->edge_buf, net5->edge_buf,
-    //                    net1->edges_count * sizeof (float)) == 0);
+    ck_assert (net1->edge_count == net5->edge_count);
+    ck_assert (memcmp (net1->edge_buf, net5->edge_buf,
+                       net1->edge_count * sizeof (float)) == 0);
 
     ck_assert (net1->layer_count == net6->layer_count);
     ck_assert (memcmp (net1->neurons_per_layer, net6->neurons_per_layer,
                        net1->layer_count * sizeof (uint32_t)) == 0);
-    // ck_assert (net1->edges_count == net6->edges_count);
-    // ck_assert (memcmp (net1->edge_buf, net6->edge_buf,
-    //                    net1->edges_count * sizeof (float)) == 0);
+    ck_assert (net1->edge_count == net6->edge_count);
+    ck_assert (memcmp (net1->edge_buf, net6->edge_buf,
+                       net1->edge_count * sizeof (float)) == 0);
 
     ck_assert (net1->layer_count == net7->layer_count);
     ck_assert (memcmp (net1->neurons_per_layer, net7->neurons_per_layer,
                        net1->layer_count * sizeof (uint32_t)) == 0);
-    // ck_assert (net1->edges_count == net7->edges_count);
-    // ck_assert (memcmp (net1->edge_buf, net7->edge_buf,
-    //                    net1->edges_count * sizeof (float)) == 0);
+    ck_assert (net1->edge_count == net7->edge_count);
+    ck_assert (memcmp (net1->edge_buf, net7->edge_buf,
+                       net1->edge_count * sizeof (float)) == 0);
 
     destroy_neural_net (net1);
     destroy_neural_net (net2);
@@ -206,7 +205,6 @@ START_TEST (test_file)
     remove ("bin2text");
     remove ("text2bin");
     remove ("text2text");
-#endif
 }
 END_TEST
 
