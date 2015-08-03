@@ -76,26 +76,48 @@ void destroy_neural_net (neuralnet_t* net)
 }
 
 // Calculation #########################################################
-static float* sigmoidize(const float* array, const uint32_t size){
-	
-	float* result = SAFE_MALLOC(size * sizeof(float));
-	
-	for(uint32_t i = 0; i < size; ++i){
-		result[i] = sigmoid(array[i]);
-	}
+static float* sigmoidize (const float* array, const size_t size)
+{
+    float* result = SAFE_MALLOC (size * sizeof (float));
 
-	return result;
+    for (uint32_t i = 0; i < size; ++i)
+    {
+        result[i] = sigmoid (array[i]);
+    }
+
+    return result;
 }
 
-static float* desigmoidize(const float* array, const uint32_t size){
-	
-	float* result = SAFE_MALLOC(size * sizeof(float));
-	
-	for(uint32_t i = 0; i < size; ++i){
-		result[i] = inverse_sigmoid(array[i]);
-	}
+static float* desigmoidize (const float* array, const size_t size)
+{
+    float* result = SAFE_MALLOC (size * sizeof (float));
 
-	return result;
+    for (uint32_t i = 0; i < size; ++i)
+    {
+        result[i] = inverse_sigmoid (array[i]);
+    }
+
+    return result;
+}
+
+static float* sigmoidize_inplace (float* array, const size_t size)
+{
+    for (uint32_t i = 0; i < size; ++i)
+    {
+        array[i] = sigmoid (array[i]);
+    }
+
+    return array;
+}
+
+static float* desigmoidize_inplace (float* array, const size_t size)
+{
+    for (uint32_t i = 0; i < size; ++i)
+    {
+        array[i] = inverse_sigmoid (array[i]);
+    }
+
+    return array;
 }
 
 float* calculate_output(const neuralnet_t* net, const float* input){
@@ -127,7 +149,7 @@ float* calculate_output(const neuralnet_t* net, const float* input){
 
 	}
 
-	return desigmoidize(current_result_1, net->neurons_per_layer[net->layer_count - 1]);
+	return desigmoidize_inplace(current_result_1, net->neurons_per_layer[net->layer_count - 1]);
 
 }
 
