@@ -9,7 +9,7 @@
 
 // Construction and Destruction ########################################
 
-size_t edge_count (size_t layer_count, const size_t* neurons_per_layer)
+size_t nnet_edge_count (size_t layer_count, const size_t* neurons_per_layer)
 {
     size_t cnt = 0;
     for (size_t i = 0; i < layer_count - 1; ++i)
@@ -17,7 +17,7 @@ size_t edge_count (size_t layer_count, const size_t* neurons_per_layer)
     return cnt;
 }
 
-size_t node_count (size_t layer_count, const size_t* neurons_per_layer)
+size_t nnet_node_count (size_t layer_count, const size_t* neurons_per_layer)
 {
     size_t cnt = 0;
     for (size_t i = 0; i < layer_count; ++i)
@@ -56,13 +56,16 @@ static neuralnet_t* allocate_neural_net (const size_t layer_count,
     net = SAFE_MALLOC (sizeof (neuralnet_t));
     net->neurons_per_layer = SAFE_MALLOC (layer_count * sizeof (size_t));
 
+    size_t edge_cnt =
+        nnet_edge_count (layer_count, neurons_per_layer);
+    size_t help_len =
+        nnet_node_count (layer_count, neurons_per_layer) -
+        neurons_per_layer[layer_count - 1];
+
     net->layer_count = layer_count;
+    net->edge_count = edge_cnt;
     memcpy (net->neurons_per_layer, neurons_per_layer,
             layer_count * sizeof (size_t));
-
-    size_t edge_cnt = edge_count (net->layer_count, net->neurons_per_layer);
-    size_t help_len = node_count (net->layer_count, net->neurons_per_layer) -
-                      net->neurons_per_layer[net->layer_count - 1];
 
     net->edge_buf = SAFE_CALLOC (edge_cnt, sizeof (float));
     net->edge_helper = SAFE_CALLOC (help_len, sizeof (float*));
@@ -104,7 +107,7 @@ neuralnet_t* create_neural_net_buffer (const size_t layer_count,
 
     neuralnet_t* net = allocate_neural_net (layer_count, neurons_per_layer);
     memcpy (net->edge_buf, edges,
-            edge_count (layer_count, neurons_per_layer) * sizeof (float));
+            nnet_edge_count (layer_count, neurons_per_layer) * sizeof (float));
 
     return net;
 }

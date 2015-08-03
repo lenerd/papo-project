@@ -8,8 +8,8 @@
 START_TEST (test_misc)
 {
     size_t size[] = {1, 3, 3, 7};
-    ck_assert (edge_count (4, size) == 33);
-    ck_assert (node_count (4, size) == 14);
+    ck_assert (nnet_edge_count (4, size) == 33);
+    ck_assert (nnet_node_count (4, size) == 14);
 }
 END_TEST
 
@@ -19,6 +19,7 @@ START_TEST (test_construction)
     neuralnet_t* net = create_neural_net_random (4, size);
 
     ck_assert (net->layer_count == 4);
+    ck_assert (net->edge_count == 33);
     ck_assert (memcmp (size, net->neurons_per_layer,
                        net->layer_count * sizeof (size_t)) == 0);
 

@@ -27,8 +27,13 @@ typedef struct
      */
     size_t* neurons_per_layer;
 
+    /** \brief Number of edges.*/
+    size_t edge_count;
+
     /**
      * \brief Buffer containing all edge weights.
+     *
+     * Length should be equal to edge_count.
      *
      * TODO: interface description
      */
@@ -69,7 +74,7 @@ typedef struct
  * \pre neurons_per_layer != NULL
  * \pre len(neurons_per_layer) == layer_count
  */
-size_t edge_count (size_t layer_count, const size_t* neurons_per_layer);
+size_t nnet_edge_count (size_t layer_count, const size_t* neurons_per_layer);
 
 /**
  * Calculates the amount of nodes in a neuralnetwork with given properties.
@@ -84,7 +89,7 @@ size_t edge_count (size_t layer_count, const size_t* neurons_per_layer);
  * \pre neurons_per_layer != NULL
  * \pre len(neurons_per_layer) == layer_count
  */
-size_t node_count (size_t layer_count, const size_t* neurons_per_layer);
+size_t nnet_node_count (size_t layer_count, const size_t* neurons_per_layer);
 
 /**
  * \brief Creates and returns a neuralnet with random edge-weights, given its
