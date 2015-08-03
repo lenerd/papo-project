@@ -1,6 +1,7 @@
 #include "util.h"
 
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -46,4 +47,14 @@ void swap_float_buffer(float** buf1, float** buf2){
 	float* tmp = *buf1;
 	*buf1 = *buf2;
 	*buf2 = tmp;
+}
+
+size_t max_size (const size_t* array, size_t n)
+{
+    assert (array != NULL);
+
+    size_t maximum = 0;
+    for (size_t i = 0; i < n; ++i)
+        maximum = maximum > array[i] ? maximum : array[i];
+    return maximum;
 }
