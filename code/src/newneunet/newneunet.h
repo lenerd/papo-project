@@ -117,7 +117,7 @@ neuralnet_t* create_neural_net_random (const size_t layer_count,
  */
 neuralnet_t* create_neural_net_buffer (const size_t layer_count,
                                        const size_t* neurons_per_layer,
-                                       float* edges);
+                                       const float* edges);
 
 /**
  * \brief Saves a neural network in a file;

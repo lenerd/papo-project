@@ -94,6 +94,21 @@ neuralnet_t* create_neural_net_random (const size_t layer_count,
     return net;
 }
 
+neuralnet_t* create_neural_net_buffer (const size_t layer_count,
+                                       const size_t* neurons_per_layer,
+                                       const float* edges)
+{
+    assert (layer_count > 1);
+    assert (neurons_per_layer != NULL);
+    assert (edges != NULL);
+
+    neuralnet_t* net = allocate_neural_net (layer_count, neurons_per_layer);
+    memcpy (net->edge_buf, edges,
+            edge_count (layer_count, neurons_per_layer) * sizeof (float));
+
+    return net;
+}
+
 void destroy_neural_net (neuralnet_t* net)
 {
     assert (net != NULL);
