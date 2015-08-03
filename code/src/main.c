@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "util/util.h"
 #include "genetic/genetic_algorithm.h"
 #include "newneunet/newneunet.h"
 #include "go/game_controller.h"
@@ -10,6 +11,14 @@ struct net_struct
 	neuralnet_t* net;
 	int score;
 };
+
+struct net_struct* make_net_struct()
+{
+	struct net_struct* made = SAFE_MALLOC(sizeof(struct net_struct));
+	made->score = 0;
+	made->net = SAFE_MALLOC(sizeof(neuralnet_t));
+	return made;
+}
 
 int cmp(struct net_struct* a, struct net_struct* b)
 {
@@ -38,7 +47,11 @@ int main (int argc, char** argv)
 			komi = 4.5;
 					
 		//Create as many nets as specified or take the given population
-		struct net_struct** current_nets = malloc((sizeof(neuralnet_t*) + sizeof(int)) * net_count);
+		struct net_struct** current_nets = SAFE_MALLOC(net_count * sizeof(struct net_struct));
+		for(int a = 0; a < net_count; ++a)
+		{
+			current_nets[a] = make_net_struct();
+		}
 
 		if(argc >= 7)
 		{
@@ -46,30 +59,32 @@ int main (int argc, char** argv)
 		}
 		else
 		{
-			int* layers = malloc((hidden_layers +2)*sizeof(int));
-			layers[0] = board_size * board_size;
+			int* layers = SAFE_MALLOC(hidden_layers*sizeof(int));
 			
-			for(int a = 1; a <= hidden_layers; ++a)
+			for(int a = 0; a < hidden_layers; ++a)
 			{	
 				layers[a] = neurons_per_layer;
 			}
-			layers[hidden_layers+2] = 2;
 
 			for(int i = 0; i < net_count; ++i)
 			{
-				current_nets[i]->net = create_neural_net_random((hidden_layers+2), layers);
+				current_nets[i]->net = create_neural_net_random(hidden_layers, layers);
 			}
 		}
 	
 		//Train nets
-		dataset_t* dataset = generate_training_data("path", board_size, c_black);
+		//Generate data 
+		char path[100];
+		sprintf(path, "../../src/training/data/%d", board_size);
+		dataset_t* dataset = generate_training_data(path, board_size, c_black);
+
 		//Backpropagation 	
 		for(int j = 0; j < net_count; ++j)
 		{
-            for (int i = 0; i < dataset->size; ++i)
-            {
-                backpropagate(current_nets[j]->net, dataset->data[i].input->buffer, dataset->data[i].expected);	
-            }
+	            for (int i = 0; i < dataset->size; ++i)
+        	    {
+                	backpropagate(current_nets[j]->net, dataset->data[i].input->buffer, dataset->data[i].expected);	
+                     }	
 		}	
 			
 		//For as many times as specified
@@ -84,7 +99,7 @@ int main (int argc, char** argv)
 					if(b != a)
 					{
 						char name[4];
-						sprintf(name, "%c%c.sgf", a, b);
+						sprintf(name, "./kifu/%c%c.sgf", a, b);
 						FILE* record = fopen(name, "a+");
 						result_t* result = play(board_size, current_nets[a]->net, current_nets[b]->net, komi, record);
 						fclose(record);
@@ -102,7 +117,14 @@ int main (int argc, char** argv)
 			//Sort nets in descending order of scores 
 			qsort(current_nets, net_count, sizeof(struct net_struct), cmp);			
 			//Save best two nets
-			
+			sprintf(path, "./nets/%d1", i);
+			neural_net_to_file(current_nets[0]->net, path, false);
+		
+			sprintf(path, "./nets/%d2", i);
+			neural_net_to_file(current_nets[1]->net, path, false); 		
+
+			//TODO: Convert edge weights to genomes
+			/*	
 			//Create population for genetic algorithm
 			genome_t** genomes = malloc(sizeof(genome_t) * net_count);
 			
@@ -115,9 +137,15 @@ int main (int argc, char** argv)
 		
 			//Make next generation	
 			next_generation(population);
+			*/
 			
 		}
 		//At the end save all nets of the last generation
+		for(int l = 0; l < net_count; ++l)
+		{
+			sprintf(path, "./nets/%d%d", generations, l);	
+			neural_net_to_file(current_nets[l]->net, path, false);
+		}
 	}
 
     return EXIT_SUCCESS;
