@@ -23,8 +23,7 @@ int main()
 	int input_size = 5;
 	int runs = 1000000;
 
-	clock_t start, end;
-	float total;
+	struct timespec start, end, total;
 	
 	int layers[] = {5, 5, 5, 5, 5};
 	neuralnet_t* net = create_neural_net_random(5, layers);
@@ -40,19 +39,23 @@ int main()
 			bench_expected[j]= random_value_0m(10000);
 		}
 		
-		start = clock();
+		clock_gettime(CLOCK_REALTIME, &start);
 
 		backpropagate(net, bench_input, bench_expected);
 		
-		end = clock();
-
-		total += (float) end - start;
+		clock_gettime(CLOCK_REALTIME, &end);
+		
+		struct timespec diff = diff_timespec(start, end);
+		total.tv_sec += diff.tv_sec;
+		total.tv_nsec += diff.tv_nsec;
 		
 	} 
+	
+	struct timespec per_run;
+	per_run.tv_sec = total.tv_sec / runs;
+	per_run.tv_nsec = total.tv_nsec / runs;
 
-	float per_run = (total / CLOCKS_PER_SEC) / runs;
-
-	printf("In total %4.4f s for %d backpropagations \n That's %4.4f s per run\n", total, runs, per_run);
+	printf("In total %lu s and %lu ns for %d backpropagations \n That's %lu sand %lu ns per run\n", total.tv_sec, total.tv_nsec, runs, per_run.tv_sec, per_run.tv_nsec);
 
 	return EXIT_SUCCESS;
 }
