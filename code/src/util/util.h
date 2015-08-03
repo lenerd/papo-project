@@ -9,6 +9,7 @@
 
 
 #include <stdlib.h>
+#include <time.h>
 
 
 /**
@@ -69,5 +70,22 @@ void swap_float_buffer(float** buf1, float** buf2);
  * \pre array != NULL
  */
 size_t max_size (const size_t* array, size_t n);
+
+/**
+ * \brief Calculates the difference between two timestamps.
+ * \param start First timestamp.
+ * \param end Second timestamp.
+ * \return end - start
+ */
+struct timespec diff_timespec (struct timespec start, struct timespec end);
+
+/**
+ * \brief Prints time to stdout.
+ *
+ * Time in seconds with nanosecond precision.
+ * Format: \d+\.\d{9}
+ * \param time Time to print.
+ */
+void print_time (struct timespec time);
 
 #endif /* UTIL_H */

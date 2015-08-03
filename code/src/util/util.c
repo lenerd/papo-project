@@ -58,3 +58,24 @@ size_t max_size (const size_t* array, size_t n)
         maximum = maximum > array[i] ? maximum : array[i];
     return maximum;
 }
+
+struct timespec diff_timespec (struct timespec start, struct timespec end)
+{
+    struct timespec diff;
+    if (end.tv_nsec < start.tv_nsec)
+    {
+        diff.tv_sec = end.tv_sec - start.tv_sec - 1;
+        diff.tv_nsec = 1000000000 + end.tv_nsec - start.tv_nsec;
+    }
+    else
+    {
+        diff.tv_sec = end.tv_sec - start.tv_sec;
+        diff.tv_nsec = end.tv_nsec - start.tv_nsec;
+    }
+    return diff;
+}
+
+void print_time (struct timespec time)
+{
+    printf("%lu.%9lu\n", time.tv_sec, time.tv_nsec);
+}
