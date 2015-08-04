@@ -25,6 +25,28 @@ int cmp(struct net_struct* a, struct net_struct* b)
 	return a->score - b->score;
 }
 
+static float* int_array_to_float(const int* array, const size_t size)
+{
+	float* result = SAFE_MALLOC (size * sizeof(float));
+
+	for(uint32_t  i = 0; i < size; ++i){
+		result[i] = (float)array[i];
+	}
+
+	return result;
+}
+
+static float* uint8_array_to_float(const uint8_t* array, const size_t size)
+{
+	float* result = SAFE_MALLOC (size * sizeof(float));
+
+	for(uint32_t  i = 0; i < size; ++i){
+		result[i] = (float)array[i];
+	}
+
+	return result;
+}
+
 int main (int argc, char** argv)
 {
 	if(argc < 5 )
@@ -37,7 +59,7 @@ int main (int argc, char** argv)
 		int generations = atoi(argv[2]);
 		int board_size = atoi(argv[3]);
 		int hidden_layers = atoi(argv[4]);
-		int neurons_per_layer = atoi(argv[5]);
+		size_t neurons_per_layer = (size_t)atoi(argv[5]);
 		float komi;
 
 		//Read optional komi argument or set to standard value
@@ -59,7 +81,7 @@ int main (int argc, char** argv)
 		}
 		else
 		{
-			int* layers = SAFE_MALLOC(hidden_layers*sizeof(int));
+			size_t* layers = SAFE_MALLOC(hidden_layers*sizeof(size_t));
 			
 			for(int a = 0; a < hidden_layers; ++a)
 			{	
@@ -81,10 +103,12 @@ int main (int argc, char** argv)
 		//Backpropagation 	
 		for(int j = 0; j < net_count; ++j)
 		{
-	            for (int i = 0; i < dataset->size; ++i)
-        	    {
-                	backpropagate(current_nets[j]->net, dataset->data[i].input->buffer, dataset->data[i].expected);	
-                     }	
+            for (int i = 0; i < dataset->size; ++i)
+    	    {
+    	    	float* ins = uint8_array_to_float(dataset->data[i].input->buffer, current_nets[j]->net->neurons_per_layer[0]);
+    	    	float* outs = int_array_to_float(dataset->data[i].expected, current_nets[j]->net->neurons_per_layer[current_nets[j]->net->layer_count-1]);
+            	backpropagate(current_nets[j]->net, ins, outs);	
+            }	
 		}	
 			
 		//For as many times as specified

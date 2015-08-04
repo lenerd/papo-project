@@ -492,6 +492,7 @@ void backpropagate(neuralnet_t* net, const float* input, const float* target_out
 	full_output_t* fout = calculate_full_output(net, input);
 
 	float* ins = sigmoidize(input, net->neurons_per_layer[0]);
+
 	float* touts = sigmoidize(target_output, net->neurons_per_layer[net->layer_count - 1]);
 
 	float** errors = SAFE_MALLOC(net->layer_count * sizeof(float*));
