@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "play_gtp.h"
-#include "newneunet/newneunet.h"
+#include "neuralnet/neuralnet.h"
 #include "board.h"
 #include "game_controller.c"
 

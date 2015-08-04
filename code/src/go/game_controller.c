@@ -1,7 +1,7 @@
 #include "board.h"
 #include "record.h"
 #include "game_controller.h"
-#include "newneunet/newneunet.h"
+#include "neuralnet/neuralnet.h"
 #include <stdio.h>
 #include <stdlib.h>
 

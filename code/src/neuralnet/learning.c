@@ -1,4 +1,4 @@
-#include "newneunet.h"
+#include "neuralnet.h"
 #include "util/util.h"
 #include "util/math_ext.h"
 

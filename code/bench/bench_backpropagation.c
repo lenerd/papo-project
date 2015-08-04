@@ -1,6 +1,6 @@
 #define _POSIX_C_SOURCE 199309L
 
-#include "newneunet/newneunet.h"
+#include "neuralnet/neuralnet.h"
 #include "util/util.h"
 #include "util/math_ext.h"
 

@@ -3,7 +3,7 @@
 #include "go/board.h"
 #include "go/record.h"
 #include "go/game_controller.h"
-#include "newneunet/newneunet.h"
+#include "neuralnet/neuralnet.h"
 #include "util/util.h"
 
 board_t* board;
