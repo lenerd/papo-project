@@ -2,8 +2,8 @@
 #include "record.h"
 #include "game_controller.h"
 #include "newneunet/newneunet.h"
+#include "util/util.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 result_t* play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* record)
 {
@@ -59,13 +59,13 @@ move_t* genmove(board_t* board, result_t* result)
     uint16_t count = 0;
     int size = board->size * board->size +1; 
     //Holds x and y positions as well as number of tried illegal moves
-    move_t* move = malloc(sizeof(move_t));
+    move_t* move = SAFE_MALLOC(sizeof(move_t));
 
 	//Get output of neural net
 	if(board->turn == c_black)
-		output = calculate_output(result->black, board->buffer);
+		output = calculate_output(result->black, uint8_array_to_float(board->buffer, size-1));
 	else
-		output = calculate_output(result->white, board->buffer);
+		output = calculate_output(result->white, uint8_array_to_float(board->buffer, size-1));
 
 
 	//If count is equal or bigger than size, the whole board has been checked without finding

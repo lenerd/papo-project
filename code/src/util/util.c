@@ -49,6 +49,28 @@ void swap_float_buffer(float** buf1, float** buf2){
 	*buf2 = tmp;
 }
 
+float* int_array_to_float(const int* array, const size_t size)
+{
+    float* result = SAFE_MALLOC (size * sizeof(float));
+
+    for(uint32_t  i = 0; i < size; ++i){
+        result[i] = (float)array[i];
+    }
+
+    return result;
+}
+
+float* uint8_array_to_float(const uint8_t* array, const size_t size)
+{
+    float* result = SAFE_MALLOC (size * sizeof(float));
+
+    for(uint32_t  i = 0; i < size; ++i){
+        result[i] = (float)array[i];
+    }
+
+    return result;
+}
+
 size_t max_size (const size_t* array, size_t n)
 {
     assert (array != NULL);

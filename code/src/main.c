@@ -25,32 +25,13 @@ int cmp(struct net_struct* a, struct net_struct* b)
 	return a->score - b->score;
 }
 
-static float* int_array_to_float(const int* array, const size_t size)
-{
-	float* result = SAFE_MALLOC (size * sizeof(float));
-
-	for(uint32_t  i = 0; i < size; ++i){
-		result[i] = (float)array[i];
-	}
-
-	return result;
-}
-
-static float* uint8_array_to_float(const uint8_t* array, const size_t size)
-{
-	float* result = SAFE_MALLOC (size * sizeof(float));
-
-	for(uint32_t  i = 0; i < size; ++i){
-		result[i] = (float)array[i];
-	}
-
-	return result;
-}
-
 int main (int argc, char** argv)
 {
-	if(argc < 5 )
-		printf("Please start again with the following parameters: \n <number of nets> <number of generations> <board_size> <hidden layers> <neurons per hidden layer> \n optional: <komi> <preexisting population>\n");
+	//For now we don't need the neurons_per_hidden_layer argument 
+	//because the size of the board will determine the number of input or output neurons.
+	//For the intermediate ones we can come up with a solution later.
+	if(argc < 4 )
+		printf("Please start again with the following parameters: \n <number of nets> <number of generations> <board_size> <hidden layers> \n optional: <komi> <preexisting population>\n");
 	else
 	{
 		//Setup
@@ -59,11 +40,11 @@ int main (int argc, char** argv)
 		int generations = atoi(argv[2]);
 		int board_size = atoi(argv[3]);
 		int hidden_layers = atoi(argv[4]);
-		size_t neurons_per_layer = (size_t)atoi(argv[5]);
+		size_t neurons_per_layer = board_size * board_size;
 		float komi;
 
 		//Read optional komi argument or set to standard value
-		if(argc == 7)
+		if(argc == 6)
 			komi = atof(argv[4]);
 		else
 			komi = 4.5;
@@ -75,22 +56,21 @@ int main (int argc, char** argv)
 			current_nets[a] = make_net_struct();
 		}
 
-		if(argc >= 7)
+		if(argc >= 6)
 		{
 			//TODO: Parse command line argument to population
 		}
 		else
 		{
-			size_t* layers = SAFE_MALLOC(hidden_layers*sizeof(size_t));
-			
-			for(int a = 0; a < hidden_layers; ++a)
+			size_t* layers = SAFE_MALLOC((hidden_layers+2)*sizeof(size_t)); //+2 because input and output layers ar not hidden ones
+			for(int a = 0; a < hidden_layers + 2; ++a) //see line 65 comment
 			{	
 				layers[a] = neurons_per_layer;
 			}
 
 			for(int i = 0; i < net_count; ++i)
 			{
-				current_nets[i]->net = create_neural_net_random(hidden_layers, layers);
+				current_nets[i]->net = create_neural_net_random(hidden_layers + 2, layers);  //see line 65 comment
 			}
 		}
 	

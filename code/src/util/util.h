@@ -9,6 +9,7 @@
 
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <time.h>
 
 
@@ -61,6 +62,19 @@ void* safe_calloc (size_t nmemb, size_t size, const char* file,
 
 void swap_int_buffer(int** buf1, int** buf2);
 void swap_float_buffer(float** buf1, float** buf2);
+
+/**
+ * \brief Casts the contents of the given uint8_t array to float and returns an array of those values.
+ * \param array The uint8_t array to convert.
+ * \param size The size of the array.
+ */
+float* uint8_array_to_float(const uint8_t* array, const size_t size);
+/**
+ * \brief Casts the contents of the given int array to float and returns an array of those values.
+ * \param array The uint8_t array to convert.
+ * \param size The size of the array.
+ */
+float* int_array_to_float(const int* array, const size_t size);
 
 /**
  * \brief Maximum size over array of sizes.
