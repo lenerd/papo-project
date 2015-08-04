@@ -1,6 +1,8 @@
-#include "../src/newneunet/newneunet.h"
-#include "../src/util/util.h"
-#include "../src/util/math_ext.h"
+#define _POSIX_C_SOURCE 199309L
+
+#include "newneunet/newneunet.h"
+#include "util/util.h"
+#include "util/math_ext.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,11 +23,14 @@
 int main()
 {
 	int input_size = 5;
-	int runs = 1000000;
+	int runs = 100;
 
 	struct timespec start, end, total;
+
+    total.tv_sec = 0;
+    total.tv_nsec = 0;
 	
-	int layers[] = {5, 5, 5, 5, 5};
+	size_t layers[] = {5, 5, 5, 5, 5};
 	neuralnet_t* net = create_neural_net_random(5, layers);
 
 	float* bench_input = SAFE_MALLOC(input_size *  sizeof(float));
@@ -50,6 +55,10 @@ int main()
 		total.tv_nsec += diff.tv_nsec;
 		
 	} 
+
+    free (bench_input);
+    free (bench_expected);
+    destroy_neural_net (net);
 	
 	struct timespec per_run;
 	per_run.tv_sec = total.tv_sec / runs;
