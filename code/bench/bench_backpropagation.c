@@ -22,7 +22,7 @@
 
 int main()
 {
-	int input_size = 5;
+	size_t input_size = 5;
 	int runs = 100;
 
 	struct timespec start, end, total;
@@ -38,7 +38,7 @@ int main()
 
 	for(int i = 0; i < runs; ++i)
 	{
-		for(int j = 0; j < input_size; ++j)
+		for(size_t j = 0; j < input_size; ++j)
 		{
 			bench_input[j] = random_value_0m(10000);
 			bench_expected[j]= random_value_0m(10000);
