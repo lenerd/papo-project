@@ -10,6 +10,7 @@ set (PROJECT_SOURCES
     util/util.c
     util/math_ext.c
     newneunet/newneunet.c
+    newneunet/learning.c
     training/training.c
     example/example.c
 )
