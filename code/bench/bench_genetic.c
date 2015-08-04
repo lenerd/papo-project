@@ -21,17 +21,17 @@
 
 int main()
 {
-	int individual_count = 10;
-	int gene_count = 5;
+	size_t individual_count = 10;
+	size_t gene_count = 5;
 
 	population_t* pop = SAFE_MALLOC(individual_count * gene_count * sizeof(population_t*)); 
 	genome_t** genomes = SAFE_MALLOC(individual_count * gene_count * sizeof(genome_t*));
 
-	for(int i = 0; i < individual_count; ++i)
+	for(size_t i = 0; i < individual_count; ++i)
 	{
 		float* genes = SAFE_MALLOC(gene_count * sizeof(float));
 		
-		for( int j = 0; j < gene_count; ++j)
+		for(size_t j = 0; j < gene_count; ++j)
 		{
 			genes[j] = random_value_0m(10000);
 		}
