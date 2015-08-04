@@ -1,7 +1,10 @@
+#define _POSIX_C_SOURCE 199309L
+
 #include "genetic/genetic_algorithm.h"
 #include "util/util.h"
 #include "util/math_ext.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -21,12 +24,12 @@ int main()
 	int individual_count = 10;
 	int gene_count = 5;
 
-	population_t* pop = SAFE_MAlLOC(individual_count * gene_count * sizeof(population_t*)); 
-	genome_t** genomes = SAFE_MAlLOC(individual_count * gene_count * sizeof(genome_t*));
+	population_t* pop = SAFE_MALLOC(individual_count * gene_count * sizeof(population_t*)); 
+	genome_t** genomes = SAFE_MALLOC(individual_count * gene_count * sizeof(genome_t*));
 
 	for(int i = 0; i < individual_count; ++i)
 	{
-		float* genes = SAFE_MAlLOC(gene_count * sizeof(float));
+		float* genes = SAFE_MALLOC(gene_count * sizeof(float));
 		
 		for( int j = 0; j < gene_count; ++j)
 		{
@@ -42,12 +45,15 @@ int main()
 
 	int generations = 1000000;
 	struct timespec start, end, total;
+    total.tv_sec = 0;
+    total.tv_nsec = 0;
 
 	clock_gettime(CLOCK_REALTIME, &start);
 
-	for(int k = 0; k < generations; ++k}
+	for(int k = 0; k < generations; ++k)
 	{
-		next_generation;
+        ;
+		// next_generation;
 	}
 
 	clock_gettime(CLOCK_REALTIME, &end);
@@ -58,7 +64,7 @@ int main()
 	per_gen.tv_sec = total.tv_sec / generations;
 	per_gen.tv_nsec = total.tv_nsec /generations;
 
-	printf("The total time was %lu s %lu ns for %d generations, \n That's %lu s %lu ns per generation", total.tv_sec, total.tv_nsec, generation, per_gen.tv_sec, per_gen.tv_nsec);
+	printf("The total time was %lu s %lu ns for %d generations, \n That's %lu s %lu ns per generation", total.tv_sec, total.tv_nsec, generations, per_gen.tv_sec, per_gen.tv_nsec);
 
 	return EXIT_SUCCESS;
 }
