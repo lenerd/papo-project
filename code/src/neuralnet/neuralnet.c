@@ -377,7 +377,7 @@ void print_neuralnet(const neuralnet_t* net){
 
 			for(uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from){
 
-				printf(" %f", net->edges[gap][from][to]);
+				printf(" %f", (double)net->edges[gap][from][to]);
 
 			}
 
@@ -389,11 +389,11 @@ void print_neuralnet(const neuralnet_t* net){
 
 }
 
+#if 0
 static float zoo(){ // Zero or one
 	return random_value_01() > 0.5f ? 1.0f : 0.0f;
 }
 
-/*
 int main(int argc, char** argv){
 
 	uint32_t nphl[] = {5, 5};
@@ -423,5 +423,6 @@ int main(int argc, char** argv){
 
 	return 0;
 
-}*/
+}
+#endif
 
