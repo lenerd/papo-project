@@ -28,6 +28,9 @@ add_subdirectory (tests)
 # build benchmarks
 add_subdirectory (bench)
 
+# build experiments
+add_subdirectory (experiments)
+
 # documentation
 find_package (Doxygen)
 if (DOXYGEN_FOUND)
