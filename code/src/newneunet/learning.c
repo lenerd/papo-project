@@ -26,7 +26,7 @@ static full_output_t* allocate_full_output(const neuralnet_t* net){
 	full_output->neurons_per_layer = net->neurons_per_layer;
 	
 	full_output->values = SAFE_MALLOC(net->layer_count * sizeof(float*));
-	for(uint32_t layer = 0; layer < net->layer_count; ++layer){
+	for(size_t layer = 0; layer < net->layer_count; ++layer){
 
 		full_output->values[layer] = SAFE_MALLOC(net->neurons_per_layer[layer] * sizeof(float));
 
@@ -37,7 +37,7 @@ static full_output_t* allocate_full_output(const neuralnet_t* net){
 }
 static void free_full_output(full_output_t* full_output){
 	
-	for(uint32_t layer = 0; layer < full_output->layer_count; ++layer){
+	for(size_t layer = 0; layer < full_output->layer_count; ++layer){
 		free(full_output->values[layer]);
 	}
 	free(full_output->values);
@@ -53,13 +53,13 @@ static full_output_t* calculate_full_output(const neuralnet_t* net, const float*
 
 	memcpy(fout->values[0], ins, net->neurons_per_layer[0] * sizeof(float));
 
-	for(uint32_t gap = 0; gap < net->layer_count - 1; ++gap){
+	for(size_t gap = 0; gap < net->layer_count - 1; ++gap){
 
-		for(uint32_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to){
+		for(size_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to){
 
 			fout->values[gap + 1][to] = 0.0f;
 
-			for(uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from){
+			for(size_t from = 0; from < net->neurons_per_layer[gap]; ++from){
 
 				fout->values[gap + 1][to] += fout->values[gap][from] * net->edges[gap][from][to];
 
