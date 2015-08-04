@@ -34,11 +34,6 @@ if (CHECK_FOUND)
     target_link_libraries (check_training ${LIBS})
     add_test (check_training ${CMAKE_CURRENT_BINARY_DIR}/check_training)
 
-    #newneunet test
-    add_executable (check_newneunet check_newneunet.c)
-    target_link_libraries (check_newneunet ${LIBS})
-    add_test (check_newneunet ${CMAKE_CURRENT_BINARY_DIR}/check_newneunet)	
-
     # feel free to add more tests :)
 
 endif (CHECK_FOUND)
