@@ -4,6 +4,7 @@
 #include "go/record.h"
 #include "go/game_controller.h"
 #include "newneunet/newneunet.h"
+#include "util/util.h"
 
 board_t* board;
 neuralnet_t* net1;
@@ -13,11 +14,12 @@ void setup (void)
 {
     board = board_create (5);
 
-    int* layers = malloc(4 * sizeof(int));
-    layers[0] = board->buf_size;
-    layers[1] = 5;
-    layers[2] = 5;
-    layers[3] = 2;
+    // size_t* layers = SAFE_MALLOC(4 * sizeof(size_t));
+    size_t layers[] = {board->buf_size, 5, 5, 2};
+    // layers[0] = board->buf_size;
+    // layers[1] = 5;
+    // layers[2] = 5;
+    // layers[3] = 2;
 
     // TODO: use a deterministic initialition
     net1 = create_neural_net_random (4, layers);
@@ -308,11 +310,7 @@ END_TEST
 // Tests for game_controller.c
 START_TEST(test_play)
 {	
-	    int* layers = malloc(4 * sizeof(int));
-	    layers[0] = board->buf_size;
-	    layers[1] = 5;
-	    layers[2] = 5;
-	    layers[3] = 2;
+    size_t layers[] = {board->buf_size, 5, 5, 2};
 
 	neuralnet_t* black = create_neural_net_random(4, layers);
 	neuralnet_t* white = create_neural_net_random(4, layers);
@@ -403,7 +401,7 @@ int main (void)
     sr = srunner_create (make_go_suite ());
 
 	//Uncomment if needed for debugging with gdb:
-	//srunner_set_fork_status (sr, CK_NOFORK);
+	srunner_set_fork_status (sr, CK_NOFORK);
 
 	srunner_run_all (sr, CK_VERBOSE);
 
