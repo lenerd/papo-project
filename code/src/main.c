@@ -83,6 +83,7 @@ int main (int argc, char** argv)
 		//Backpropagation 	
 		for(int j = 0; j < net_count; ++j)
 		{
+            printf("Dataset-size: %d", dataset->size);
             for (int i = 0; i < dataset->size; ++i)
     	    {
     	    	float* ins = uint8_array_to_float(dataset->data[i].input->buffer, current_nets[j]->net->neurons_per_layer[0]);

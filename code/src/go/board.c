@@ -69,7 +69,7 @@ void board_destroy(board_t *board) {
 }
 
 pos_state_t board_position_state(const board_t *board, uint8_t x, uint8_t y) {
-  return board->grid[x][y];
+    return board->grid[x][y];
 }
 
 bool board_legal_placement(const board_t *board, uint8_t x, uint8_t y,
