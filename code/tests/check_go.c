@@ -7,12 +7,14 @@
 #include "util/util.h"
 
 board_t* board;
+board_t* board2;
 neuralnet_t* net1;
 neuralnet_t* net2;
 
 void setup (void)
 {
     board = board_create (5);
+    board2 = board_create (9);
 
     // size_t* layers = SAFE_MALLOC(4 * sizeof(size_t));
     size_t layers[] = {board->buf_size, 5, 5, 2};
@@ -29,6 +31,7 @@ void setup (void)
 void teardown (void)
 {
     board_destroy (board);
+    board_destroy (board2);
     nnet_destroy (net1);
     nnet_destroy (net2);
 }
@@ -179,6 +182,27 @@ START_TEST (test_board_capture)
     ck_assert (board_position_state (board, 0, 0) == ps_empty);
     ck_assert (board_position_state (board, 0, 1) == ps_empty);
     ck_assert (board_position_state (board, 1, 1) == ps_empty);
+
+    board_place (board2, 6, 4);
+    board_place (board2, 3, 4);
+    board_place (board2, 6, 6);
+    board_place (board2, 4, 6);
+    board_place (board2, 5, 6);
+    board_place (board2, 4, 7);
+    board_place (board2, 3, 6);
+    board_place (board2, 2, 6);
+    board_place (board2, 4, 5);
+    board_place (board2, 3, 5);
+    board_place (board2, 3, 7);
+    board_place (board2, 2, 7);
+    board_place (board2, 3, 8);
+    board_place (board2, 4, 8);
+    board_place (board2, 5, 8);
+    board_place (board2, 2, 8);
+    ck_assert (board_position_state (board2, 3, 6) == ps_empty);
+    ck_assert (board_position_state (board2, 3, 7) == ps_empty);
+    ck_assert (board_position_state (board2, 3, 8) == ps_empty);
+    board_place (board2, 3, 7);
 }
 END_TEST
 
