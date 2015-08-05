@@ -9,7 +9,8 @@ set (PROJECT_SOURCES
     go/record.c
     util/util.c
     util/math_ext.c
-    newneunet/newneunet.c
+    neuralnet/neuralnet.c
+    neuralnet/learning.c
     training/training.c
     example/example.c
 )

@@ -1,7 +1,9 @@
+#include "math_ext.h"
+#include "util.h"
+
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include "math_ext.h"
 
 
 void set_seed (unsigned int seed)
@@ -54,4 +56,48 @@ float inverse_sigmoid (float y)
 float centered_sigmoid (float x)
 {
     return 2.0f * (sigmoid (x) - 0.5f);
+}
+
+float* sigmoidize (const float* array, const size_t size)
+{
+    float* result = SAFE_MALLOC (size * sizeof (float));
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        result[i] = sigmoid (array[i]);
+    }
+
+    return result;
+}
+
+float* desigmoidize (const float* array, const size_t size)
+{
+    float* result = SAFE_MALLOC (size * sizeof (float));
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        result[i] = inverse_sigmoid (array[i]);
+    }
+
+    return result;
+}
+
+float* sigmoidize_inplace (float* array, const size_t size)
+{
+    for (size_t i = 0; i < size; ++i)
+    {
+        array[i] = sigmoid (array[i]);
+    }
+
+    return array;
+}
+
+float* desigmoidize_inplace (float* array, const size_t size)
+{
+    for (size_t i = 0; i < size; ++i)
+    {
+        array[i] = inverse_sigmoid (array[i]);
+    }
+
+    return array;
 }

@@ -1,7 +1,7 @@
 #include <check.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "newneunet/newneunet.h"
+#include "neuralnet/neuralnet.h"
 #include "training/training.h"
 
 START_TEST(test_backpropagation)

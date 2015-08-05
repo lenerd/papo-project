@@ -1,8 +1,8 @@
 #include "board.h"
 #include "record.h"
 #include "game_controller.h"
-#include "newneunet/newneunet.h"
 #include "util/util.h"
+#include "neuralnet/neuralnet.h"
 #include <stdio.h>
 
 result_t* play(uint8_t board_size, neuralnet_t* black, neuralnet_t* white, uint8_t komi, FILE* record)

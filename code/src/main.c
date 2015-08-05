@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "util/util.h"
 #include "genetic/genetic_algorithm.h"
-#include "newneunet/newneunet.h"
+#include "neuralnet/neuralnet.h"
 #include "go/game_controller.h"
 #include "training/training.h"
 

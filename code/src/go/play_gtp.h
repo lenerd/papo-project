@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "go/play_gtp.h"
 #include "go/gtp.h"
-#include "newneunet/newneunet.h"
+#include "neuralnet/neuralnet.h"
 #include "go/board.h"
 
 /*

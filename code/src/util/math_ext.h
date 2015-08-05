@@ -11,6 +11,7 @@
 
 
 #include <stdbool.h>
+#include <stddef.h>
 
 
 /**
@@ -101,5 +102,13 @@ float inverse_sigmoid (float y);
  * to 1.0 (exclusive) with the center of the function at (0|0).
  */
 float centered_sigmoid (float x);
+
+float* sigmoidize (const float* array, const size_t size);
+
+float* desigmoidize (const float* array, const size_t size);
+
+float* sigmoidize_inplace (float* array, const size_t size);
+
+float* desigmoidize_inplace (float* array, const size_t size);
 
 #endif /* MATH_EXT_H */

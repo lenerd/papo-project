@@ -2,164 +2,127 @@
 #define NEURALNET_H
 
 /**
-* \file
-* \brief Contains everything required for neural networks.
-* \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
-* \author Lennart Braun <3braun@informatik.uni-hamburg.de>
-* \ingroup neuralnet
-*/
-
-
-#include <stdbool.h>
-#include <stdint.h>
-
-/**
- * \brief Enumeration of number types.
+ * \file
+ * \brief Contains everything required for neural networks.
+ * \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
+ * \ingroup neuralnet
  */
-typedef enum{FLOAT, UINT8} type_t;
+
+#include <stddef.h>
+#include <stdint.h>
+#include "util/math_ext.h"
 
 /**
  * \brief Represents a neural network.
  */
 typedef struct
 {
-    /** \brief Total count of all edges.*/
-    uint32_t edges_count;
-    /** \brief Count of input neurons.*/
-    uint32_t input_count;
-    /** \brief Count of hidden layers.*/
-    uint32_t hidden_layer_count;
-    /** \brief Count of neurons each hidden layer has.*/
-    uint32_t neurons_per_hidden_layer;
-    /** \brief Count of output neurons.*/
-    uint32_t output_count;
+    /** \brief Number of layers.*/
+    size_t layer_count;
 
-    /** \brief Array of floats to store the calculated output.*/
-    float* output;
+    /**
+     * \brief Array containing layer sizes.
+     *
+     * Length of array equals layer_count.
+     */
+    size_t* neurons_per_layer;
+
+    /** \brief Number of edges.*/
+    size_t edge_count;
 
     /**
      * \brief Buffer containing all edge weights.
      *
-     * The buffer is partioned as following:
-     * - (input_count + 1) X neurons_per_hidden_layer
-     * - hidden_layer_count X (neurons_per_hidden_layer + 1)
-     *                      X neurons_per_hidden_layer
-     * - neurons_per_hidden_layer X output_count
+     * Length should be equal to edge_count.
+     *
+     * TODO: interface description
      */
     float* edge_buf;
 
     /**
-     * \brief 2D-Interface for the edges between input and first hidden layer.
-     *
-     * Dimensions: (neurons_per_hidden_layer) X (neurons_per_hidden_layer)
-     *
-     * edges[x][y] = edge weight between input neuron x and neuron y on the
-     * first hidden layer
+     * \private
+     * Helper to implement the edges 3D-array.
+     * Do not use this otherwise!
      */
-    float** input_edges;
+    float** edge_helper;
 
     /**
-     * \brief 3D-Interface for the edges between the hidden layers
-     *
-     * Dimensions: (hidden_layer_count - 1) X (neurons_per_hidden_layer)
-     *                                      X (neurons_per_hidden_layer)
+     * \brief 3D-Interface for the edges.
      *
      * edges[x][y][z] = edge weight between neuron y on layer x and neuron z on
-     *                  layer x + 1
+     * layer x + 1.
+     * * 0 <= x < layer_count
+     * * 0 <= y < neurons_per_layer[x]
+     * * 0 <= z < neurons_per_layer[x+1]
      */
-    float*** hidden_edges;
-
-    /**
-     * \brief 2D-Interface for the edges between last hidden and output layer.
-     *
-     * Dimensions: (neurons_per_hidden_layer) X (neurons_per_hidden_layer)
-     *
-     * edges[x][y] = edge weight between input neuron x and neuron y on the
-     * first hidden layer
-     */
-    float** output_edges;
-
-    /** \brief Buffer to store some pointers (required for magic). */
-    float** edge_helper_buf;
+    float*** edges;
 
 } neuralnet_t;
 
+
 /**
- * \brief Calculates how many edges are required for a neural network of a given
- * size.
+ * Calculates the amount of edges in a neuralnetwork with given properties.
  *
  * \f[
- * E(i, f, n, o) = (i + 1) \cdot n + (h - 1) \cdot (n + 1) \cdot n + n \cdot o
+ * \sum_{l = 0}^{layer\_count - 2} neurons\_per\_layer[l] \cdot
+ * neurons\_per\_layer[l+1]
  * \f]
+ * \param layer_count       		Number of layers.
+ * \param neurons_per_layer_count 	Array containing layer sizes.
+ * \return Number of edges.
+ * \pre layer_count > 1
+ * \pre neurons_per_layer != NULL
+ * \pre len(neurons_per_layer) == layer_count
+ */
+size_t nnet_edge_count (size_t layer_count, const size_t* neurons_per_layer);
+
+/**
+ * Calculates the amount of nodes in a neuralnetwork with given properties.
  *
- * \param input_count \f$i\f$
- * \param hidden_layer_count \f$h\f$
- * \param neurons_per_hidden_layer \f$n\f$
- * \param output_count \f$o\f$
- * \return \f$E(i, h, n, o)\f$
+ * \f[
+ * \sum_{l = 0}^{layer\_count - 1} neurons\_per\_layer[l]
+ * \f]
+ * \param layer_count       		Number of layers.
+ * \param neurons_per_layer_count 	Array containing layer sizes.
+ * \return Number of nodes.
+ * \pre layer_count > 1
+ * \pre neurons_per_layer != NULL
+ * \pre len(neurons_per_layer) == layer_count
  */
-uint32_t edge_count (uint32_t input_count, uint32_t hidden_layer_count,
-                     uint32_t neurons_per_hidden_layer, uint32_t output_count);
-
-/**
- * \brief Setup pointer interface.
- * \param net The neural network to work on.
- * \pre net != NULL
- * \post {input,hidden,outpout}_edges contain valid pointers.
- */
-void build_pointer (neuralnet_t* net);
-
-/**
- * \brief Call this, when a neural networks edge buffer is used as a genome and
- * edge_buf points to a new location.
- * \param arg Pointer to a neural network.
- * \pre arg != NULL
- * \post The neural network is updated to use the new buffer.
- */
-void update_neuralnet (void* arg);
+size_t nnet_node_count (size_t layer_count, const size_t* neurons_per_layer);
 
 /**
  * \brief Creates and returns a neuralnet with random edge-weights, given its
  * preferences.
  *
  * This allocates and initializes a new neural net with the given preferences.
- * \param input_count              Number of input neurons.
- * \param hidden_layer_count       Number of hidden layers.
- * \param neurons_per_hidden_layer Number of neurons in each hidden layer.
- * \param output_count             Number of output neurons.
+ * \param layer_count       		Number of layers.
+ * \param neurons_per_layer_count 	Number of neurons in each layer.
  * \return Pointer to the new neural network.
- * \pre input_count > 0
- * \pre hidden_layer_count > 0
- * \pre neurons_per_hidden_layer > 0
- * \pre output_count > 0
+ * \pre layer_count > 1
+ * \pre len(neurons_per_layer) == layer_count
+ * \pre neurons_per_layer_count[x] > 0, where 0 <= x < layer_count
  */
-neuralnet_t* create_neural_net_random (uint32_t input_count,
-                                       uint32_t hidden_layer_count,
-                                       uint32_t neurons_per_hidden_layer,
-                                       uint32_t output_count);
+neuralnet_t* create_neural_net_random (const size_t layer_count,
+                                       const size_t* neurons_per_layer);
 
 /**
  * \brief Creates and returns a neuralnet with given edge-weights.
  *
- * This allocates and initializes a new neural net with the given preferences.
- * \param input_count              Number of input neurons.
- * \param hidden_layer_count       Number of hidden layers.
- * \param neurons_per_hidden_layer Number of neurons in each hidden layer.
- * \param output_count             Number of output neurons.
- * \param edges                    Buffer containing edge weights
+ * This allocates and initializes a new neural net.
+ * \param layer_count       		Number of hidden layers.
+ * \param neurons_per_layer_count 	Number of neurons in each hidden layer.
  * \return Pointer to the new neural network.
- * \pre input_count > 0
- * \pre hidden_layer_count > 0
- * \pre neurons_per_hidden_layer > 0
- * \pre output_count > 0
+ * \pre layer_count > 1
+ * \pre len(neurons_per_layer) == layer_count
+ * \pre neurons_per_layer != NULL
+ * \pre neurons_per_layer[x] > 0, where 0 <= x < layer_count
  * \pre edges != NULL
- * \pre length(edges) = edge_count
- * \post Returned network is initialized with given edge weigths.
+ * \pre len(edges) == edge_count
  */
-neuralnet_t* create_neural_net_buffer (uint32_t input_count,
-                                       uint32_t hidden_layer_count,
-                                       uint32_t neurons_per_hidden_layer,
-                                       uint32_t output_count, float* edges);
+neuralnet_t* create_neural_net_buffer (const size_t layer_count,
+                                       const size_t* neurons_per_layer,
+                                       const float* edges);
 
 /**
  * \brief Saves a neural network in a file;
@@ -176,7 +139,7 @@ neuralnet_t* create_neural_net_buffer (uint32_t input_count,
  * \pre User is permitted to write in the path.
  * \post The state of the neural network is saved in the file.
  */
-void neural_net_to_file (neuralnet_t* net, const char* path, bool binary);
+void neural_net_to_file (const neuralnet_t* net, const char* path, bool binary);
 
 /**
  * \brief Creates and returns a neuralnet with edge-weights stored in a file.
@@ -196,7 +159,7 @@ void neural_net_to_file (neuralnet_t* net, const char* path, bool binary);
 neuralnet_t* neural_net_from_file (const char* path, bool binary);
 
 /**
- * \brief Destroys a neuralnet and frees all used ressources.
+ * \brief Destroys a neuralnet and frees all used resources.
  * \param net Neural network to destroy.
  * \pre net != NULL
  * \post All used memory is freed.
@@ -207,13 +170,25 @@ void destroy_neural_net (neuralnet_t* net);
  * \brief Calculates the output of a given neuralnet and input.
  * \param net Network to be used
  * \param input Buffer containing input values of a given type.
- * \param type The type of the input buffer. 
  * \pre net != NULL
  * \pre input != NULL
- * \pre length(input) = net->input_count
- * \post net->output is updated
+ * \pre length(input) = net->neurons_per_layer[0]
  */
-float* calculate_output (neuralnet_t* net, void* input, type_t type);
+float* calculate_output (const neuralnet_t* net, const float* input);
+
+/**
+ * \brief Trains the neuralnet through backpropagation.
+ * \param net Network to be used
+ * \param target_output Buffer containing target values the neuralnet should
+ * have computed.
+ * \pre net != NULL
+ * \pre input != NULL
+ * \pre target_output != NULL
+ * \pre length(*input) = net->input_count
+ * \pre length(*target_output) = net->output_count
+ */
+void backpropagate (neuralnet_t* net, const float* input,
+                    const float* target_output);
 
 /**
  * \brief Print the edge weights to console. TH stands for threashold, EWs are
