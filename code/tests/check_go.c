@@ -22,15 +22,15 @@ void setup (void)
     // layers[3] = 2;
 
     // TODO: use a deterministic initialition
-    net1 = create_neural_net_random (4, layers);
-    net2 = create_neural_net_random (4, layers);
+    net1 = nnet_create_random (4, layers);
+    net2 = nnet_create_random (4, layers);
 }
 
 void teardown (void)
 {
     board_destroy (board);
-    destroy_neural_net (net1);
-    destroy_neural_net (net2);
+    nnet_destroy (net1);
+    nnet_destroy (net2);
 }
 
 // Tests for board.c
@@ -312,8 +312,8 @@ START_TEST(test_play)
 {	
     size_t layers[] = {board->buf_size, 5, 5, 2};
 
-	neuralnet_t* black = create_neural_net_random(4, layers);
-	neuralnet_t* white = create_neural_net_random(4, layers);
+	neuralnet_t* black = nnet_create_random (4, layers);
+	neuralnet_t* white = nnet_create_random (4, layers);
 	
 	FILE* test = create_file ("1");
 
@@ -321,8 +321,8 @@ START_TEST(test_play)
 
 	ck_assert_msg(result->score_black == -result->score_white, "%d", result->score_black); 
 
-	destroy_neural_net(black);
-	destroy_neural_net(white);
+	nnet_destroy (black);
+	nnet_destroy (white);
 
 	fclose(test);
 	remove("1");

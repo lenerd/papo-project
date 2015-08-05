@@ -17,10 +17,10 @@ int main (void)
 
     if (access ("./xor.net", R_OK) != -1)
     {
-        net = neural_net_from_file ("./xor.net", false);
+        net = nnet_from_file ("./xor.net", false);
         for (int i = 0; i < 4; ++i)
         {
-            output = calculate_output (net, inputs[i]);
+            output = nnet_calculate_output (net, inputs[i]);
             printf ("%f ^ %f = %f\n", (double) inputs[i][0],
                     (double) inputs[i][1], (double) output[0]);
             free (output);
@@ -28,11 +28,11 @@ int main (void)
     }
     else
     {
-        net = create_neural_net_random (3, size);
+        net = nnet_create_random (3, size);
 
         for (int i = 0; i < 4; ++i)
         {
-            output = calculate_output (net, inputs[i]);
+            output = nnet_calculate_output (net, inputs[i]);
             printf ("%f ^ %f = %f\n", (double) inputs[i][0],
                     (double) inputs[i][1], (double) output[0]);
             free (output);
@@ -41,19 +41,19 @@ int main (void)
 
         for (int n = 0; n < 100000; ++n)
             for (int i = 0; i < 4; ++i)
-                backpropagate (net, inputs[i], targets[i]);
+                nnet_backpropagate (net, inputs[i], targets[i]);
 
         for (int i = 0; i < 4; ++i)
         {
-            output = calculate_output (net, inputs[i]);
+            output = nnet_calculate_output (net, inputs[i]);
             printf ("%f ^ %f = %f\n", (double) inputs[i][0],
                     (double) inputs[i][1], (double) output[0]);
             free (output);
         }
-        neural_net_to_file (net, "./xor.net", false);
+        nnet_to_file (net, "./xor.net", false);
     }
 
-    destroy_neural_net (net);
+    nnet_destroy (net);
 
     return 0;
 }

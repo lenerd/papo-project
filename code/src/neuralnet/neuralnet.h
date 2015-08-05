@@ -103,8 +103,8 @@ size_t nnet_node_count (size_t layer_count, const size_t* neurons_per_layer);
  * \pre len(neurons_per_layer) == layer_count
  * \pre neurons_per_layer_count[x] > 0, where 0 <= x < layer_count
  */
-neuralnet_t* create_neural_net_random (const size_t layer_count,
-                                       const size_t* neurons_per_layer);
+neuralnet_t* nnet_create_random (const size_t layer_count,
+                                 const size_t* neurons_per_layer);
 
 /**
  * \brief Creates and returns a neuralnet with given edge-weights.
@@ -120,9 +120,9 @@ neuralnet_t* create_neural_net_random (const size_t layer_count,
  * \pre edges != NULL
  * \pre len(edges) == edge_count
  */
-neuralnet_t* create_neural_net_buffer (const size_t layer_count,
-                                       const size_t* neurons_per_layer,
-                                       const float* edges);
+neuralnet_t* nnet_create_buffer (const size_t layer_count,
+                                 const size_t* neurons_per_layer,
+                                 const float* edges);
 
 /**
  * \brief Saves a neural network in a file;
@@ -139,7 +139,7 @@ neuralnet_t* create_neural_net_buffer (const size_t layer_count,
  * \pre User is permitted to write in the path.
  * \post The state of the neural network is saved in the file.
  */
-void neural_net_to_file (const neuralnet_t* net, const char* path, bool binary);
+void nnet_to_file (const neuralnet_t* net, const char* path, bool binary);
 
 /**
  * \brief Creates and returns a neuralnet with edge-weights stored in a file.
@@ -156,7 +156,7 @@ void neural_net_to_file (const neuralnet_t* net, const char* path, bool binary);
  * correct format.
  * \post Returned network is initialized with the data from the file.
  */
-neuralnet_t* neural_net_from_file (const char* path, bool binary);
+neuralnet_t* nnet_from_file (const char* path, bool binary);
 
 /**
  * \brief Destroys a neuralnet and frees all used resources.
@@ -164,7 +164,7 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary);
  * \pre net != NULL
  * \post All used memory is freed.
  */
-void destroy_neural_net (neuralnet_t* net);
+void nnet_destroy (neuralnet_t* net);
 
 /**
  * \brief Calculates the output of a given neuralnet and input.
@@ -174,7 +174,7 @@ void destroy_neural_net (neuralnet_t* net);
  * \pre input != NULL
  * \pre length(input) = net->neurons_per_layer[0]
  */
-float* calculate_output (const neuralnet_t* net, const float* input);
+float* nnet_calculate_output (const neuralnet_t* net, const float* input);
 
 /**
  * \brief Trains the neuralnet through backpropagation.
@@ -187,8 +187,8 @@ float* calculate_output (const neuralnet_t* net, const float* input);
  * \pre length(*input) = net->input_count
  * \pre length(*target_output) = net->output_count
  */
-void backpropagate (neuralnet_t* net, const float* input,
-                    const float* target_output);
+void nnet_backpropagate (neuralnet_t* net, const float* input,
+                         const float* target_output);
 
 /**
  * \brief Print the edge weights to console. TH stands for threashold, EWs are
@@ -196,6 +196,6 @@ void backpropagate (neuralnet_t* net, const float* input,
  * receiving EWs.
  * \pre net != NULL
  */
-void print_neural_net (const neuralnet_t* net);
+void nnet_print (const neuralnet_t* net);
 
 #endif /* NEURALNET_H */

@@ -85,7 +85,7 @@ void init_neural_net (neuralnet_t* net)
 }
 
 
-neuralnet_t* create_neural_net_random (const size_t layer_count,
+neuralnet_t* nnet_create_random (const size_t layer_count,
                                        const size_t* neurons_per_layer)
 {
     assert (layer_count > 1);
@@ -97,7 +97,7 @@ neuralnet_t* create_neural_net_random (const size_t layer_count,
     return net;
 }
 
-neuralnet_t* create_neural_net_buffer (const size_t layer_count,
+neuralnet_t* nnet_create_buffer (const size_t layer_count,
                                        const size_t* neurons_per_layer,
                                        const float* edges)
 {
@@ -112,7 +112,7 @@ neuralnet_t* create_neural_net_buffer (const size_t layer_count,
     return net;
 }
 
-void neural_net_to_file (const neuralnet_t* net, const char* path, bool binary)
+void nnet_to_file (const neuralnet_t* net, const char* path, bool binary)
 {
     assert (net != NULL);
     assert (path != NULL);
@@ -191,7 +191,7 @@ static void skip_comments (FILE* file)
     }
 }
 
-neuralnet_t* neural_net_from_file (const char* path, bool binary)
+neuralnet_t* nnet_from_file (const char* path, bool binary)
 {
     assert (path != NULL);
 
@@ -310,7 +310,7 @@ neuralnet_t* neural_net_from_file (const char* path, bool binary)
     return net;
 }
 
-void destroy_neural_net (neuralnet_t* net)
+void nnet_destroy (neuralnet_t* net)
 {
     assert (net != NULL);
 
@@ -325,7 +325,7 @@ void destroy_neural_net (neuralnet_t* net)
 
 // Calculation #########################################################
 
-float* calculate_output (const neuralnet_t* net, const float* input)
+float* nnet_calculate_output (const neuralnet_t* net, const float* input)
 {
     assert (net != NULL);
     assert (input != NULL);
@@ -362,7 +362,7 @@ float* calculate_output (const neuralnet_t* net, const float* input)
 }
 
 
-void print_neuralnet(const neuralnet_t* net){
+void nnet_print (const neuralnet_t* net){
     assert (net != NULL);
 
 	printf("\nNeural network at Adress x:");
@@ -388,41 +388,3 @@ void print_neuralnet(const neuralnet_t* net){
 	printf("\n");
 
 }
-
-#if 0
-static float zoo(){ // Zero or one
-	return random_value_01() > 0.5f ? 1.0f : 0.0f;
-}
-
-int main(int argc, char** argv){
-
-	uint32_t nphl[] = {5, 5};
-	neuralnet_t* net = create_neural_net_random_new(2, nphl);
-
-	learn_rate = 10.0f;
-
-	print_neuralnet(net);
-
-	for(uint32_t i = 0; i < 10000; ++i){
-
-		float ins[5] = { zoo(), zoo(), zoo(), zoo(), zoo() }; 	// Input of zeros and ones
-		float* target = ins;					// This neural net should give the same binary sequence it got as input
-
-		if(i%100 == 0){
-			float* out = calculate_output_new(net, ins);
-			printf("Error: %f %f %f %f %f\n", target[0] - out[0], target[1] - out[1], target[2] - out[2], target[3] - out[3], target[4] - out[4]);
-			free(out);
-		}
-		backpropagate(net, ins, target);
-	}
-
-	printf("\n");
-	print_neuralnet(net); // It works!
-
-	destroy_neural_net_new(net);
-
-	return 0;
-
-}
-#endif
-

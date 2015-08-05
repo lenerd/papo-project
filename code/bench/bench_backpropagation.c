@@ -31,7 +31,7 @@ int main()
     total.tv_nsec = 0;
 	
 	size_t layers[] = {5, 5, 5, 5, 5};
-	neuralnet_t* net = create_neural_net_random(5, layers);
+	neuralnet_t* net = nnet_create_random (5, layers);
 
 	float* bench_input = SAFE_MALLOC(input_size *  sizeof(float));
 	float* bench_expected = SAFE_MALLOC(input_size * sizeof(float));
@@ -46,7 +46,7 @@ int main()
 		
 		clock_gettime(CLOCK_REALTIME, &start);
 
-		backpropagate(net, bench_input, bench_expected);
+		nnet_backpropagate(net, bench_input, bench_expected);
 		
 		clock_gettime(CLOCK_REALTIME, &end);
 		
@@ -58,7 +58,7 @@ int main()
 
     free (bench_input);
     free (bench_expected);
-    destroy_neural_net (net);
+    nnet_destroy (net);
 	
 	struct timespec per_run;
 	per_run.tv_sec = total.tv_sec / runs;

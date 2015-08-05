@@ -68,7 +68,7 @@ int main (int argc, char** argv)
 
 			for(int i = 0; i < net_count; ++i)
 			{
-				current_nets[i]->net = create_neural_net_random(hidden_layers, layers);
+				current_nets[i]->net = nnet_create_random (hidden_layers, layers);
 			}
 		}
 	
@@ -83,7 +83,7 @@ int main (int argc, char** argv)
 		{
 	            for (int i = 0; i < dataset->size; ++i)
         	    {
-                	backpropagate(current_nets[j]->net, dataset->data[i].input->buffer, dataset->data[i].expected);	
+                	nnet_backpropagate(current_nets[j]->net, dataset->data[i].input->buffer, dataset->data[i].expected);	
                      }	
 		}	
 			
@@ -118,10 +118,10 @@ int main (int argc, char** argv)
 			qsort(current_nets, net_count, sizeof(struct net_struct), cmp);			
 			//Save best two nets
 			sprintf(path, "./nets/%d1", i);
-			neural_net_to_file(current_nets[0]->net, path, false);
+			nnet_to_file(current_nets[0]->net, path, false);
 		
 			sprintf(path, "./nets/%d2", i);
-			neural_net_to_file(current_nets[1]->net, path, false); 		
+			nnet_to_file(current_nets[1]->net, path, false); 		
 
 			//TODO: Convert edge weights to genomes
 			/*	
@@ -144,7 +144,7 @@ int main (int argc, char** argv)
 		for(int l = 0; l < net_count; ++l)
 		{
 			sprintf(path, "./nets/%d%d", generations, l);	
-			neural_net_to_file(current_nets[l]->net, path, false);
+			nnet_to_file(current_nets[l]->net, path, false);
 		}
 	}
 

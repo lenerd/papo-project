@@ -11,11 +11,11 @@ START_TEST(test_backpropagation)
 	layers[1] = 4;
 	layers[2] = 2;
 
-	neuralnet_t* net = create_neural_net_random(3, layers);
+	neuralnet_t* net = nnet_create_random (3, layers);
 
 	dataset_t* t_back = generate_training_data("path", 2, c_black);
 
-	backpropagate(net, t_back->data[0].input->buffer, t_back->data[0].expected);
+	nnet_backpropagate(net, t_back->data[0].input->buffer, t_back->data[0].expected);
 
 	int* test_input = malloc(4*sizeof(int));
 	test_input[0] = 2;
@@ -23,7 +23,7 @@ START_TEST(test_backpropagation)
 	test_input[2] = 0;
 	test_input[3] = 0;
 
-	float* test_output = calculate_output(net, test_input);
+	float* test_output = nnet_calculate_output(net, test_input);
 
 	ck_assert(test_output[0] < 0.25);
 	ck_assert(test_output[1] < 0.25);	
