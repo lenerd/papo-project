@@ -182,27 +182,52 @@ void input_from_file (training_data_t* data, FILE* fp)
 {
     board_t* board = data->input;
 	int x, y;
-	int c;
+	char c;
+
+    bool pass = false;
 
 	while((c = fgetc(fp)) != EOF)
 	{
-		if(c == 'B')
-		{
-			c = fgetc(fp);
-			c = fgetc(fp);
-			x = c - 'a';
-			c = fgetc(fp);
-			y = c - 'a';
-            board_place_color(board, x, y, c_black);
-		}
-		else if(c == 'W')
-		{
-			c = fgetc(fp);
-			c = fgetc(fp);
-			x = c - 'a';
-			c = fgetc(fp);
-			y = c - 'a';
-            board_place_color(board, x, y, c_white);
-		}
+        if(c == ';'){
+            c = fgetc(fp);
+            if(c == 'B')
+            {
+                c = fgetc(fp);
+                c = fgetc(fp);
+                if(c != ']'){
+                    x = c - 'a';
+                    c = fgetc(fp);
+                    y = c - 'a';
+                    printf("Black: x%d, y%d\n", x, y);
+                    board_place_color(board, x, y, c_black);    
+                    pass = false;
+                }
+                else if(pass == true)
+                    break;
+                else{
+                    pass = true;
+                    continue;
+                }
+            }
+            else if(c == 'W')
+            {
+                c = fgetc(fp);
+                c = fgetc(fp);
+                if(c != ']'){
+                    x = c - 'a';
+                    c = fgetc(fp);
+                    y = c - 'a';
+                    printf("White: x%d, y%d\n", x, y);
+                    board_place_color(board, x, y, c_black);    
+                    pass = false;
+                }
+                else if(pass == true)
+                    break;
+                else{
+                    pass = true;
+                    continue;
+                }
+            }    
+        }
 	}
 }

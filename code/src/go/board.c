@@ -74,12 +74,20 @@ pos_state_t board_position_state(const board_t *board, uint8_t x, uint8_t y) {
 
 bool board_legal_placement(const board_t *board, uint8_t x, uint8_t y,
                            color_t color) {
-  if (x >= board->size || y >= board->size)
+  if (x >= board->size || y >= board->size){
+    printf("Position out of board bounds!\n");
     return false;
-  if (board->grid[x][y] != ps_empty)
+  }
+  if (board->grid[x][y] != ps_empty){
+    printf("Position already occupied!\n");
     return false;
-  if (board_test_suicide(board, x, y, color))
+  }
+    
+  if (board_test_suicide(board, x, y, color)){
+    printf("Position would be a suicide!\n");
     return false;
+  }
+    
   return true;
 }
 
@@ -99,8 +107,6 @@ void board_place_color (board_t* board, uint8_t x, uint8_t y, color_t color)
 
 void board_place (board_t* board, uint8_t x, uint8_t y)
 {
-    assert (board_legal_placement(board, x, y, board->turn));
-
     board_place_color (board, x, y, board->turn);
     board->turn = (board->turn == c_black) ? c_white : c_black;
 }
