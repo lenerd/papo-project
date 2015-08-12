@@ -51,7 +51,7 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
     case 'i':  // input
         if (strlen (arg) > 0)
         {
-            opts->in = arg;
+            opts->in_path = arg;
             opts->set_i = true;
         }
         else
@@ -96,12 +96,39 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
     case 'o':  // output
         if (strlen (arg) > 0)
         {
-            opts->out = arg;
+            opts->out_path = arg;
             opts->set_o = true;
         }
         else
         {
             argp_error (state, "output filename is empty");
+        }
+        break;
+
+    case 's':  // board-size
+    {
+        size_t tmp = strtoul (arg, NULL, 10);
+        if (tmp > 1)
+        {
+            opts->board_size = tmp;
+            opts->set_s = true;
+        }
+        else
+        {
+            argp_error (state, "a minimum board size of 2x2 is required");
+        }
+    }
+    break;
+
+    case 't':  // training-data
+        if (strlen (arg) > 0)
+        {
+            opts->training_data_path = arg;
+            opts->set_t = true;
+        }
+        else
+        {
+            argp_error (state, "training data filename is empty");
         }
         break;
 
@@ -130,6 +157,7 @@ int main (int argc, char** argv)
         {"binary-out", 201, 0, 0, "use binary output file", 0},
         {"number", 'n', "NUM", 0,
          "number of networks to create or training iterations", 0},
+        {"board-size", 's', 0, 0, "size of the used go board", 0},
         {"training-data", 't', "FILE", 0, "training data to use", 0},
         {"layer", 'l', "NUMS", 0, "number of neurons in each layer\n"
                                   "e.g. \"2 3 3 2\"",

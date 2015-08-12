@@ -16,8 +16,9 @@ typedef struct
 {
     enum action action;
 
-    char* in;
-    char* out;
+    char* in_path;
+    char* out_path;
+    char* training_data_path;
     bool b_in;
     bool b_out;
 
@@ -26,11 +27,14 @@ typedef struct
 
     size_t iterations;
 
+    size_t board_size;
+
     bool set_a;
     bool set_i;
     bool set_l;
     bool set_n;
     bool set_o;
+    bool set_s;
     bool set_t;
 
     bool verbose;
@@ -41,6 +45,7 @@ void init_opts (options_t* opts);
 void cleanup_opts (options_t* opts);
 
 int create_networks (options_t* opts);
+int generate_training_data (options_t* opts);
 int train_networks (options_t* opts);
 
 
