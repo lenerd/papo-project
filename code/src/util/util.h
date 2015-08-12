@@ -46,6 +46,23 @@ void* safe_calloc (size_t nmemb, size_t size, const char* file,
 
 
 /**
+ * \brief Reallocates a buffer with error checking.
+ *
+ * Uses realloc for allocation.
+ *
+ * \param ptr  Pointer to the original buffer.
+ * \param size Length of requested memory in bytes.
+ * \param file Filename to display in error message.
+ * \param line Line to display in error message.
+ * \pre size != 0
+ * \return Pointer to allocated buffer.
+ * \post Allocation successfull or exit with error message.
+ */
+void* safe_realloc (void* ptr, size_t size, const char* file,
+                    unsigned long line);
+
+
+/**
  * \brief Shortcut for safe_malloc().
  * \param size Length of requested memory in bytes.
  */
@@ -58,6 +75,14 @@ void* safe_calloc (size_t nmemb, size_t size, const char* file,
  * \param size Length of one element.
  */
 #define SAFE_CALLOC(nmemb, size) safe_calloc(nmemb, size, __FILE__, __LINE__)
+
+
+/**
+ * \brief Shortcut for safe_calloc().
+ * \param nmemb Number of elements.
+ * \param size Length of one element.
+ */
+#define SAFE_REALLOC(ptr, size) safe_realloc(ptr, size, __FILE__, __LINE__)
 
 void swap_int_buffer(int** buf1, int** buf2);
 void swap_float_buffer(float** buf1, float** buf2);

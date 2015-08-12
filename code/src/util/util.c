@@ -37,6 +37,23 @@ void* safe_calloc (size_t nmemb, size_t size, const char* file,
     return p;
 }
 
+
+void* safe_realloc (void* ptr, size_t size, const char* file,
+                    unsigned long line)
+{
+    assert (ptr != NULL);
+    assert (size != 0);
+
+    void* p = realloc (ptr, size);
+    if (p == NULL)
+    {
+        fprintf (stderr, "[%s:%lu] realloc failed (%lu bytes)\n", file, line,
+                 size);
+        exit (EXIT_FAILURE);
+    }
+    return p;
+}
+
 void swap_int_buffer(int** buf1, int** buf2){
 	int* tmp = *buf1;
 	*buf1 = *buf2;

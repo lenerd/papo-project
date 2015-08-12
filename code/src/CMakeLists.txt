@@ -1,6 +1,3 @@
-# main source (startup functionality
-set (MAIN_SOURCE main.c)
-
 # other source files
 set (PROJECT_SOURCES
     genetic/genetic_algorithm.c
@@ -19,7 +16,11 @@ set (PROJECT_SOURCES
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_library (${PROJECT_NAME}_lib ${PROJECT_SOURCES})
-add_executable (${PROJECT_NAME} ${MAIN_SOURCE})
-
 target_link_libraries (${PROJECT_NAME}_lib m)
+
+# executables
+add_executable (${PROJECT_NAME} exe/main.c)
 target_link_libraries (${PROJECT_NAME} ${PROJECT_NAME}_lib)
+
+add_executable (ngg_tool exe/ngg_tool.c exe/ngg_tool_impl.c)
+target_link_libraries (ngg_tool ${PROJECT_NAME}_lib)
