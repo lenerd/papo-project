@@ -1,5 +1,6 @@
 #include "ngg_tool.h"
 #include "neuralnet/neuralnet.h"
+#include "training/training.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,6 +80,15 @@ int generate_training_data (options_t* opts)
     if (ret)
         return ret;
 
+    dataset_t* set = dataset_create (opts->n);
+
+    for (size_t i = 0; i < opts->n; ++i)
+        set->data[i] = td_generate_nxn_nxn (opts->board_size);
+
+    dataset_to_file (set, opts->out_path);
+
+    dataset_destroy (set);
+
     return ret;
 }
 
@@ -110,10 +120,9 @@ int train_networks (options_t* opts)
     if (ret)
         return ret;
 
-    nnet_set_t* old = nnet_set_from_file (opts->in_path, opts->b_in);
-    nnet_set_t* new = nnet_set_create (old->size);
+    nnet_set_t* set = nnet_set_from_file (opts->in_path, opts->b_in);
 
-    for (size_t i = 0; i < old->size; ++i)
+    for (size_t i = 0; i < set->size; ++i)
     {
         for (size_t j = 0; j < opts->n; ++j)
         {
@@ -121,7 +130,7 @@ int train_networks (options_t* opts)
         }
     }
 
-    nnet_set_to_file (new, opts->out_path, opts->b_out);
+    nnet_set_to_file (set, opts->out_path, opts->b_out);
 
     return ret;
 }

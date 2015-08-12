@@ -76,14 +76,16 @@ int main (int argc, char** argv)
 		//Generate data 
 		char path[100];
 		sprintf(path, "../../src/training/data/%d", board_size);
-		dataset_t* dataset = generate_training_data(path, board_size, c_black);
+        // FIXME
+		dataset_t* dataset; // = generate_training_data(path, board_size, c_black);
 
 		//Backpropagation 	
 		for(int j = 0; j < net_count; ++j)
 		{
 	            for (int i = 0; i < dataset->size; ++i)
         	    {
-                	nnet_backpropagate(current_nets[j]->net, dataset->data[i].input->buffer, dataset->data[i].expected);	
+                    // FIXME:
+                	//nnet_backpropagate(current_nets[j]->net, dataset->data[i].input->buffer, dataset->data[i].expected);	
                      }	
 		}	
 			

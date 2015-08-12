@@ -345,7 +345,7 @@ neuralnet_t* nnet_from_file (FILE* file, bool binary)
 
         if (!success)
         {
-            const char* line = __LINE__;
+            int line = __LINE__;
             const char* filename = __FILE__;
             if (feof (file))
             {

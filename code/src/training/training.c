@@ -12,24 +12,223 @@
 #include <sys/types.h>
 #include <linux/limits.h>
 
+static void td_to_file (training_data_t* td, FILE* file);
+static training_data_t* td_from_file (FILE* file);
 
-dataset_t* create_dataset (int size)
+dataset_t* dataset_create (size_t size)
 {
-    dataset_t* set = SAFE_CALLOC(1, sizeof(dataset_t));
+    dataset_t* set = SAFE_CALLOC (1, sizeof (dataset_t));
     set->size = size;
-    set->data = SAFE_CALLOC(size, sizeof(training_data_t));
+    set->data = SAFE_CALLOC (size, sizeof (training_data_t));
     return set;
 }
 
-void destroy_dataset (dataset_t* set)
+void dataset_destroy (dataset_t* set)
 {
-    for (int i = 0; i < set->size; ++i)
-        if (set->data[i].size != 0)
-            destroy_training_data(&set->data[i]);
-    free(set->data);
-    free(set);
+    for (size_t i = 0; i < set->size; ++i)
+        if (set->data[i] != NULL)
+            td_destroy (set->data[i]);
+    free (set->data);
+    free (set);
 }
 
+void dataset_to_file (dataset_t* set, const char* path)
+{
+    assert (set != NULL);
+    assert (path != NULL);
+
+    FILE* file = NULL;
+    file = fopen (path, "w");
+    if (file == NULL)
+    {
+        fprintf (stderr, "fopen() failed in file %s at line # %d\n", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    fwrite (&set->size, sizeof (set->size), 1, file);
+    for (size_t i = 0; i < set->size; ++i)
+    {
+        if (set->data[i] == NULL)
+            continue;
+        td_to_file (set->data[i], file);
+    }
+
+    fclose (file);
+}
+dataset_t* dataset_from_file (const char* path)
+{
+    assert (path != NULL);
+
+    size_t size = 0;
+
+    dataset_t* set;
+    FILE* file = NULL;
+    file = fopen (path, "r");
+    if (file == NULL)
+    {
+        fprintf (stderr, "fopen() failed in file %s at line # %d\n", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    bool success = true;
+    size_t num = 0;
+
+    num = fread (&size, sizeof (size), 1, file);
+    success = success && num == 1;
+
+    set = dataset_create (size);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        training_data_t* data = td_from_file (file);
+        if (data != NULL)
+            set->data[i] = data;
+    }
+
+    fclose (file);
+
+    return set;
+}
+
+training_data_t* td_create (size_t input_size, size_t output_size)
+{
+    assert (input_size > 0);
+    assert (output_size > 0);
+
+    training_data_t* data = SAFE_MALLOC (sizeof (training_data_t));
+    data->input_size = input_size;
+    data->output_size = output_size;
+    data->input = SAFE_MALLOC (input_size * sizeof (float));
+    data->expected = SAFE_MALLOC (output_size * sizeof (float));
+    return data;
+}
+
+void td_destroy (training_data_t* data)
+{
+    assert (data != NULL);
+
+    free (data->input);
+    free (data->expected);
+    free (data);
+}
+
+#if 0
+typedef struct
+{
+    size_t input_size;
+    size_t output_size;
+    float* input;
+    float* expected;
+} training_data_t;
+#endif
+
+static void td_to_file (training_data_t* td, FILE* file)
+{
+    assert (td != NULL);
+    assert (file != NULL);
+
+    fwrite (&td->input_size, sizeof (td->input_size), 1, file);
+    fwrite (&td->output_size, sizeof (td->output_size), 1, file);
+    fwrite (td->input, sizeof (float), td->input_size, file);
+    fwrite (td->expected, sizeof (float), td->output_size, file);
+}
+
+static training_data_t* td_from_file (FILE* file)
+{
+    assert (file != NULL);
+
+    size_t input_size = 0;
+    size_t output_size = 0;
+    training_data_t* td = NULL;
+
+    bool success = true;
+    size_t num = 0;
+    ;
+
+    num = fread (&input_size, sizeof (input_size), 1, file);
+    success = success && num == 1;
+    num = fread (&output_size, sizeof (output_size), 1, file);
+    success = success && num == 1;
+
+    td = td_create (input_size, output_size);
+
+    num = fread (td->input, sizeof (float), input_size, file);
+    success = success && num == input_size;
+    num = fread (td->expected, sizeof (float), output_size, file);
+    success = success && num == output_size;
+
+    if (!success)
+    {
+        int line = __LINE__;
+        const char* filename = __FILE__;
+        if (feof (file))
+        {
+            fprintf (stderr,
+                     "fread reached unexpected EOF in file %s at line # %d\n",
+                     filename, line);
+        }
+        else if (ferror (file))
+        {
+            fprintf (stderr, "error occurred in fread in file %s at line # %d",
+                     filename, line);
+        }
+        else
+        {
+            fprintf (stderr,
+                     "unknown error occurred in fread in file %s at line # %d",
+                     filename, line);
+        }
+        td_destroy (td);
+        return NULL;
+    }
+
+    return td;
+}
+
+training_data_t* td_generate_nxn_nxn (size_t n)
+{
+    training_data_t* data = td_create (n * n, n * n);
+    board_t* board = board_create (n);
+
+    int max_tries = random () % 256;
+    size_t x, y;
+
+    for (int i = 0; i < max_tries; ++i)
+    {
+        x = random () % n;
+        y = random () % n;
+        if (board_legal_placement (board, x, y, board->turn))
+            board_place (board, x, y);
+    }
+
+    for (size_t i = 0, i_end = n * n; i < i_end; ++i)
+    {
+        switch (board->buffer[i])
+        {
+        case ps_black:
+            data->input[i] = 1.0f;
+            data->expected[i] = 0.0f;
+            break;
+        case ps_white:
+            data->input[i] = -1.0f;
+            data->expected[i] = 0.0f;
+            break;
+        case ps_empty:
+        default:
+            data->input[i] = 0.0f;
+            data->expected[i] = 1.0f;
+            break;
+        }
+    }
+
+    board_destroy (board);
+    return data;
+}
+
+
+#if 0
 void create_training_data (training_data_t* data, int size, color_t color)
 {
     data->size = size;
@@ -206,3 +405,4 @@ void input_from_file (training_data_t* data, FILE* fp)
 		}
 	}
 }
+#endif

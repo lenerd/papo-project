@@ -162,7 +162,7 @@ int main (int argc, char** argv)
         {"binary-out", 201, 0, 0, "use binary output file", 0},
         {"number", 'n', "NUM", 0,
          "number of networks to create or training iterations", 0},
-        {"board-size", 's', 0, 0, "size of the used go board", 0},
+        {"board-size", 's', "NUM", 0, "size of the used go board", 0},
         {"training-data", 't', "FILE", 0, "training data to use", 0},
         {"layer", 'l', "NUMS", 0, "number of neurons in each layer\n"
                                   "e.g. \"2 3 3 2\"",

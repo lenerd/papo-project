@@ -209,7 +209,7 @@ START_TEST (test_file)
                        nets[0]->edge_count * sizeof (float)) == 0);
 
     for (int i = 0; i < 7; ++i)
-        nnet_set_destroy(sets[i]);
+        nnet_set_destroy (sets[i]);
 
     remove ("bin2");
     remove ("text2");
@@ -274,7 +274,7 @@ START_TEST (test_file2)
                        nets[1]->edge_count * sizeof (float)) == 0);
 
     for (int i = 0; i < 3; ++i)
-        nnet_set_destroy(sets[i]);
+        nnet_set_destroy (sets[i]);
 
     remove ("bin2");
     remove ("text2");
