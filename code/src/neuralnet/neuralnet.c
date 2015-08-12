@@ -8,6 +8,128 @@
 #include <string.h>
 
 // Construction and Destruction ########################################
+//
+static void skip_comments (FILE* file);
+
+nnet_set_t* nnet_set_create (size_t size)
+{
+    assert (size > 0);
+
+    nnet_set_t* set = SAFE_CALLOC(1, sizeof(nnet_set_t));
+    set->size = size;
+    set->nets = SAFE_CALLOC(size, sizeof(neuralnet_t*));
+
+    return set;
+}
+
+void nnet_set_destroy (nnet_set_t* set)
+{
+    assert (set != NULL);
+
+    for (size_t i = 0; i < set->size; ++i)
+        if (set->nets[i] != NULL)
+            nnet_destroy(set->nets[i]);
+
+    free (set->nets);
+    free (set);
+}
+
+
+void nnet_set_to_file (const nnet_set_t* set, const char* path, bool binary)
+{
+    assert (set != NULL);
+    assert (path != NULL);
+
+    FILE* file = NULL;
+    file = fopen (path, "w");
+    if (file == NULL)
+    {
+        fprintf (stderr, "fopen() failed in file %s at line # %d\n", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    if (binary)
+    {
+        fwrite (&set->size, sizeof(set->size), 1, file);
+        for (size_t i = 0; i < set->size; ++i)
+        {
+            if (set->nets[i] == NULL)
+                continue;
+            nnet_to_file (set->nets[i], file, true);
+        }
+    }
+    else
+    {
+        fprintf (file, "# nnet_set_t\n");
+        fprintf (file, "size = %zu\n", set->size);
+        fprintf (file, "#\n");
+        for (size_t i = 0; i < set->size; ++i)
+        {
+            if (set->nets[i] == NULL)
+                continue;
+            fprintf (file, "# neuralnet #%zu\n", i);
+            nnet_to_file (set->nets[i], file, false);
+            fprintf (file, "#\n");
+        }
+    }
+
+    fclose (file);
+}
+
+nnet_set_t* nnet_set_from_file (const char* path, bool binary)
+{
+    assert (path != NULL);
+
+    size_t size = 0;
+
+    nnet_set_t* set;
+    FILE* file = NULL;
+    file = fopen (path, "r");
+    if (file == NULL)
+    {
+        fprintf (stderr, "fopen() failed in file %s at line # %d\n", __FILE__,
+                 __LINE__);
+        exit (EXIT_FAILURE);
+    }
+
+    if (binary)
+    {
+        bool success = true;
+        size_t num = 0;
+
+        num = fread (&size, sizeof (size), 1, file);
+        success = success && num == 1;
+
+        set = nnet_set_create (size);
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            neuralnet_t* net = nnet_from_file (file, true);
+            if (net != NULL)
+                set->nets[i] = net;
+        }
+    }
+    else
+    {
+        skip_comments (file);
+        fscanf (file, "size = %zu\n", &size);
+
+        set = nnet_set_create (size);
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            skip_comments (file);
+            neuralnet_t* net = nnet_from_file (file, false);
+            if (net != NULL)
+                set->nets[i] = net;
+        }
+    }
+
+    fclose (file);
+
+    return set;
+}
 
 size_t nnet_edge_count (size_t layer_count, const size_t* neurons_per_layer)
 {
@@ -112,19 +234,10 @@ neuralnet_t* nnet_create_buffer (const size_t layer_count,
     return net;
 }
 
-void nnet_to_file (const neuralnet_t* net, const char* path, bool binary)
+void nnet_to_file (const neuralnet_t* net, FILE* file, bool binary)
 {
     assert (net != NULL);
-    assert (path != NULL);
-
-    FILE* file = NULL;
-    file = fopen (path, "w");
-    if (file == NULL)
-    {
-        fprintf (stderr, "fopen() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
+    assert (file != NULL);
 
     if (binary)
     {
@@ -161,8 +274,6 @@ void nnet_to_file (const neuralnet_t* net, const char* path, bool binary)
             }
         }
     }
-
-    fclose (file);
 }
 
 static void skip_comments (FILE* file)
@@ -191,23 +302,15 @@ static void skip_comments (FILE* file)
     }
 }
 
-neuralnet_t* nnet_from_file (const char* path, bool binary)
+neuralnet_t* nnet_from_file (FILE* file, bool binary)
 {
-    assert (path != NULL);
+    assert (file != NULL);
 
     size_t edge_count = 0;
     size_t layer_count = 0;
     size_t* neurons_per_layer = NULL;
 
     neuralnet_t* net;
-    FILE* file = NULL;
-    file = fopen (path, "r");
-    if (file == NULL)
-    {
-        fprintf (stderr, "fopen() failed in file %s at line # %d\n", __FILE__,
-                 __LINE__);
-        exit (EXIT_FAILURE);
-    }
 
     if (binary)
     {
@@ -230,8 +333,8 @@ neuralnet_t* nnet_from_file (const char* path, bool binary)
             fprintf (stderr, "edge_count %zu nnet_edge_count %zu\n", edge_count, nnet_edge_count(layer_count, neurons_per_layer));
             fprintf (stderr, "file corrupted in file %s at line # %d\n",
                      __FILE__, __LINE__);
-            fclose (file);
-            exit (EXIT_FAILURE);
+            free (neurons_per_layer);
+            return NULL;
         }
 
         net = allocate_neural_net (layer_count, neurons_per_layer);
@@ -243,23 +346,29 @@ neuralnet_t* nnet_from_file (const char* path, bool binary)
 
         if (!success)
         {
+            const char* line = __LINE__;
+            const char* filename = __FILE__;
             if (feof (file))
             {
                 fprintf (
                     stderr,
                     "fread reached unexpected EOF in file %s at line # %d\n",
-                    __FILE__, __LINE__);
-                fclose (file);
-                exit (EXIT_FAILURE);
+                    filename, line);
             }
-            if (ferror (file))
+            else if (ferror (file))
             {
                 fprintf (stderr,
                          "error occurred in fread in file %s at line # %d",
-                         __FILE__, __LINE__);
-                fclose (file);
-                exit (EXIT_FAILURE);
+                    filename, line);
             }
+            else
+            {
+                fprintf (stderr,
+                         "unknown error occurred in fread in file %s at line # %d",
+                    filename, line);
+            }
+            nnet_destroy (net);
+            return NULL;
         }
     }
     else
@@ -284,8 +393,8 @@ neuralnet_t* nnet_from_file (const char* path, bool binary)
         {
             fprintf (stderr, "file corrupted in file %s at line # %d\n",
                      __FILE__, __LINE__);
-            fclose (file);
-            exit (EXIT_FAILURE);
+            free (neurons_per_layer);
+            return NULL;
         }
 
         net = allocate_neural_net (layer_count, neurons_per_layer);
@@ -304,7 +413,6 @@ neuralnet_t* nnet_from_file (const char* path, bool binary)
         }
     }
 
-    fclose (file);
     free (neurons_per_layer);
 
     return net;

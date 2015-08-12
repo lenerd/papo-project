@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include "util/math_ext.h"
 
 /**
@@ -58,6 +59,37 @@ typedef struct
     float*** edges;
 
 } neuralnet_t;
+
+
+/**
+ * \brief Represents a set of neural networks.
+ */
+typedef struct
+{
+    /** \brief The size. */
+    size_t size;
+    /** \brief Buffer of size size containing networks. */
+    neuralnet_t** nets;
+} nnet_set_t;
+
+
+/**
+ * \brief Creates a set of neural networks.
+ *
+ * \param size Buffer size.
+ * \pre size > 0
+ * \return Pointer to the set.
+ */
+nnet_set_t* nnet_set_create (size_t size);
+
+/**
+ * \brief Destroys a set of neural networks.
+ *
+ * The networks are destroyed as well.
+ * \param set Pointer to the set.
+ * \pree set != NULL
+ */
+void nnet_set_destroy (nnet_set_t* set);
 
 
 /**
@@ -125,27 +157,59 @@ neuralnet_t* nnet_create_buffer (const size_t layer_count,
                                  const float* edges);
 
 /**
- * \brief Saves a neural network in a file;
+ * \brief Saves a set of neural networks in a file;
  *
  * If the file already exists, it will be overwritten.
  * The output buffer will not be saved.
  * TODO: format specification
  *
- * \param net    Pointer to the new neural network.
+ * \param set    Pointer to the neural network set.
  * \param path   Path to a file.
  * \param binary Is the file in a binary format?
- * \pre net != NULL
+ * \pre set != NULL
  * \pre path != NULL
+ * \pre User is permitted to write in the path.
+ * \post The state of the neural networks is saved in the file.
+ */
+void nnet_set_to_file (const nnet_set_t* set, const char* path, bool binary);
+
+/**
+ * \brief Saves a neural network to an open file;
+ *
+ * TODO: format specification
+ *
+ * \param net    Pointer to the new neural network.
+ * \param file   Pointer to an open FILE object.
+ * \param binary Is the file in a binary format?
+ * \pre net != NULL
+ * \pre file != NULL
  * \pre User is permitted to write in the path.
  * \post The state of the neural network is saved in the file.
  */
-void nnet_to_file (const neuralnet_t* net, const char* path, bool binary);
+void nnet_to_file (const neuralnet_t* net, FILE* file, bool binary);
 
 /**
- * \brief Creates and returns a neuralnet with edge-weights stored in a file.
+ * \brief Loads a set of neural networks from a file
  *
- * This allocates and initializes a new neural net with the data stored in given
- * file.
+ * This allocates and initializes new neural networks with the data stored in
+ * given file.
+ * TODO: format specification
+ *
+ * \param path   Path to a file containing edge weights.
+ * \param binary Is the file in a binary format?
+ * \return Pointer to the new neural network, NULL if an error occurred.
+ * \pre path != NULL
+ * \pre The file specified by path exists, is readable and contains data in the
+ * correct format.
+ * \post Returned network is initialized with the data from the file.
+ */
+nnet_set_t* nnet_set_from_file (const char* path, bool binary);
+
+/**
+ * \brief Loads a neural network from an open file.
+ *
+ * This allocates and initializes a new neural network with the data stored in
+ * given file.
  * TODO: format specification
  *
  * \param path   Path to a file containing edge weights.
@@ -156,7 +220,7 @@ void nnet_to_file (const neuralnet_t* net, const char* path, bool binary);
  * correct format.
  * \post Returned network is initialized with the data from the file.
  */
-neuralnet_t* nnet_from_file (const char* path, bool binary);
+neuralnet_t* nnet_from_file (FILE* file, bool binary);
 
 /**
  * \brief Destroys a neuralnet and frees all used resources.
