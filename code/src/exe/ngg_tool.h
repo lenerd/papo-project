@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 enum action
 {
@@ -28,6 +29,8 @@ typedef struct
     size_t iterations;
 
     size_t board_size;
+
+    size_t n;
 
     bool set_a;
     bool set_i;

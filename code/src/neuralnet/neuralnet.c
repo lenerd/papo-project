@@ -63,14 +63,13 @@ void nnet_set_to_file (const nnet_set_t* set, const char* path, bool binary)
     {
         fprintf (file, "# nnet_set_t\n");
         fprintf (file, "size = %zu\n", set->size);
-        fprintf (file, "#\n");
         for (size_t i = 0; i < set->size; ++i)
         {
             if (set->nets[i] == NULL)
                 continue;
+            fprintf (file, "# ----------------------------\n");
             fprintf (file, "# neuralnet #%zu\n", i);
             nnet_to_file (set->nets[i], file, false);
-            fprintf (file, "#\n");
         }
     }
 

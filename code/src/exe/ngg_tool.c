@@ -93,6 +93,11 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
     }
     break;
 
+    case 'n':  // number
+        opts->n = strtoul (arg, NULL, 10);
+        opts->set_n = true;
+        break;
+
     case 'o':  // output
         if (strlen (arg) > 0)
         {
@@ -174,7 +179,7 @@ int main (int argc, char** argv)
         ret = create_networks (&opts);
         break;
     case gen_data:
-        // TODO
+        ret = generate_training_data (&opts);
         break;
     case train:
         ret = train_networks (&opts);
