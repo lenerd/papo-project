@@ -14,10 +14,12 @@ int main (void)
 
     float* output;
     neuralnet_t* net;
+    nnet_set_t* set;
 
     if (access ("./xor.net", R_OK) != -1)
     {
-        net = nnet_from_file ("./xor.net", false);
+        set = nnet_set_from_file ("./xor.net", false);
+        net = set->nets[0];
         for (int i = 0; i < 4; ++i)
         {
             output = nnet_calculate_output (net, inputs[i]);
@@ -28,7 +30,9 @@ int main (void)
     }
     else
     {
+        set = nnet_set_create (1);
         net = nnet_create_random (3, size);
+        set->nets[0] = net;
 
         for (int i = 0; i < 4; ++i)
         {
@@ -50,7 +54,7 @@ int main (void)
                     (double) inputs[i][1], (double) output[0]);
             free (output);
         }
-        nnet_to_file (net, "./xor.net", false);
+        nnet_set_to_file (set, "./xor.net", false);
     }
 
     nnet_destroy (net);
