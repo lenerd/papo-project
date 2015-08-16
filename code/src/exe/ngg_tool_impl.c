@@ -2,6 +2,7 @@
 #include "neuralnet/neuralnet.h"
 #include "training/training.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -152,6 +153,62 @@ int train_networks (options_t* opts)
         printf("finished training\n");
 
     nnet_set_to_file (nets, opts->out_path, opts->b_out);
+
+    nnet_set_destroy (nets);
+    dataset_destroy (data);
+
+    return ret;
+}
+
+int calculate (options_t* opts)
+{
+    int ret = EXIT_SUCCESS;
+
+    if (!opts->set_i)
+    {
+        fprintf (stderr, "error: specify input file with -i\n");
+        ret = EXIT_FAILURE;
+    }
+    if (!opts->set_t)
+    {
+        fprintf (stderr,
+                 "error: specify file containing input data with -t\n");
+        ret = EXIT_FAILURE;
+    }
+    if (ret)
+        return ret;
+
+    nnet_set_t* nets = nnet_set_from_file (opts->in_path, opts->b_in);
+    dataset_t* data = dataset_from_file (opts->training_data_path);
+
+    neuralnet_t* net = nets->nets[0];
+    training_data_t* td = data->data[0];
+
+
+    float* output = nnet_calculate_output (net, td->input);
+
+    size_t board_size = sqrt(td->input_size);
+
+    for (size_t i = 0; i < board_size; ++i)
+    {
+        for (size_t j = 0; j < board_size; ++j)
+        {
+            printf("%f ", (double)td->input[i * board_size + j]);
+        }
+        putchar('\n');
+    }
+
+    putchar('\n');
+
+    for (size_t i = 0; i < board_size; ++i)
+    {
+        for (size_t j = 0; j < board_size; ++j)
+        {
+            printf("%f ", (double)output[i * board_size + j]);
+        }
+        putchar('\n');
+    }
+
 
     nnet_set_destroy (nets);
     dataset_destroy (data);

@@ -29,9 +29,14 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
             opts->action = train;
             opts->set_a = true;
         }
+        else if (strcmp (arg, "calc") == 0)
+        {
+            opts->action = calc;
+            opts->set_a = true;
+        }
         else
         {
-            argp_error (state, "action not in {create,gen-data,train}");
+            argp_error (state, "action not in {calc,create,gen-data,train}");
         }
         break;
 
@@ -153,7 +158,9 @@ int main (int argc, char** argv)
         {"action", 'a', "STRING", 0,
          "create: creates a new neural network              "
          "gen-data: generates training data                 "
-         "train: trains a neural network with supervised learning",
+         "train: trains a neural network with supervised    "
+         "learning                                          "
+         "calc: calculates output of a neural network given input",
          0},
         {"in", 'i', "FILE", 0, "load neuralnet from file", 0},
         {"out", 'o', "FILE", 0, "output neuralnet to file", 0},
@@ -175,6 +182,9 @@ int main (int argc, char** argv)
     int ret = EXIT_SUCCESS;
     switch (opts.action)
     {
+    case calc:
+        ret = calculate (&opts);
+        break;
     case create:
         ret = create_networks (&opts);
         break;

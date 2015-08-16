@@ -8,6 +8,7 @@
 enum action
 {
     none,
+    calc,
     create,
     gen_data,
     train,
@@ -47,6 +48,7 @@ typedef struct
 void init_opts (options_t* opts);
 void cleanup_opts (options_t* opts);
 
+int calculate (options_t* opts);
 int create_networks (options_t* opts);
 int generate_training_data (options_t* opts);
 int train_networks (options_t* opts);
