@@ -170,6 +170,7 @@ void board_pass (board_t* board);
 
 /**
  * \brief The number of liberties of a (group of) stone(s).
+ * \pre board != NULL
  * \pre board->grid[x][y] == ps_black || board->grid[x][y] == ps_white
  */
 uint16_t board_num_liberties (const board_t* board, uint16_t group);

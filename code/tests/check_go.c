@@ -203,6 +203,171 @@ START_TEST (test_board_capture)
     ck_assert (board_position_state (board2, 3, 7) == ps_empty);
     ck_assert (board_position_state (board2, 3, 8) == ps_empty);
     board_place (board2, 3, 7);
+
+    board_destroy (board);
+    board = board_create (5);
+
+    board_place (board, 3, 3);
+    board_place (board, 3, 2);
+    board_place (board, 0, 2);
+    /* Board:
+     *  01234
+     * 0     
+     * 1     
+     * 2b    
+     * 3  wb 
+     * 4     
+     */
+    board_place (board, 4, 0);
+    board_place (board, 0, 0);
+    board_place (board, 2, 3);
+    board_place (board, 2, 2);
+    board_place (board, 2, 1);
+    board_place (board, 3, 4);
+    board_place (board, 4, 4);
+    board_place (board, 1, 4);
+    board_place (board, 4, 1);
+    board_place (board, 1, 1);
+    board_place (board, 2, 0);
+    board_place (board, 4, 2);
+    /* Board:
+     *  01234
+     * 0b w w
+     * 1 bw w
+     * 2b bwB
+     * 3  wb 
+     * 4 b bw
+     */
+    board_place (board, 4, 3);
+    /* Board:
+     *  01234
+     * 0b w w
+     * 1 bw w
+     * 2b bw 
+     * 3  wbW
+     * 4 b bw
+     */
+    uint16_t pos = board_2d_to_1d(board, 4, 2);
+    ck_assert (board->buffer[pos] == ps_empty);
+    ck_assert (board->group_id[pos] == invalid_1d);
+    ck_assert (board->group_next[pos] == invalid_1d);
+    ck_assert (board->group_liberties[pos] == 0);
+
+    board_place (board, 0, 1);
+    /* Board:
+     *  01234
+     * 0b w w
+     * 1Bbw w
+     * 2b bw 
+     * 3  wbW
+     * 4 b bw
+     */
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 0)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 1, 1)] == 0);
+
+    board_place (board, 0, 3);
+    board_place (board, 1, 2);
+    /* Board:
+     *  01234
+     * 0b w w
+     * 1bbw w
+     * 2bbbw 
+     * 3w wbw
+     * 4 b bw
+     */
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 0)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 1, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 1, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 2, 2)] == 0);
+
+    pos = board_2d_to_1d (board, 1, 0);
+    ck_assert (board->buffer[pos] == ps_empty);
+    ck_assert (board->group_id[pos] == invalid_1d);
+    ck_assert (board->group_next[pos] == invalid_1d);
+    ck_assert (board->group_liberties[pos] == 0);
+    ck_assert (board_legal_placement(board, 1, 0, c_white));
+
+    board_place (board, 1, 0);
+    board_place (board, 4, 2);
+    /* Board:
+     *  01234
+     * 0bww w
+     * 1bbw w
+     * 2bbbwB
+     * 3w wb 
+     * 4 b b 
+     */
+    ck_assert (board->grid[0][0] == ps_black);
+    ck_assert (board->grid[0][1] == ps_black);
+    ck_assert (board->grid[0][2] == ps_black);
+    ck_assert (board->grid[0][3] == ps_white);
+
+    ck_assert (board->grid[1][0] == ps_white);
+    ck_assert (board->grid[1][1] == ps_black);
+    ck_assert (board->grid[1][2] == ps_black);
+    ck_assert (board->grid[1][3] == ps_empty);
+
+    ck_assert (board->grid[2][0] == ps_white);
+    ck_assert (board->grid[2][1] == ps_white);
+    ck_assert (board->grid[2][2] == ps_black);
+    ck_assert (board->grid[2][3] == ps_white);
+
+    ck_assert (board->grid[3][0] == ps_empty);
+    ck_assert (board->grid[3][1] == ps_empty);
+    ck_assert (board->grid[3][2] == ps_white);
+    ck_assert (board->grid[3][3] == ps_black);
+
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 0)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 0, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 1, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 1, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d(board, 2, 2)] == 0);
+    ck_assert (board->group_liberties[0] == 1);
+
+    board_place (board, 1, 3);
+    /* Board:
+     *  01234
+     * 0 ww w
+     * 1  w w
+     * 2   wb
+     * 3wWwb 
+     * 4 b b 
+     */
+    ck_assert (board->grid[0][0] == ps_empty);
+    ck_assert (board->grid[0][1] == ps_empty);
+    ck_assert (board->grid[0][2] == ps_empty);
+    ck_assert (board->grid[0][3] == ps_white);
+
+    ck_assert (board->grid[1][0] == ps_white);
+    ck_assert (board->grid[1][1] == ps_empty);
+    ck_assert (board->grid[1][2] == ps_empty);
+    ck_assert (board->grid[1][3] == ps_white);
+
+    ck_assert (board->grid[2][0] == ps_white);
+    ck_assert (board->grid[2][1] == ps_white);
+    ck_assert (board->grid[2][2] == ps_empty);
+    ck_assert (board->grid[2][3] == ps_white);
+
+    ck_assert (board->grid[3][0] == ps_empty);
+    ck_assert (board->grid[3][1] == ps_empty);
+    ck_assert (board->grid[3][2] == ps_white);
+    ck_assert (board->grid[3][3] == ps_black);
+
+    board_place (board, 1, 2);
+    /* Board:
+     *  01234
+     * 0 ww w
+     * 1  w w
+     * 2 b wb
+     * 3wwwb 
+     * 4 b b 
+     */
+    board_place (board, 0, 1);
 }
 END_TEST
 
@@ -213,6 +378,13 @@ START_TEST (test_board_groups)
     board_place (board, 1, 0);
     board_place (board, 0, 0);
     board_place (board, 1, 1);
+    /* Board:
+     *  0123
+     * 0WB  
+     * 1 B  
+     * 2    
+     * 3    
+     */
 
     ck_assert (board_position_state (board, 1, 0) == ps_black);
     ck_assert (board_position_state (board, 0, 0) == ps_white);
@@ -226,6 +398,13 @@ START_TEST (test_board_groups)
     board_place (board, 0, 2);
     board_place (board, 2, 0);
     board_place (board, 0, 1);
+    /* Board:
+     *  0123
+     * 0WBB 
+     * 1WB  
+     * 2W   
+     * 3    
+     */
 
     ck_assert (board_get_group (board, 0, 0) == board_get_group (board, 0, 1));
     ck_assert (board_get_group (board, 0, 0) == board_get_group (board, 0, 2));

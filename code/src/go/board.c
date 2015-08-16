@@ -41,15 +41,15 @@ board_t *board_create(uint8_t size) {
 
   board->grid = SAFE_CALLOC((size_t)size, sizeof(int8_t *));
 
-  board->group_next = SAFE_MALLOC((size_t)board->buf_size * sizeof(uint16_t *));
+  board->group_next = SAFE_MALLOC((size_t)board->buf_size * sizeof(uint16_t));
   memset(board->group_next, 0xFF, board->buf_size * sizeof(uint16_t));
 
-  board->group_id = SAFE_MALLOC((size_t)board->buf_size * sizeof(uint16_t *));
+  board->group_id = SAFE_MALLOC((size_t)board->buf_size * sizeof(uint16_t));
   memset(board->group_id, 0xFF, board->buf_size * sizeof(uint16_t));
 
-  board->group_liberties = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint16_t *));
+  board->group_liberties = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint16_t));
 
-  board->mark_buf = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint8_t *));
+  board->mark_buf = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint8_t));
 
   for (uint8_t i = 0; i < size; ++i) {
     board->grid[i] = board->buffer + i * size;
@@ -91,6 +91,7 @@ void board_place_color (board_t* board, uint8_t x, uint8_t y, color_t color)
     uint16_t pos = board_2d_to_1d (board, x, y);
     board->group_next[pos] = pos;
     board->group_id[pos] = pos;
+
     /* update groups */
     board_join_groups (board, x, y);
     /* capture stones */
@@ -105,18 +106,31 @@ void board_place (board_t* board, uint8_t x, uint8_t y)
     board->turn = (board->turn == c_black) ? c_white : c_black;
 }
 
-void board_pass(board_t *board) {
-  board->turn = (board->turn == c_black) ? c_white : c_black;
+void board_pass (board_t* board)
+{
+    assert (board != NULL);
+
+    board->turn = (board->turn == c_black) ? c_white : c_black;
 }
 
-uint16_t board_num_liberties(const board_t *board, uint16_t group) {
-    assert(group != invalid_1d);
+uint16_t board_num_liberties (const board_t* board, uint16_t group)
+{
+    assert (board != NULL);
+    assert (group != invalid_1d);
+    assert (group < board->buf_size);
+    assert (board->buffer[group] == ps_black ||
+            board->buffer[group] == ps_white);
+
     return board->group_liberties[group];
 }
 
 bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
                          color_t color)
 {
+    assert (board != NULL);
+    assert (x < board->size);
+    assert (y < board->size);
+
     color_t enemy = color == c_white ? c_black : c_white;
     uint16_t pos = board_2d_to_1d (board, x, y);
     uint16_t left = board_1d_left (board, pos);
@@ -175,8 +189,8 @@ uint16_t board_capture_group (board_t* board, uint16_t group)
 {
     assert (board != NULL);
     assert (group < board->buf_size);
-    assert (group == board->group_id[group]);
     assert (board->buffer[group] != ps_empty);
+    assert (group == board->group_id[group]);
 
     uint16_t stones_captured = 0;
     uint16_t tmp_next;
@@ -204,6 +218,7 @@ void board_capture (board_t* board, uint8_t x, uint8_t y)
     assert (board != NULL);
     assert (x < board->size);
     assert (y < board->size);
+    assert (board->grid[x][y] == ps_black || board->grid[x][y] == ps_white);
 
     color_t state = (color_t) board_position_state (board, x, y);
     color_t enemy = state == c_white ? c_black : c_white;
@@ -307,9 +322,9 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
     assert (board != NULL);
     assert (x < board->size);
     assert (y < board->size);
-    assert (board->grid[x][y] != ps_empty);
+    assert (board->grid[x][y] == ps_black || board->grid[x][y] == ps_white);
 
-    color_t turn = board->turn;
+    color_t turn = board->grid[x][y];
 
     uint16_t pos, left, right, top, bot;
 
@@ -321,49 +336,52 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
     bot = board_1d_bot (board, pos);
     uint16_t n[4] = {left, right, top, bot};
 
-    uint16_t tmp;
-
-    board->group_next[pos] = pos;
-    board->group_id[pos] = pos;
-
     uint16_t min_id = pos;
 
     /* merge groups */
     for (uint8_t x = 0; x < 4; ++x)
     {
-        if (n[x] != invalid_1d && board->buffer[n[x]] == turn)
+        /* update if
+         * * position is valid
+         * * it's occupied by a stone of the same color
+         * * this stone is in another group
+         */
+        if (n[x] != invalid_1d && board->buffer[n[x]] == turn &&
+            board->group_id[n[x]] != board->group_id[pos])
         {
-            min_id = (board->group_id[n[x]] < min_id) ? board->group_id[n[x]] :
-                                                        min_id;
+            uint16_t tmp;
+
+            /* merge group cycles */
             tmp = board->group_next[n[x]];
             board->group_next[n[x]] = board->group_next[pos];
             board->group_next[pos] = tmp;
+
+            /* update group id */
+            min_id = (board->group_id[n[x]] < min_id) ? board->group_id[n[x]] :
+                                                        min_id;
+
+            board->group_id[pos] = min_id;
+            for (uint16_t i = board->group_next[pos]; i != pos;
+                 i = board->group_next[i])
+                board->group_id[i] = min_id;
         }
     }
 
     /* set group id */
     board->group_id[pos] = min_id;
 
-    for (uint8_t x = 0; x < 4; ++x)
-    {
-        if (n[x] != invalid_1d && board->buffer[n[x]] == turn &&
-            min_id < board->group_id[n[x]])
-        {
-            board->group_id[n[x]] = min_id;
-            for (uint16_t i = n[x]; board->group_next[i] != n[x];
-                 i = board->group_next[i])
-                board->group_id[i] = min_id;
-        }
-    }
-
+    /* calculate liberties of merged group */
     board_calc_liberties (board, x, y);
-    if (x > 0 && board->grid[x - 1][y] != ps_empty)
+
+    /* update liberties of neighboured enemy groups */
+    pos_state_t enemy = ((pos_state_t) turn == ps_black) ? ps_white : ps_black;
+    if (x > 0 && board->grid[x - 1][y] == enemy)
         board_calc_liberties (board, (uint8_t)(x - 1), y);
-    if (x < board->size - 1 && board->grid[x + 1][y] != ps_empty)
+    if (x < board->size - 1 && board->grid[x + 1][y] == enemy)
         board_calc_liberties (board, (uint8_t)(x + 1), y);
-    if (y > 0 && board->grid[x][y - 1] != ps_empty)
+    if (y > 0 && board->grid[x][y - 1] == enemy)
         board_calc_liberties (board, x, (uint8_t)(y - 1));
-    if (y < board->size - 1 && board->grid[x][y + 1] != ps_empty)
+    if (y < board->size - 1 && board->grid[x][y + 1] == enemy)
         board_calc_liberties (board, x, (uint8_t)(y + 1));
 
     return min_id;
@@ -371,6 +389,11 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
 
 uint16_t board_calc_liberties (board_t* board, uint8_t x, uint8_t y)
 {
+    assert (board != NULL);
+    assert (x < board->size);
+    assert (y < board->size);
+    assert (board->grid[x][y] != ps_empty);
+
     uint16_t pos = board_2d_to_1d (board, x, y);
     uint16_t lib = 0;
     uint16_t n[4];
