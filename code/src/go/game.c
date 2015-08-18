@@ -16,7 +16,6 @@ game_t* game_create (player_t* black, player_t* white, size_t board_size, uint64
 
     game->board = board_create (board_size);
     game->turn = c_black;
-    game->score = 0;
 
     game->finished = false;
     
@@ -66,7 +65,7 @@ void game_step (game_t* game)
 }
 
 
-int64_t game_score (game_t* game)
+int64_t game_score (const game_t* game)
 {
     return board_score (game->board);
 }

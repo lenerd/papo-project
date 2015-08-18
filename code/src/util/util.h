@@ -79,12 +79,23 @@ void* safe_realloc (void* ptr, size_t size, const char* file,
 
 /**
  * \brief Shortcut for safe_calloc().
- * \param nmemb Number of elements.
- * \param size Length of one element.
+ * \param ptr  Pointer to an allocated buffer.
+ * \param size Length of requested memory in bytes.
  */
 #define SAFE_REALLOC(ptr, size) safe_realloc(ptr, size, __FILE__, __LINE__)
 
+/**
+ * \brief TODO: documentation
+ * \param buf1
+ * \param buf2
+ */
 void swap_int_buffer(int** buf1, int** buf2);
+
+/**
+ * \brief TODO: documentation
+ * \param buf1
+ * \param buf2
+ */
 void swap_float_buffer(float** buf1, float** buf2);
 
 /**
@@ -108,7 +119,7 @@ struct timespec diff_timespec (struct timespec start, struct timespec end);
  * \brief Prints time to stdout.
  *
  * Time in seconds with nanosecond precision.
- * Format: \d+\.\d{9}
+ * Format: \\d+\\\.\\d{9}
  * \param time Time to print.
  */
 void print_time (struct timespec time);

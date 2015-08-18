@@ -98,17 +98,56 @@ float sigmoid (float x);
 float inverse_sigmoid (float y);
 
 /**
- * \brief Centered version of the Sigmoid function. Output values range from -1.0
+ * \brief Centered version of the Sigmoid function. Output values range from
+ * -1.0
  * to 1.0 (exclusive) with the center of the function at (0|0).
  */
 float centered_sigmoid (float x);
 
+/**
+ * \brief Applies the sigmoid function to an array.
+ *
+ * Creates a new array.
+ * \param array Array to work on.
+ * \param size  Size of the array.
+ * \return sigmoid(array)
+ * \pre array != NULL
+ */
 float* sigmoidize (const float* array, const size_t size);
 
+/**
+ * \brief Applies the inverse sigmoid function to an array.
+ *
+ * Creates a new array.
+ * \param array Array to work on.
+ * \param size  Size of the array.
+ * \return sigmoid^-1(array)
+ * \pre array != NULL
+ */
 float* desigmoidize (const float* array, const size_t size);
 
+/**
+ * \brief Applies the sigmoid function to an array.
+ *
+ * Works inplace.
+ * \param array Array to work on.
+ * \param size  Size of the array.
+ * \return sigmoid(array)
+ * \pre array != NULL
+ * \post array <- sigmoid(array)
+ */
 float* sigmoidize_inplace (float* array, const size_t size);
 
+/**
+ * \brief Applies the inverse sigmoid function to an array.
+ *
+ * Works inplace.
+ * \param array Array to work on.
+ * \param size  Size of the array.
+ * \return sigmoid^-1(array)
+ * \pre array != NULL
+ * \post array <- sigmoid^-1(array)
+ */
 float* desigmoidize_inplace (float* array, const size_t size);
 
 #endif /* MATH_EXT_H */

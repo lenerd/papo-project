@@ -1,6 +1,7 @@
 #include "math_ext.h"
 #include "util.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
@@ -60,6 +61,8 @@ float centered_sigmoid (float x)
 
 float* sigmoidize (const float* array, const size_t size)
 {
+    assert (array != NULL);
+
     float* result = SAFE_MALLOC (size * sizeof (float));
 
     for (size_t i = 0; i < size; ++i)
@@ -72,6 +75,8 @@ float* sigmoidize (const float* array, const size_t size)
 
 float* desigmoidize (const float* array, const size_t size)
 {
+    assert (array != NULL);
+
     float* result = SAFE_MALLOC (size * sizeof (float));
 
     for (size_t i = 0; i < size; ++i)
@@ -84,6 +89,8 @@ float* desigmoidize (const float* array, const size_t size)
 
 float* sigmoidize_inplace (float* array, const size_t size)
 {
+    assert (array != NULL);
+
     for (size_t i = 0; i < size; ++i)
     {
         array[i] = sigmoid (array[i]);
@@ -94,6 +101,8 @@ float* sigmoidize_inplace (float* array, const size_t size)
 
 float* desigmoidize_inplace (float* array, const size_t size)
 {
+    assert (array != NULL);
+
     for (size_t i = 0; i < size; ++i)
     {
         array[i] = inverse_sigmoid (array[i]);

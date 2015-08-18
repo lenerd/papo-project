@@ -25,6 +25,8 @@ dataset_t* dataset_create (size_t size)
 
 void dataset_destroy (dataset_t* set)
 {
+    assert (set != NULL);
+
     for (size_t i = 0; i < set->size; ++i)
         if (set->data[i] != NULL)
             td_destroy (set->data[i]);
@@ -124,6 +126,17 @@ typedef struct
 } training_data_t;
 #endif
 
+/**
+ * \brief Saves a training_data object to an open file;
+ *
+ * TODO: format specification
+ *
+ * \param net    Pointer to the training data.
+ * \param file   Pointer to an open FILE object.
+ * \pre net != NULL
+ * \pre file != NULL
+ * \post The training data is saved in the file.
+ */
 static void td_to_file (training_data_t* td, FILE* file)
 {
     assert (td != NULL);
@@ -135,6 +148,16 @@ static void td_to_file (training_data_t* td, FILE* file)
     fwrite (td->expected, sizeof (float), td->output_size, file);
 }
 
+/**
+ * \brief Reads a training_data object from an open file;
+ *
+ * TODO: format specification
+ *
+ * \param file   Pointer to an open FILE object.
+ * \return The read training_data object.
+ * \pre file != NULL
+ * \pre The FILE is readable.
+ */
 static training_data_t* td_from_file (FILE* file)
 {
     assert (file != NULL);

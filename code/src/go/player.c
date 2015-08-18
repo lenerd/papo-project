@@ -12,6 +12,8 @@
 
 static float* board_to_nnet (const board_t* board, color_t color)
 {
+    assert (board != NULL);
+
     float* in = SAFE_MALLOC (board->buf_size * sizeof (float));
 
     pos_state_t friend = (pos_state_t) color;
@@ -81,6 +83,9 @@ static position_t net_move (const player_t* player, const board_t* board)
 
 static position_t human_move (const player_t* player, const board_t* board)
 {
+    assert (player != NULL);
+    assert (board != NULL);
+
     char* line;
     bool pass;
     position_t pos = {board->size, board->size};
@@ -145,6 +150,8 @@ player_t* player_create (move_func move, const void* context)
 
 player_t* player_create_net (const neuralnet_t* net)
 {
+    assert (net != NULL);
+
     return player_create (&net_move, net);
 }
 
@@ -156,11 +163,16 @@ player_t* player_create_human (void)
 
 position_t player_move (const player_t* player, const board_t* board)
 {
+    assert (player != NULL);
+    assert (board != NULL);
+
     return player->move (player, board);
 }
 
 
 void player_set_color (player_t* player, color_t color)
 {
+    assert (player != NULL);
+
     player->color = color;
 }

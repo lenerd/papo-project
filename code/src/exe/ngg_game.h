@@ -1,5 +1,5 @@
-#ifndef NGG_TOOL_H
-#define NGG_TOOL_H
+#ifndef NGG_GAME_H
+#define NGG_GAME_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -16,16 +16,12 @@ enum action
 
 typedef struct
 {
-    enum action action;
+    // enum action action;
 
     char* in_path;
     char* out_path;
-    char* training_data_path;
     bool b_in;
     bool b_out;
-
-    size_t number_layer;
-    size_t* number_neurons;
 
     size_t board_size;
 
@@ -33,11 +29,9 @@ typedef struct
 
     bool set_a;
     bool set_i;
-    bool set_l;
     bool set_n;
     bool set_o;
     bool set_s;
-    bool set_t;
 
     bool verbose;
 } options_t;
@@ -46,10 +40,6 @@ typedef struct
 void init_opts (options_t* opts);
 void cleanup_opts (options_t* opts);
 
-int calculate (options_t* opts);
-int create_networks (options_t* opts);
-int generate_training_data (options_t* opts);
-int train_networks (options_t* opts);
+int unsupervised (options_t* opts);
 
-
-#endif /* NGG_TOOL_H */
+#endif /* NGG_GAME_H */

@@ -90,9 +90,14 @@ typedef struct
 } board_t;
 
 
+/**
+ * \brief Represents a 2D position on a board.
+ */
 typedef struct
 {
+    /** \brief Row. */
     size_t x;
+    /** \brief Column. */
     size_t y;
 } position_t;
 
@@ -142,7 +147,7 @@ bool board_legal_placement (const board_t* board, size_t x, size_t y,
  * \brief Checks if placing a stone at given position would be suicide.
  * \param board Board to place one.
  * \param x x coordinate
- * \param x y coordinate
+ * \param y y coordinate
  * \param color Color of the stone to place.
  * \return True if it would be suicide, else false.
  * \pre board != NULL
@@ -273,6 +278,15 @@ uint16_t board_calc_liberties (board_t* board, size_t x, size_t y);
  */
 size_t board_2d_to_1d (const board_t* board, size_t x, size_t y);
 
+/**
+ * \brief Calculates the 2D position in board->grid from 1D coordinates.
+ * \param board Context of the positions.
+ * \param z Index in board->buffer
+ * \return The 2D coordinate of the given position.
+ * \pre board != NULL
+ * \pre z < board->buf_size
+ * \post &board->buffer[z] == &board->grid[ret.x][ret.y]
+ */
 position_t board_1d_to_2d (const board_t* board, size_t z);
 
 /**

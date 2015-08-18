@@ -87,7 +87,7 @@ nnet_set_t* nnet_set_create (size_t size);
  *
  * The networks are destroyed as well.
  * \param set Pointer to the set.
- * \pree set != NULL
+ * \pre set != NULL
  */
 void nnet_set_destroy (nnet_set_t* set);
 
@@ -99,8 +99,8 @@ void nnet_set_destroy (nnet_set_t* set);
  * \sum_{l = 0}^{layer\_count - 2} neurons\_per\_layer[l] \cdot
  * neurons\_per\_layer[l+1]
  * \f]
- * \param layer_count       		Number of layers.
- * \param neurons_per_layer_count 	Array containing layer sizes.
+ * \param layer_count        Number of layers.
+ * \param neurons_per_layer  Array containing layer sizes.
  * \return Number of edges.
  * \pre layer_count > 1
  * \pre neurons_per_layer != NULL
@@ -114,8 +114,8 @@ size_t nnet_edge_count (size_t layer_count, const size_t* neurons_per_layer);
  * \f[
  * \sum_{l = 0}^{layer\_count - 1} neurons\_per\_layer[l]
  * \f]
- * \param layer_count       		Number of layers.
- * \param neurons_per_layer_count 	Array containing layer sizes.
+ * \param layer_count       Number of layers.
+ * \param neurons_per_layer Array containing layer sizes.
  * \return Number of nodes.
  * \pre layer_count > 1
  * \pre neurons_per_layer != NULL
@@ -128,8 +128,8 @@ size_t nnet_node_count (size_t layer_count, const size_t* neurons_per_layer);
  * preferences.
  *
  * This allocates and initializes a new neural net with the given preferences.
- * \param layer_count       		Number of layers.
- * \param neurons_per_layer_count 	Number of neurons in each layer.
+ * \param layer_count       Number of layers.
+ * \param neurons_per_layer Number of neurons in each layer.
  * \return Pointer to the new neural network.
  * \pre layer_count > 1
  * \pre len(neurons_per_layer) == layer_count
@@ -142,8 +142,9 @@ neuralnet_t* nnet_create_random (const size_t layer_count,
  * \brief Creates and returns a neuralnet with given edge-weights.
  *
  * This allocates and initializes a new neural net.
- * \param layer_count       		Number of hidden layers.
- * \param neurons_per_layer_count 	Number of neurons in each hidden layer.
+ * \param layer_count       Number of hidden layers.
+ * \param neurons_per_layer Number of neurons in each hidden layer.
+ * \param edges             Buffer containing network edges.
  * \return Pointer to the new neural network.
  * \pre layer_count > 1
  * \pre len(neurons_per_layer) == layer_count
@@ -168,7 +169,7 @@ neuralnet_t* nnet_create_buffer (const size_t layer_count,
  * \param binary Is the file in a binary format?
  * \pre set != NULL
  * \pre path != NULL
- * \pre User is permitted to write in the path.
+ * \pre The FILE is writable.
  * \post The state of the neural networks is saved in the file.
  */
 void nnet_set_to_file (const nnet_set_t* set, const char* path, bool binary);
@@ -178,7 +179,7 @@ void nnet_set_to_file (const nnet_set_t* set, const char* path, bool binary);
  *
  * TODO: format specification
  *
- * \param net    Pointer to the new neural network.
+ * \param net    Pointer to the neural network.
  * \param file   Pointer to an open FILE object.
  * \param binary Is the file in a binary format?
  * \pre net != NULL
@@ -212,7 +213,7 @@ nnet_set_t* nnet_set_from_file (const char* path, bool binary);
  * given file.
  * TODO: format specification
  *
- * \param path   Path to a file containing edge weights.
+ * \param file   Open file containing edge weights.
  * \param binary Is the file in a binary format?
  * \return Pointer to the new neural network.
  * \pre path != NULL
@@ -243,6 +244,7 @@ float* nnet_calculate_output (const neuralnet_t* net, const float* input);
 /**
  * \brief Trains the neuralnet through backpropagation.
  * \param net Network to be used
+ * \param input Input values.
  * \param target_output Buffer containing target values the neuralnet should
  * have computed.
  * \pre net != NULL
