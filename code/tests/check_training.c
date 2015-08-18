@@ -66,10 +66,10 @@ START_TEST (test_td_gen_nxn_nxn)
     for (size_t i = 0; i < 25; ++i)
     {
         float in = data->input[i];
-        if (in == 0.0f)
-            ck_assert (data->expected[i] == 1.0f);
-        else if (in == 1.0f || in == -1.0f)
-            ck_assert (data->expected[i] == 0.0f);
+        if (!(in < 0.0f || in > 0.0f))
+            ck_assert (!(data->expected[i] < 1.0f || data->expected[i] > 1.0f));
+        else if (!(in < 1.0f || in > 1.0f) || !(in < -1.0f || in > -1.0f))
+            ck_assert (!(data->expected[i] < 0.0f || data->expected[i] > 0.0f));
         else
             ck_abort ();
     }
@@ -218,6 +218,7 @@ Suite* make_suite (void)
 
     tcase_add_test (tc_core, test_training_data);
     tcase_add_test (tc_core, test_dataset);
+    tcase_add_test (tc_core, test_dataset_file);
     tcase_add_test (tc_core, test_td_gen_nxn_nxn);
 
     tcase_add_test (tc_core, test_backpropagation);
