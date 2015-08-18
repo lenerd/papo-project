@@ -238,6 +238,8 @@ void board_capture (board_t* board, size_t x, size_t y)
     size_t bot = board_1d_bot (board, pos);
     size_t group;
 
+    bool captured = false;
+
     size_t n[4] = {left, right, top, bot};
     for (size_t x = 0; x < 4; ++x)
     {
@@ -245,8 +247,24 @@ void board_capture (board_t* board, size_t x, size_t y)
         {
             group = board->group_id[n[x]];
             if (board_num_liberties (board, group) == 0)
+            {
                 stones_captured = (uint16_t)(
                     stones_captured + board_capture_group (board, group));
+                captured = true;
+            }
+        }
+    }
+
+    /* update liberties */
+    if (captured)
+    {
+        for (size_t i = 0; i < board->buf_size; ++i)
+        {
+            if (board->group_id[i] == i)
+            {
+                position_t pos = board_1d_to_2d (board, i);
+                board_calc_liberties (board, pos.x, pos.y);
+            }
         }
     }
 
@@ -317,13 +335,13 @@ size_t board_2d_to_1d (const board_t* board, size_t x, size_t y)
     return (x * board->size + y);
 }
 
-// position_t board_1d_to_2d (const board_t* board, uint16_t z)
-// {
-//     position_t pos;
-//     pos.x = (uint8_t)(z / board->size);
-//     pos.y = (uint8_t)(z % board->size);
-//     return pos;
-// }
+position_t board_1d_to_2d (const board_t* board, size_t z)
+{
+    position_t pos;
+    pos.x = z / board->size;
+    pos.y = z % board->size;
+    return pos;
+}
 
 size_t board_join_groups (board_t* board, size_t x, size_t y)
 {

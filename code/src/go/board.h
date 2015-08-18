@@ -89,11 +89,11 @@ typedef struct
 } board_t;
 
 
-// typedef struct
-// {
-//     uint8_t x;
-//     uint8_t y;
-// } position_t;
+typedef struct
+{
+    size_t x;
+    size_t y;
+} position_t;
 
 
 /**
@@ -263,7 +263,7 @@ uint16_t board_calc_liberties (board_t* board, size_t x, size_t y);
  */
 size_t board_2d_to_1d (const board_t* board, size_t x, size_t y);
 
-// position_t board_1d_to_2d (const board_t* board, uint16_t z);
+position_t board_1d_to_2d (const board_t* board, size_t z);
 
 /**
  * \brief Calculates the 1D position left of a given position.

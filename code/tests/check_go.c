@@ -115,6 +115,35 @@ START_TEST (test_board_suicide)
     board_pass (board);
     ck_assert (!board_test_suicide (board, 0, 0, c_white));
     ck_assert (board_legal_placement (board, 0, 0, c_white));
+
+    board_destroy (board);
+    board = board_create (5);
+    board_place (board, 2, 2);
+    board_place (board, 1, 1);
+    board_place (board, 2, 1);
+    board_place (board, 1, 4);
+    board_place (board, 0, 1);
+    board_place (board, 0, 2);
+    board_place (board, 1, 0);
+    board_place (board, 0, 3);
+    /* Board:
+     *  01234
+     * 0 BWW 
+     * 1BW  W
+     * 2 BB  
+     * 3     
+     * 4     
+     */
+    board_place (board, 1, 2);
+    /* Board:
+     *  01234
+     * 0 BWW 
+     * 1BxB W
+     * 2 BB  
+     * 3     
+     * 4     
+     */
+    ck_assert (!board_legal_placement (board, 1, 1, c_white));
 }
 END_TEST
 
