@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 /** \brief Represents an invalid 1D position. */
 extern const size_t invalid_1d;
@@ -108,6 +109,15 @@ board_t* board_create (size_t size);
  * \post all used memory freed
  */
 void board_destroy (board_t* board);
+
+/**
+ * \brief Prints a pretty picture to a file.
+ * \param board Board to print.
+ * \param file File to print to.
+ * \pre board != NULL
+ * \pre file != NULL
+ */
+void board_print (const board_t* board, FILE* file);
 
 /**
  * \brief Return the state of specified position on the board.

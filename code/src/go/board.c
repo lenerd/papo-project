@@ -14,16 +14,47 @@
 const size_t invalid_1d = SIZE_MAX;
 
 
-void board_print (board_t* board)
+void board_print (const board_t* board, FILE* file)
 {
-    for (size_t i = 0; i < board->size; ++i)
+    fputc (' ', file);
+    for (size_t y = 0; y < board->size; ++y)
+        fputc ('|', file);
+    fputc (' ', file);
+    fputc ('\n', file);
+    
+    for (size_t x = 0; x < board->size; ++x)
     {
-        for (size_t j = 0; j < board->size; ++j)
+        fputc ('-', file);
+        for (size_t y = 0; y < board->size; ++y)
         {
-            printf ("%d ", board->grid[i][j]);
+            pos_state_t ps = board->grid[x][y];
+            char symbol;
+            switch (ps)
+            {
+                case ps_black:
+                    symbol = 'B';
+                    break;
+                case ps_white:
+                    symbol = 'W';
+                    break;
+                case ps_empty:
+                    symbol = ' ';
+                    break;
+                default:
+                    symbol = '?';
+                    break;
+            }
+            fputc (symbol, file);
         }
-        printf ("\n");
+        fputc ('-', file);
+        fputc ('\n', file);
     }
+
+    fputc (' ', file);
+    for (size_t y = 0; y < board->size; ++y)
+        fputc ('|', file);
+    fputc (' ', file);
+    fputc ('\n', file);
 }
 
 board_t* board_create (size_t size)
