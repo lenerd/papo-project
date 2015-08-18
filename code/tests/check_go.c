@@ -72,14 +72,14 @@ START_TEST (test_board_placement)
     ck_assert (board_legal_placement (board, 0, 0, c_black));
     ck_assert (!(board->turn == c_white));
     board_place (board, 0, 0);
-	ck_assert(board_position_state(board, 0, 0) == ps_black);
+    ck_assert (board_position_state (board, 0, 0) == ps_black);
     ck_assert (board->turn == c_white);
     ck_assert (!board_legal_placement (board, 0, 0, c_black));
     ck_assert (!board_legal_placement (board, 0, 0, c_white));
     ck_assert (!(board->turn == c_black));
     ck_assert (board_legal_placement (board, 1, 0, c_white));
     board_place (board, 1, 0);
-	ck_assert(board_position_state(board, 1, 0) == ps_white);
+    ck_assert (board_position_state (board, 1, 0) == ps_white);
     ck_assert (board->turn == c_black);
 }
 END_TEST
@@ -91,30 +91,30 @@ START_TEST (test_board_suicide)
     board_place (board, 0, 1);
     /* Board:
      *  0123
-     * 0 B  
-     * 1B   
-     * 2    
-     * 3    
+     * 0 B
+     * 1B
+     * 2
+     * 3
      */
-    ck_assert (board_test_suicide(board, 0, 0, c_white));
-    ck_assert (!board_legal_placement(board, 0, 0, c_white));
+    ck_assert (board_test_suicide (board, 0, 0, c_white));
+    ck_assert (!board_legal_placement (board, 0, 0, c_white));
     board_place (board, 0, 2);
-    board_pass(board);
+    board_pass (board);
     board_place (board, 1, 1);
-    board_pass(board);
+    board_pass (board);
     board_place (board, 2, 0);
     /* Board:
      *  0123
-     * 0 BW 
-     * 1BW  
-     * 2W   
-     * 3    
+     * 0 BW
+     * 1BW
+     * 2W
+     * 3
      */
-    ck_assert (board_test_suicide(board, 0, 0, c_black));
-    ck_assert (!board_legal_placement(board, 0, 0, c_black));
-    board_pass(board);
-    ck_assert (!board_test_suicide(board, 0, 0, c_white));
-    ck_assert (board_legal_placement(board, 0, 0, c_white));
+    ck_assert (board_test_suicide (board, 0, 0, c_black));
+    ck_assert (!board_legal_placement (board, 0, 0, c_black));
+    board_pass (board);
+    ck_assert (!board_test_suicide (board, 0, 0, c_white));
+    ck_assert (board_legal_placement (board, 0, 0, c_white));
 }
 END_TEST
 
@@ -146,22 +146,22 @@ END_TEST
 START_TEST (test_board_liberties)
 {
     board_place (board, 0, 0);
-    ck_assert_msg (board_num_liberties (board, board_get_group (board, 0, 0)) ==
+    ck_assert_msg (board_num_liberties (board, board_get_group_id (board, 0, 0)) ==
                    2);
     board_place (board, 1, 0);
-    ck_assert_msg (board_num_liberties (board, board_get_group (board, 0, 0)) ==
+    ck_assert_msg (board_num_liberties (board, board_get_group_id (board, 0, 0)) ==
                    1);
-    ck_assert_msg (board_num_liberties (board, board_get_group (board, 1, 0)) ==
+    ck_assert_msg (board_num_liberties (board, board_get_group_id (board, 1, 0)) ==
                    2);
     board_place (board, 0, 1);
-    ck_assert_msg (board_num_liberties (board, board_get_group (board, 0, 0)) ==
+    ck_assert_msg (board_num_liberties (board, board_get_group_id (board, 0, 0)) ==
                    2);
-    ck_assert_msg (board_num_liberties (board, board_get_group (board, 1, 0)) ==
+    ck_assert_msg (board_num_liberties (board, board_get_group_id (board, 1, 0)) ==
                    2);
     board_place (board, 1, 1);
-    ck_assert_msg (board_num_liberties (board, board_get_group (board, 0, 0)) ==
+    ck_assert_msg (board_num_liberties (board, board_get_group_id (board, 0, 0)) ==
                    1);
-    ck_assert_msg (board_num_liberties (board, board_get_group (board, 1, 0)) ==
+    ck_assert_msg (board_num_liberties (board, board_get_group_id (board, 1, 0)) ==
                    3);
 }
 END_TEST
@@ -212,11 +212,11 @@ START_TEST (test_board_capture)
     board_place (board, 0, 2);
     /* Board:
      *  01234
-     * 0     
-     * 1     
-     * 2b    
-     * 3  wb 
-     * 4     
+     * 0
+     * 1
+     * 2b
+     * 3  wb
+     * 4
      */
     board_place (board, 4, 0);
     board_place (board, 0, 0);
@@ -235,7 +235,7 @@ START_TEST (test_board_capture)
      * 0b w w
      * 1 bw w
      * 2b bwB
-     * 3  wb 
+     * 3  wb
      * 4 b bw
      */
     board_place (board, 4, 3);
@@ -243,11 +243,11 @@ START_TEST (test_board_capture)
      *  01234
      * 0b w w
      * 1 bw w
-     * 2b bw 
+     * 2b bw
      * 3  wbW
      * 4 b bw
      */
-    uint16_t pos = board_2d_to_1d(board, 4, 2);
+    size_t pos = board_2d_to_1d (board, 4, 2);
     ck_assert (board->buffer[pos] == ps_empty);
     ck_assert (board->group_id[pos] == invalid_1d);
     ck_assert (board->group_next[pos] == invalid_1d);
@@ -258,14 +258,14 @@ START_TEST (test_board_capture)
      *  01234
      * 0b w w
      * 1Bbw w
-     * 2b bw 
+     * 2b bw
      * 3  wbW
      * 4 b bw
      */
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 0)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 1)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 2)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 1, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 0)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 1, 1)] == 0);
 
     board_place (board, 0, 3);
     board_place (board, 1, 2);
@@ -273,23 +273,23 @@ START_TEST (test_board_capture)
      *  01234
      * 0b w w
      * 1bbw w
-     * 2bbbw 
+     * 2bbbw
      * 3w wbw
      * 4 b bw
      */
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 0)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 1)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 2)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 1, 1)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 1, 2)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 2, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 0)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 1, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 1, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 2, 2)] == 0);
 
     pos = board_2d_to_1d (board, 1, 0);
     ck_assert (board->buffer[pos] == ps_empty);
     ck_assert (board->group_id[pos] == invalid_1d);
     ck_assert (board->group_next[pos] == invalid_1d);
     ck_assert (board->group_liberties[pos] == 0);
-    ck_assert (board_legal_placement(board, 1, 0, c_white));
+    ck_assert (board_legal_placement (board, 1, 0, c_white));
 
     board_place (board, 1, 0);
     board_place (board, 4, 2);
@@ -298,8 +298,8 @@ START_TEST (test_board_capture)
      * 0bww w
      * 1bbw w
      * 2bbbwB
-     * 3w wb 
-     * 4 b b 
+     * 3w wb
+     * 4 b b
      */
     ck_assert (board->grid[0][0] == ps_black);
     ck_assert (board->grid[0][1] == ps_black);
@@ -321,12 +321,12 @@ START_TEST (test_board_capture)
     ck_assert (board->grid[3][2] == ps_white);
     ck_assert (board->grid[3][3] == ps_black);
 
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 0)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 1)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 0, 2)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 1, 1)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 1, 2)] == 0);
-    ck_assert (board->group_id[board_2d_to_1d(board, 2, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 0)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 0, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 1, 1)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 1, 2)] == 0);
+    ck_assert (board->group_id[board_2d_to_1d (board, 2, 2)] == 0);
     ck_assert (board->group_liberties[0] == 1);
 
     board_place (board, 1, 3);
@@ -335,8 +335,8 @@ START_TEST (test_board_capture)
      * 0 ww w
      * 1  w w
      * 2   wb
-     * 3wWwb 
-     * 4 b b 
+     * 3wWwb
+     * 4 b b
      */
     ck_assert (board->grid[0][0] == ps_empty);
     ck_assert (board->grid[0][1] == ps_empty);
@@ -364,8 +364,8 @@ START_TEST (test_board_capture)
      * 0 ww w
      * 1  w w
      * 2 b wb
-     * 3wwwb 
-     * 4 b b 
+     * 3wwwb
+     * 4 b b
      */
     board_place (board, 0, 1);
 }
@@ -380,35 +380,35 @@ START_TEST (test_board_groups)
     board_place (board, 1, 1);
     /* Board:
      *  0123
-     * 0WB  
-     * 1 B  
-     * 2    
-     * 3    
+     * 0WB
+     * 1 B
+     * 2
+     * 3
      */
 
     ck_assert (board_position_state (board, 1, 0) == ps_black);
     ck_assert (board_position_state (board, 0, 0) == ps_white);
     ck_assert (board_position_state (board, 1, 1) == ps_black);
 
-    ck_assert (board_get_group (board, 1, 0) == board_get_group (board, 1, 1));
-    ck_assert (board_get_group (board, 1, 0) <= board_2d_to_1d (board, 1, 0));
-    ck_assert (board_get_group (board, 1, 1) <= board_2d_to_1d (board, 1, 1));
-    ck_assert (board_get_group (board, 0, 0) == board_2d_to_1d (board, 0, 0));
+    ck_assert (board_get_group_id (board, 1, 0) == board_get_group_id (board, 1, 1));
+    ck_assert (board_get_group_id (board, 1, 0) <= board_2d_to_1d (board, 1, 0));
+    ck_assert (board_get_group_id (board, 1, 1) <= board_2d_to_1d (board, 1, 1));
+    ck_assert (board_get_group_id (board, 0, 0) == board_2d_to_1d (board, 0, 0));
 
     board_place (board, 0, 2);
     board_place (board, 2, 0);
     board_place (board, 0, 1);
     /* Board:
      *  0123
-     * 0WBB 
-     * 1WB  
-     * 2W   
-     * 3    
+     * 0WBB
+     * 1WB
+     * 2W
+     * 3
      */
 
-    ck_assert (board_get_group (board, 0, 0) == board_get_group (board, 0, 1));
-    ck_assert (board_get_group (board, 0, 0) == board_get_group (board, 0, 2));
-    ck_assert (board_get_group (board, 2, 0) == board_get_group (board, 1, 0));
+    ck_assert (board_get_group_id (board, 0, 0) == board_get_group_id (board, 0, 1));
+    ck_assert (board_get_group_id (board, 0, 0) == board_get_group_id (board, 0, 2));
+    ck_assert (board_get_group_id (board, 2, 0) == board_get_group_id (board, 1, 0));
 }
 END_TEST
 
@@ -425,8 +425,8 @@ START_TEST (test_board_score)
     // 00000
     // 00000
     // 00000
-    score = board_score(board);
-    ck_assert_msg(score == -2, "calculated score ist %d", score);
+    score = board_score (board);
+    ck_assert_msg (score == -2, "calculated score ist %d", score);
     board_place (board, 1, 1);
     board_pass (board);
     board_place (board, 0, 2);
@@ -437,16 +437,16 @@ START_TEST (test_board_score)
     // B0000
     // 00000
     // 00000
-    score = board_score(board);
-    ck_assert_msg(score == 22, "calculated score ist %d", score);
+    score = board_score (board);
+    ck_assert_msg (score == 22, "calculated score ist %d", score);
     board_place (board, 4, 0);
     // B0B0W
     // 0B000
     // B0000
     // 00000
     // 00000
-    score = board_score(board);
-    ck_assert_msg(score == 3, "calculated score ist %d", score);
+    score = board_score (board);
+    ck_assert_msg (score == 3, "calculated score ist %d", score);
     board_pass (board);
     board_place (board, 0, 3);
     board_pass (board);
@@ -460,8 +460,8 @@ START_TEST (test_board_score)
     // BW000
     // W0000
     // 00000
-    score = board_score(board);
-    ck_assert_msg(score == -11, "calculated score ist %d", score);
+    score = board_score (board);
+    ck_assert_msg (score == -11, "calculated score ist %d", score);
 }
 END_TEST
 
@@ -484,9 +484,9 @@ START_TEST (test_record_content)
     write_move (test_record, 0, 5, 3);
     write_move (test_record, 1, 4, 9);
     write_move (test_record, 0, 7, 1);
-    
-    fclose(test_record);
-    test_record = fopen("1", "r");
+
+    fclose (test_record);
+    test_record = fopen ("1", "r");
 
     fgets (line, 150, test_record);
     ck_assert_str_eq (line, "AP[nugengo:?] \n");
@@ -511,35 +511,36 @@ END_TEST
 
 
 // Tests for game_controller.c
-START_TEST(test_play)
-{	
+START_TEST (test_play)
+{
     size_t layers[] = {board->buf_size, 5, 5, 2};
 
-	neuralnet_t* black = nnet_create_random (4, layers);
-	neuralnet_t* white = nnet_create_random (4, layers);
-	
-	FILE* test = create_file ("1");
+    neuralnet_t* black = nnet_create_random (4, layers);
+    neuralnet_t* white = nnet_create_random (4, layers);
 
-	result_t* result = play(2, black, white, 4.5, test);
+    FILE* test = create_file ("1");
 
-	ck_assert_msg(result->score_black == -result->score_white, "%d", result->score_black); 
+    result_t* result = play (2, black, white, 4.5, test);
 
-	nnet_destroy (black);
-	nnet_destroy (white);
+    ck_assert_msg (result->score_black == -result->score_white, "%d",
+                   result->score_black);
 
-	fclose(test);
-	remove("1");
+    nnet_destroy (black);
+    nnet_destroy (white);
+
+    fclose (test);
+    remove ("1");
 }
 END_TEST
 
 START_TEST (test_genmove)
 {
     result_t* test_result = result_init (net1, net2);
-	move_t* test_move = genmove(board, test_result);
-	ck_assert(test_move->x > -2);
-	ck_assert(test_move->x < 11);
-	ck_assert(test_move->y > -2);
-	ck_assert(test_move->y < 10);
+    move_t* test_move = genmove (board, test_result);
+    ck_assert (test_move->x > -2);
+    ck_assert (test_move->x < 11);
+    ck_assert (test_move->y > -2);
+    ck_assert (test_move->y < 10);
 }
 END_TEST
 
@@ -569,13 +570,13 @@ Suite* make_go_suite (void)
     tcase_add_test (tc_board, test_board_init);
     tcase_add_test (tc_board, test_board_placement);
     tcase_add_test (tc_board, test_board_suicide);
-	tcase_add_test (tc_board, test_board_pass);
+    tcase_add_test (tc_board, test_board_pass);
     tcase_add_test (tc_board, test_board_liberties);
     tcase_add_test (tc_board, test_board_capture);
-	tcase_add_test (tc_board, test_board_groups);
+    tcase_add_test (tc_board, test_board_groups);
     tcase_add_test (tc_board, test_board_score);
     suite_add_tcase (s, tc_board);
-	
+
     /* Test case for record */
     tc_record = tcase_create ("Record");
 
@@ -603,10 +604,10 @@ int main (void)
 
     sr = srunner_create (make_go_suite ());
 
-	//Uncomment if needed for debugging with gdb:
-	srunner_set_fork_status (sr, CK_NOFORK);
+    // Uncomment if needed for debugging with gdb:
+    srunner_set_fork_status (sr, CK_NOFORK);
 
-	srunner_run_all (sr, CK_VERBOSE);
+    srunner_run_all (sr, CK_VERBOSE);
 
     n = srunner_ntests_failed (sr);
     srunner_free (sr);

@@ -11,14 +11,14 @@
 #include <string.h>
 
 
-const uint16_t invalid_1d = UINT16_MAX;
+const size_t invalid_1d = SIZE_MAX;
 
 
 void board_print (board_t* board)
 {
-    for (int i = 0; i < board->size; ++i)
+    for (size_t i = 0; i < board->size; ++i)
     {
-        for (int j = 0; j < board->size; ++j)
+        for (size_t j = 0; j < board->size; ++j)
         {
             printf ("%d ", board->grid[i][j]);
         }
@@ -26,81 +26,89 @@ void board_print (board_t* board)
     }
 }
 
-board_t *board_create(uint8_t size) {
-  board_t *board = NULL;
-
-  board = SAFE_MALLOC (sizeof(board_t));
-
-  board->size = size;
-  board->buf_size = (uint16_t)(size * size);
-  board->turn = c_black;
-  board->black_captured = 0;
-  board->white_captured = 0;
-
-  board->buffer = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint8_t));
-
-  board->grid = SAFE_CALLOC((size_t)size, sizeof(int8_t *));
-
-  board->group_next = SAFE_MALLOC((size_t)board->buf_size * sizeof(uint16_t));
-  memset(board->group_next, 0xFF, board->buf_size * sizeof(uint16_t));
-
-  board->group_id = SAFE_MALLOC((size_t)board->buf_size * sizeof(uint16_t));
-  memset(board->group_id, 0xFF, board->buf_size * sizeof(uint16_t));
-
-  board->group_liberties = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint16_t));
-
-  board->mark_buf = SAFE_CALLOC((size_t)board->buf_size, sizeof(uint8_t));
-
-  for (uint8_t i = 0; i < size; ++i) {
-    board->grid[i] = board->buffer + i * size;
-  }
-
-  return board;
-}
-
-void board_destroy(board_t *board) {
-  free(board->grid);
-  free(board->buffer);
-  free(board->group_next);
-  free(board->group_id);
-  free(board->group_liberties);
-  free(board->mark_buf);
-  free(board);
-}
-
-pos_state_t board_position_state(const board_t *board, uint8_t x, uint8_t y) {
-  return board->grid[x][y];
-}
-
-bool board_legal_placement(const board_t *board, uint8_t x, uint8_t y,
-                           color_t color) {
-  if (x >= board->size || y >= board->size)
-    return false;
-  if (board->grid[x][y] != ps_empty)
-    return false;
-  if (board_test_suicide(board, x, y, color))
-    return false;
-  return true;
-}
-
-void board_place_color (board_t* board, uint8_t x, uint8_t y, color_t color)
+board_t* board_create (size_t size)
 {
-    assert (board_legal_placement(board, x, y, color));
+    board_t* board = NULL;
+
+    board = SAFE_MALLOC (sizeof (board_t));
+
+    board->size = size;
+    board->buf_size = size * size;
+    board->turn = c_black;
+    board->black_captured = 0;
+    board->white_captured = 0;
+
+    board->buffer = SAFE_CALLOC (board->buf_size, sizeof (uint8_t));
+
+    board->grid = SAFE_CALLOC (size, sizeof (int8_t*));
+
+    board->group_next =
+        SAFE_MALLOC (board->buf_size * sizeof (size_t));
+    memset (board->group_next, 0xFF, board->buf_size * sizeof (size_t));
+
+    board->group_id =
+        SAFE_MALLOC (board->buf_size * sizeof (size_t));
+    memset (board->group_id, 0xFF, board->buf_size * sizeof (size_t));
+
+    board->group_liberties =
+        SAFE_CALLOC (board->buf_size, sizeof (uint16_t));
+
+    board->mark_buf = SAFE_CALLOC (board->buf_size, sizeof (uint8_t));
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        board->grid[i] = board->buffer + i * size;
+    }
+
+    return board;
+}
+
+void board_destroy (board_t* board)
+{
+    free (board->grid);
+    free (board->buffer);
+    free (board->group_next);
+    free (board->group_id);
+    free (board->group_liberties);
+    free (board->mark_buf);
+    free (board);
+}
+
+pos_state_t board_position_state (const board_t* board, size_t x, size_t y)
+{
+    return board->grid[x][y];
+}
+
+bool board_legal_placement (const board_t* board, size_t x, size_t y,
+                            color_t color)
+{
+    if (x >= board->size || y >= board->size)
+        return false;
+    if (board->grid[x][y] != ps_empty)
+        return false;
+    if (board_test_suicide (board, x, y, color))
+        return false;
+    return true;
+}
+
+void board_place_color (board_t* board, size_t x, size_t y, color_t color)
+{
+    assert (board_legal_placement (board, x, y, color));
 
     board->grid[x][y] = (pos_state_t) color;
-    uint16_t pos = board_2d_to_1d (board, x, y);
+    size_t pos = board_2d_to_1d (board, x, y);
     board->group_next[pos] = pos;
     board->group_id[pos] = pos;
 
     /* update groups */
     board_join_groups (board, x, y);
     /* capture stones */
-    board_capture(board, x, y);
+    board_capture (board, x, y);
 }
 
-void board_place (board_t* board, uint8_t x, uint8_t y)
+void board_place (board_t* board, size_t x, size_t y)
 {
-    assert (board_legal_placement(board, x, y, board->turn));
+    assert (board_legal_placement (board, x, y, board->turn));
 
     board_place_color (board, x, y, board->turn);
     board->turn = (board->turn == c_black) ? c_white : c_black;
@@ -113,7 +121,7 @@ void board_pass (board_t* board)
     board->turn = (board->turn == c_black) ? c_white : c_black;
 }
 
-uint16_t board_num_liberties (const board_t* board, uint16_t group)
+uint16_t board_num_liberties (const board_t* board, size_t group)
 {
     assert (board != NULL);
     assert (group != invalid_1d);
@@ -124,7 +132,7 @@ uint16_t board_num_liberties (const board_t* board, uint16_t group)
     return board->group_liberties[group];
 }
 
-bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
+bool board_test_suicide (const board_t* board, size_t x, size_t y,
                          color_t color)
 {
     assert (board != NULL);
@@ -132,12 +140,12 @@ bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
     assert (y < board->size);
 
     color_t enemy = color == c_white ? c_black : c_white;
-    uint16_t pos = board_2d_to_1d (board, x, y);
-    uint16_t left = board_1d_left (board, pos);
-    uint16_t right = board_1d_right (board, pos);
-    uint16_t top = board_1d_top (board, pos);
-    uint16_t bot = board_1d_bot (board, pos);
-    uint16_t n[4] = {left, right, top, bot};
+    size_t pos = board_2d_to_1d (board, x, y);
+    size_t left = board_1d_left (board, pos);
+    size_t right = board_1d_right (board, pos);
+    size_t top = board_1d_top (board, pos);
+    size_t bot = board_1d_bot (board, pos);
+    size_t n[4] = {left, right, top, bot};
 
     bool last_lib = false;
     bool other_lib = false;
@@ -145,7 +153,7 @@ bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
     uint8_t enemy_cnt = 0;
     uint16_t libs = UINT16_MAX;
 
-    for (uint8_t x = 0; x < 4; ++x)
+    for (size_t x = 0; x < 4; ++x)
     {
         if (n[x] == invalid_1d)
         {
@@ -176,7 +184,7 @@ bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
            (last_lib || (!last_lib && (enemy_cnt == 4)));
 }
 
-uint16_t board_get_group (const board_t* board, uint8_t x, uint8_t y)
+size_t board_get_group_id (const board_t* board, size_t x, size_t y)
 {
     assert (board != NULL);
     assert (x < board->size);
@@ -185,7 +193,7 @@ uint16_t board_get_group (const board_t* board, uint8_t x, uint8_t y)
     return board->group_id[board_2d_to_1d (board, x, y)];
 }
 
-uint16_t board_capture_group (board_t* board, uint16_t group)
+uint16_t board_capture_group (board_t* board, size_t group)
 {
     assert (board != NULL);
     assert (group < board->buf_size);
@@ -193,7 +201,7 @@ uint16_t board_capture_group (board_t* board, uint16_t group)
     assert (group == board->group_id[group]);
 
     uint16_t stones_captured = 0;
-    uint16_t tmp_next;
+    size_t tmp_next;
 
     board->group_id[group] = invalid_1d;
     board->group_liberties[group] = 0;
@@ -201,7 +209,7 @@ uint16_t board_capture_group (board_t* board, uint16_t group)
     board->group_next[group] = invalid_1d;
     board->buffer[group] = ps_empty;
     ++stones_captured;
-    for (uint16_t i = tmp_next; board->group_id[i] != invalid_1d; i = tmp_next)
+    for (size_t i = tmp_next; board->group_id[i] != invalid_1d; i = tmp_next)
     {
         tmp_next = board->group_next[i];
         board->group_id[i] = invalid_1d;
@@ -213,7 +221,7 @@ uint16_t board_capture_group (board_t* board, uint16_t group)
     return stones_captured;
 }
 
-void board_capture (board_t* board, uint8_t x, uint8_t y)
+void board_capture (board_t* board, size_t x, size_t y)
 {
     assert (board != NULL);
     assert (x < board->size);
@@ -223,15 +231,15 @@ void board_capture (board_t* board, uint8_t x, uint8_t y)
     color_t state = (color_t) board_position_state (board, x, y);
     color_t enemy = state == c_white ? c_black : c_white;
     uint16_t stones_captured = 0;
-    uint16_t pos = board_2d_to_1d (board, x, y);
-    uint16_t left = board_1d_left (board, pos);
-    uint16_t right = board_1d_right (board, pos);
-    uint16_t top = board_1d_top (board, pos);
-    uint16_t bot = board_1d_bot (board, pos);
-    uint16_t group;
+    size_t pos = board_2d_to_1d (board, x, y);
+    size_t left = board_1d_left (board, pos);
+    size_t right = board_1d_right (board, pos);
+    size_t top = board_1d_top (board, pos);
+    size_t bot = board_1d_bot (board, pos);
+    size_t group;
 
-    uint16_t n[4] = {left, right, top, bot};
-    for (uint8_t x = 0; x < 4; ++x)
+    size_t n[4] = {left, right, top, bot};
+    for (size_t x = 0; x < 4; ++x)
     {
         if (n[x] != invalid_1d && board->buffer[n[x]] == enemy)
         {
@@ -251,18 +259,18 @@ void board_capture (board_t* board, uint8_t x, uint8_t y)
             (uint16_t)(board->black_captured + stones_captured);
 }
 
-uint16_t flood_fill (const board_t* board, uint16_t index, uint8_t* owner)
+uint16_t flood_fill (const board_t* board, size_t index, uint8_t* owner)
 {
     uint16_t cnt = 1;
-    uint16_t next[4];
+    size_t next[4];
     board->mark_buf[index] = ps_marked;
     *owner |= board->buffer[index];
 
-    next[0] = board_1d_top(board, index);
-    next[1] = board_1d_right(board, index);
-    next[2] = board_1d_bot(board, index);
-    next[3] = board_1d_left(board, index);
-    for (uint8_t i = 0; i < 4; ++i)
+    next[0] = board_1d_top (board, index);
+    next[1] = board_1d_right (board, index);
+    next[2] = board_1d_bot (board, index);
+    next[3] = board_1d_left (board, index);
+    for (size_t i = 0; i < 4; ++i)
     {
         if (next[i] == invalid_1d)
             continue;
@@ -272,10 +280,10 @@ uint16_t flood_fill (const board_t* board, uint16_t index, uint8_t* owner)
             *owner |= board->buffer[next[i]];
         else
         {
-            cnt = (uint16_t) (cnt + flood_fill(board, next[i], owner));
+            cnt = (uint16_t)(cnt + flood_fill (board, next[i], owner));
         }
     }
-    
+
     return cnt;
 }
 
@@ -284,7 +292,7 @@ int board_score (const board_t* board)
     int score = 0;
     int tmp;
     uint8_t owner;
-    for (uint16_t index = 0; index < board->buf_size; ++index)
+    for (size_t index = 0; index < board->buf_size; ++index)
     {
         if (board->buffer[index] == ps_empty &&
             board->mark_buf[index] != ps_marked)
@@ -302,11 +310,11 @@ int board_score (const board_t* board)
     return score;
 }
 
-uint16_t board_2d_to_1d (const board_t* board, uint8_t x, uint8_t y)
+size_t board_2d_to_1d (const board_t* board, size_t x, size_t y)
 {
     assert (x < board->size);
     assert (y < board->size);
-    return (uint16_t)(x * board->size + y);
+    return (x * board->size + y);
 }
 
 // position_t board_1d_to_2d (const board_t* board, uint16_t z)
@@ -317,7 +325,7 @@ uint16_t board_2d_to_1d (const board_t* board, uint8_t x, uint8_t y)
 //     return pos;
 // }
 
-uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
+size_t board_join_groups (board_t* board, size_t x, size_t y)
 {
     assert (board != NULL);
     assert (x < board->size);
@@ -326,7 +334,7 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
 
     color_t turn = board->grid[x][y];
 
-    uint16_t pos, left, right, top, bot;
+    size_t pos, left, right, top, bot;
 
     pos = board_2d_to_1d (board, x, y);
 
@@ -334,12 +342,12 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
     right = board_1d_right (board, pos);
     top = board_1d_top (board, pos);
     bot = board_1d_bot (board, pos);
-    uint16_t n[4] = {left, right, top, bot};
+    size_t n[4] = {left, right, top, bot};
 
-    uint16_t min_id = pos;
+    size_t min_id = pos;
 
     /* merge groups */
-    for (uint8_t x = 0; x < 4; ++x)
+    for (size_t x = 0; x < 4; ++x)
     {
         /* update if
          * * position is valid
@@ -349,7 +357,7 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
         if (n[x] != invalid_1d && board->buffer[n[x]] == turn &&
             board->group_id[n[x]] != board->group_id[pos])
         {
-            uint16_t tmp;
+            size_t tmp;
 
             /* merge group cycles */
             tmp = board->group_next[n[x]];
@@ -361,7 +369,7 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
                                                         min_id;
 
             board->group_id[pos] = min_id;
-            for (uint16_t i = board->group_next[pos]; i != pos;
+            for (size_t i = board->group_next[pos]; i != pos;
                  i = board->group_next[i])
                 board->group_id[i] = min_id;
         }
@@ -376,33 +384,33 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y)
     /* update liberties of neighboured enemy groups */
     pos_state_t enemy = ((pos_state_t) turn == ps_black) ? ps_white : ps_black;
     if (x > 0 && board->grid[x - 1][y] == enemy)
-        board_calc_liberties (board, (uint8_t)(x - 1), y);
+        board_calc_liberties (board, x - 1, y);
     if (x < board->size - 1 && board->grid[x + 1][y] == enemy)
-        board_calc_liberties (board, (uint8_t)(x + 1), y);
+        board_calc_liberties (board, x + 1, y);
     if (y > 0 && board->grid[x][y - 1] == enemy)
-        board_calc_liberties (board, x, (uint8_t)(y - 1));
+        board_calc_liberties (board, x, y - 1);
     if (y < board->size - 1 && board->grid[x][y + 1] == enemy)
-        board_calc_liberties (board, x, (uint8_t)(y + 1));
+        board_calc_liberties (board, x, y + 1);
 
     return min_id;
 }
 
-uint16_t board_calc_liberties (board_t* board, uint8_t x, uint8_t y)
+uint16_t board_calc_liberties (board_t* board, size_t x, size_t y)
 {
     assert (board != NULL);
     assert (x < board->size);
     assert (y < board->size);
     assert (board->grid[x][y] != ps_empty);
 
-    uint16_t pos = board_2d_to_1d (board, x, y);
+    size_t pos = board_2d_to_1d (board, x, y);
     uint16_t lib = 0;
-    uint16_t n[4];
+    size_t n[4];
 
     n[0] = board_1d_left (board, pos);
     n[1] = board_1d_right (board, pos);
     n[2] = board_1d_top (board, pos);
     n[3] = board_1d_bot (board, pos);
-    for (uint8_t x = 0; x < 4; ++x)
+    for (size_t x = 0; x < 4; ++x)
     {
         if (n[x] != invalid_1d && board->buffer[n[x]] == (uint8_t) ps_empty &&
             board->mark_buf[n[x]] != (uint8_t) ps_marked)
@@ -411,7 +419,7 @@ uint16_t board_calc_liberties (board_t* board, uint8_t x, uint8_t y)
             ++lib;
         }
     }
-    for (uint16_t i = board->group_next[pos]; i != pos;
+    for (size_t i = board->group_next[pos]; i != pos;
          i = board->group_next[i])
     {
         n[0] = board_1d_left (board, i);
@@ -435,38 +443,38 @@ uint16_t board_calc_liberties (board_t* board, uint8_t x, uint8_t y)
     return lib;
 }
 
-uint16_t board_1d_left (const board_t* board, uint16_t pos)
+size_t board_1d_left (const board_t* board, size_t pos)
 {
     assert (board != NULL);
     assert (pos < board->buf_size);
     if (pos % board->size == 0)
         return invalid_1d;
-    return (uint16_t)(pos - 1);
+    return pos - 1;
 }
 
-uint16_t board_1d_right (const board_t* board, uint16_t pos)
+size_t board_1d_right (const board_t* board, size_t pos)
 {
     assert (board != NULL);
     assert (pos < board->buf_size);
     if (pos % board->size == board->size - 1)
         return invalid_1d;
-    return (uint16_t)(pos + 1);
+    return pos + 1;
 }
 
-uint16_t board_1d_top (const board_t* board, uint16_t pos)
+size_t board_1d_top (const board_t* board, size_t pos)
 {
     assert (board != NULL);
     assert (pos < board->buf_size);
     if (pos < board->size)
         return invalid_1d;
-    return (uint16_t)(pos - board->size);
+    return pos - board->size;
 }
 
-uint16_t board_1d_bot (const board_t* board, uint16_t pos)
+size_t board_1d_bot (const board_t* board, size_t pos)
 {
     assert (board != NULL);
     assert (pos < board->buf_size);
     if (pos >= board->buf_size - board->size)
         return invalid_1d;
-    return (uint16_t)(pos + board->size);
+    return pos + board->size;
 }

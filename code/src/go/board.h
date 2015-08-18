@@ -11,10 +11,11 @@
 
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 /** \brief Represents an invalid 1D position. */
-extern const uint16_t invalid_1d;
+extern const size_t invalid_1d;
 
 
 /**
@@ -36,7 +37,7 @@ typedef enum
     ps_black = 1,
     ps_white = 2,
     ps_illegal = 4,
-	ps_marked = 8,
+    ps_marked = 8,
 } pos_state_t;
 
 /**
@@ -51,10 +52,10 @@ typedef struct
     uint8_t** grid;
 
     /** \brief Size of the board. */
-    uint8_t size;
+    size_t size;
 
     /** \brief Size of the buffer. */
-    uint16_t buf_size;
+    size_t buf_size;
 
     /** \brief Specifies next player to place a stone. */
     color_t turn;
@@ -66,13 +67,13 @@ typedef struct
     uint16_t white_captured;
 
     /** \brief Cyclic lists of the groups. */
-    uint16_t* group_next;
+    size_t* group_next;
 
     /**
      * \brief ID of the group of every stone. Equals smallest 1d position of a
      * stone in that group.
      */
-    uint16_t* group_id;
+    size_t* group_id;
 
     /**
      * \brief Number of liberties for every group. Only valid for entries in
@@ -99,7 +100,7 @@ typedef struct
  * \brief Creates a board of given size.
  * \pre size > 0
  */
-board_t* board_create (uint8_t size);
+board_t* board_create (size_t size);
 
 /**
  * \brief Destroys a board.
@@ -112,7 +113,7 @@ void board_destroy (board_t* board);
  * \brief Return the state of specified position on the board.
  * \pre board != NULL
  */
-pos_state_t board_position_state (const board_t* board, uint8_t x, uint8_t y);
+pos_state_t board_position_state (const board_t* board, size_t x, size_t y);
 
 /**
  * \brief Checks if a placement is legal.
@@ -124,7 +125,7 @@ pos_state_t board_position_state (const board_t* board, uint8_t x, uint8_t y);
  *
  * \pre board != NULL
  */
-bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
+bool board_legal_placement (const board_t* board, size_t x, size_t y,
                             color_t color);
 
 /**
@@ -138,7 +139,7 @@ bool board_legal_placement (const board_t* board, uint8_t x, uint8_t y,
  * \pre x < board->size
  * \pre y < board->size
  */
-bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
+bool board_test_suicide (const board_t* board, size_t x, size_t y,
                          color_t color);
 
 /**
@@ -149,7 +150,7 @@ bool board_test_suicide (const board_t* board, uint8_t x, uint8_t y,
  * \post board_legal_placement(board, x, y, color) == false
  * \post board->grid[x][y] == color
  */
-void board_place (board_t* board, uint8_t x, uint8_t y);
+void board_place (board_t* board, size_t x, size_t y);
 
 /**
  * \brief Places a stone with given color on given position.
@@ -159,7 +160,7 @@ void board_place (board_t* board, uint8_t x, uint8_t y);
  * \post board_legal_placement(board, x, y, color) == false
  * \post board->grid[x][y] == color
  */
-void board_place_color (board_t* board, uint8_t x, uint8_t y, color_t color);
+void board_place_color (board_t* board, size_t x, size_t y, color_t color);
 
 /**
  * \brief Don't place a stone and change turn.
@@ -173,7 +174,7 @@ void board_pass (board_t* board);
  * \pre board != NULL
  * \pre board->grid[x][y] == ps_black || board->grid[x][y] == ps_white
  */
-uint16_t board_num_liberties (const board_t* board, uint16_t group);
+uint16_t board_num_liberties (const board_t* board, size_t group);
 
 /**
  * \brief Finds the group the selected stone belongs to and returns its id.
@@ -185,7 +186,7 @@ uint16_t board_num_liberties (const board_t* board, uint16_t group);
  * \pre x < board->size
  * \pre y < board->size
  */
-uint16_t board_get_group(const board_t* board, uint8_t x, uint8_t y);
+size_t board_get_group_id (const board_t* board, size_t x, size_t y);
 
 /**
  * \brief Checks if the groups next to a position are to be captured and updates
@@ -198,7 +199,7 @@ uint16_t board_get_group(const board_t* board, uint8_t x, uint8_t y);
  * \pre y < board->size
  * \post board->white_captured and board->black_captured are update.
  */
-void board_capture (board_t* board, uint8_t x, uint8_t y);
+void board_capture (board_t* board, size_t x, size_t y);
 
 /**
  * \brief Removes all stones of a group from the board.
@@ -211,12 +212,12 @@ void board_capture (board_t* board, uint8_t x, uint8_t y);
  * \pre board->buffer[group] != ps_empty
  * \post All positions previously belonging to the group are now empty.
  */
-uint16_t board_capture_group (board_t* board, uint16_t group);
+uint16_t board_capture_group (board_t* board, size_t group);
 
 /**
 * \brief Returns the final score from black's perspective including komi.
 */
-int board_score(const board_t* board);
+int board_score (const board_t* board);
 
 /**
  * \brief Merges all groups of one color connecting with the stone on the given
@@ -231,7 +232,7 @@ int board_score(const board_t* board);
  * \pre board->grid[x][y] != ps_empty
  * \post ret != invalid_1d
  */
-uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y);
+size_t board_join_groups (board_t* board, size_t x, size_t y);
 
 /**
  * \brief Recalculates the number of liberties of the group containing the given
@@ -247,7 +248,7 @@ uint16_t board_join_groups (board_t* board, uint8_t x, uint8_t y);
  * \post board->group_liberties[board->group_id[pos]] is updated (for pos being
  * the 1d position).
  */
-uint16_t board_calc_liberties (board_t* board, uint8_t x, uint8_t y);
+uint16_t board_calc_liberties (board_t* board, size_t x, size_t y);
 
 /**
  * \brief Calculates the 1D position in board->buffer from 2D coordinates.
@@ -260,7 +261,7 @@ uint16_t board_calc_liberties (board_t* board, uint8_t x, uint8_t y);
  * \pre y < board->size
  * \post &board->buffer[ret] == &board->grid[x][y]
  */
-uint16_t board_2d_to_1d (const board_t* board, uint8_t x, uint8_t y);
+size_t board_2d_to_1d (const board_t* board, size_t x, size_t y);
 
 // position_t board_1d_to_2d (const board_t* board, uint16_t z);
 
@@ -273,7 +274,7 @@ uint16_t board_2d_to_1d (const board_t* board, uint8_t x, uint8_t y);
  * \pre board != NULL
  * \pre pos < board->buf_size
  */
-uint16_t board_1d_left (const board_t* board, uint16_t pos);
+size_t board_1d_left (const board_t* board, size_t pos);
 
 /**
  * \brief Calculates the 1D position right of a given position.
@@ -284,7 +285,7 @@ uint16_t board_1d_left (const board_t* board, uint16_t pos);
  * \pre board != NULL
  * \pre pos < board->buf_size
  */
-uint16_t board_1d_right (const board_t* board, uint16_t pos);
+size_t board_1d_right (const board_t* board, size_t pos);
 
 /**
  * \brief Calculates the 1D position top of a given position.
@@ -295,7 +296,7 @@ uint16_t board_1d_right (const board_t* board, uint16_t pos);
  * \pre board != NULL
  * \pre pos < board->buf_size
  */
-uint16_t board_1d_top (const board_t* board, uint16_t pos);
+size_t board_1d_top (const board_t* board, size_t pos);
 
 /**
  * \brief Calculates the 1D position bottom of a given position.
@@ -306,6 +307,6 @@ uint16_t board_1d_top (const board_t* board, uint16_t pos);
  * \pre board != NULL
  * \pre pos < board->buf_size
  */
-uint16_t board_1d_bot (const board_t* board, uint16_t pos);
+size_t board_1d_bot (const board_t* board, size_t pos);
 
 #endif /* BOARD_H */
