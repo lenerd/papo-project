@@ -45,7 +45,7 @@ void game_step (game_t* game)
 
     position_t pos;
     pos = player_move (p, game->board);
-    if (board_legal_placement (game->board, pos.x, pos.y, c_black))
+    if (board_legal_placement (game->board, pos.x, pos.y, game->turn))
     {
         board_place (game->board, pos.x, pos.y);
         game->passed = false;
