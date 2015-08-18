@@ -192,13 +192,14 @@ training_data_t* td_generate_nxn_nxn (size_t n)
     training_data_t* data = td_create (n * n, n * n);
     board_t* board = board_create (n);
 
-    int max_tries = random () % 256;
+    // TODO: seeding ?
+    uint64_t max_tries = (uint64_t) random () % 256;
     size_t x, y;
 
-    for (int i = 0; i < max_tries; ++i)
+    for (uint64_t i = 0; i < max_tries; ++i)
     {
-        x = random () % n;
-        y = random () % n;
+        x = (size_t)(random ()) % n;
+        y = (size_t)(random ()) % n;
         if (board_legal_placement (board, x, y, board->turn))
             board_place (board, x, y);
     }

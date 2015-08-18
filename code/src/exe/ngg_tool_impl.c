@@ -187,7 +187,7 @@ int calculate (options_t* opts)
 
     float* output = nnet_calculate_output (net, td->input);
 
-    size_t board_size = sqrt(td->input_size);
+    size_t board_size = (size_t)sqrt((double)td->input_size);
 
     for (size_t i = 0; i < board_size; ++i)
     {
