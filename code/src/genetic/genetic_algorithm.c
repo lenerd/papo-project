@@ -76,16 +76,13 @@ genome_t* select_individual (population_t* pop)
     float r = random_value_01 () *
               (pop->total_fitness + (float) pop->size * pop->base_fitness);
     float f = 0.0f;
-    size_t i = 0;
-    for (; i < pop->size; ++i)
+    for (size_t i = 0; i < pop->size; ++i)
     {
         f += pop->individuals[i]->fitness + pop->base_fitness;
         if (f > r)
-        {
-            break;
-        }
+            return pop->individuals[i];
     }
-    return pop->individuals[i];//pop->individuals[(i < pop->size - 1) ? i : pop->size - 1];
+    return pop->individuals[pop->size - 1];
 }
 
 void the_next_generation (population_t* pop)
@@ -97,7 +94,7 @@ void the_next_generation (population_t* pop)
     {
         size_t buf_len = pop->individuals[i]->genes_count * sizeof (float);
         new_genes[i] = SAFE_MALLOC (buf_len);
-        memcpy (new_genes[i], *(select_individual(pop)->genes), buf_len);
+        memcpy (new_genes[i], *(select_individual (pop)->genes), buf_len);
     }
 
     for (size_t i = 0; i < pop->size; ++i)
