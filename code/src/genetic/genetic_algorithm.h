@@ -8,9 +8,8 @@
 * \ingroup genetic
 */
 
-
+#include <stddef.h>
 #include <stdint.h>
-
 
 /**
  * \brief Function accepting a void pointer and returning nothing.
@@ -25,7 +24,7 @@ typedef void (*genes_update_fun)(void* arg);
 typedef struct
 {
     /** \brief Count of genes this genome contains. */
-    uint32_t genes_count;
+    size_t genes_count;
     /** \brief Values of all genes. */
     float** genes;
     /** \brief How fit this genome is. */
@@ -42,11 +41,11 @@ typedef struct
 typedef struct
 {
     /** \brief Size of the population. */
-    uint32_t size;
+    size_t size;
     /** \brief Array of pointer towards all genomes of this population. */
     genome_t** individuals;
     /** \brief The current generation this population is in. */
-    uint32_t generation;
+    uint64_t generation;
     /** \brief Summed up fitnesses of all genomes. */
     float total_fitness;
     /** \brief Average fitness of all genomes of this population. */
@@ -75,7 +74,7 @@ float gene_mutation_chance;
 * \pre genes != NULL
 * \pre update_fun != NULL
 */
-genome_t* create_genome (uint32_t genes_count, float** genes,
+genome_t* create_genome (size_t genes_count, float** genes,
                          genes_update_fun update_fun, void* update_arg);
 
 /**
@@ -85,7 +84,7 @@ genome_t* create_genome (uint32_t genes_count, float** genes,
 * \pre genomes != NULL
 * \pre base_fitness >= 0
 */
-population_t* create_population (uint32_t population_size, genome_t** genomes,
+population_t* create_population (size_t population_size, genome_t** genomes,
                                  float base_fitness);
 
 /**
@@ -121,6 +120,6 @@ genome_t* select_individual (population_t* pop);
 * \param pop Population to advance.
 * \pre pop != NULL
 */
-void next_generation (population_t* pop);
+void the_next_generation (population_t* pop);
 
 #endif /* GENETIC_ALGORITHM_H */

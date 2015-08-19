@@ -58,7 +58,7 @@ int main(int argc, char** argv){
 		pop->avg_fitness = pop->total_fitness / pop->size;
 		if(pop->generation % 10000 == 9999)
 			printf("Generation: %d\n\tTotal Fitness: %f\n\tAverage Fitness: %f\n\n", i, pop->total_fitness, pop->avg_fitness);
-		next_generation(pop);
+		the_next_generation(pop);
 	}
 	for (uint32_t i = 0; i < pop->size; ++i){
  		destroy_neural_net(nnets[i]);

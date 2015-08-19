@@ -264,4 +264,13 @@ void nnet_backpropagate (neuralnet_t* net, const float* input,
  */
 void nnet_print (const neuralnet_t* net);
 
+/**
+ * \brief Call this, when a neural networks edge buffer is used as a genome and
+ * edge_buf points to a new location.
+ * \param arg Pointer to a neural network.
+ * \pre arg != NULL
+ * \post The neural network is updated to use the new buffer.
+ */
+void update_neuralnet (void* arg);
+
 #endif /* NEURALNET_H */

@@ -138,7 +138,7 @@ int main (int argc, char** argv)
 			population_t* population = create_population(net_count, genomes, 0);
 		
 			//Make next generation	
-			next_generation(population);
+			the_next_generation(population);
 			*/
 			
 		}

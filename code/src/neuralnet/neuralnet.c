@@ -146,7 +146,7 @@ size_t nnet_node_count (size_t layer_count, const size_t* neurons_per_layer)
     return cnt;
 }
 
-void build_pointer (neuralnet_t* net)
+static void build_pointer (neuralnet_t* net)
 {
     assert (net != NULL);
 
@@ -494,4 +494,12 @@ void nnet_print (const neuralnet_t* net){
 
 	printf("\n");
 
+}
+
+void update_neuralnet (void* arg)
+{
+    assert (arg != NULL);
+
+    neuralnet_t* net = (neuralnet_t*) arg;
+    build_pointer (net);
 }

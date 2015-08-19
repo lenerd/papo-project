@@ -9,7 +9,7 @@
 float mutation_crossover_ratio = 1.0f;
 float gene_mutation_chance = 0.01f;
 
-genome_t* create_genome (uint32_t genes_count, float** genes,
+genome_t* create_genome (size_t genes_count, float** genes,
                          genes_update_fun update_fun, void* update_arg)
 {
     genome_t* genome = SAFE_MALLOC (sizeof (genome_t));
@@ -22,7 +22,7 @@ genome_t* create_genome (uint32_t genes_count, float** genes,
     return genome;
 }
 
-population_t* create_population (uint32_t population_size, genome_t** genomes,
+population_t* create_population (size_t population_size, genome_t** genomes,
                                  float base_fitness)
 {
     population_t* pop = SAFE_MALLOC (sizeof (population_t));
@@ -38,7 +38,7 @@ population_t* create_population (uint32_t population_size, genome_t** genomes,
 
 void mutate_genome (genome_t* genome)
 {
-    for (uint32_t i = 0; i < genome->genes_count; i++)
+    for (size_t i = 0; i < genome->genes_count; i++)
     {
         if (random_value_01 () < gene_mutation_chance)
         {
@@ -76,7 +76,7 @@ genome_t* select_individual (population_t* pop)
     float r = random_value_01 () *
               (pop->total_fitness + (float) pop->size * pop->base_fitness);
     float f = 0.0f;
-    uint32_t i = 0;
+    size_t i = 0;
     for (; i < pop->size; ++i)
     {
         f += pop->individuals[i]->fitness + pop->base_fitness;
@@ -88,19 +88,19 @@ genome_t* select_individual (population_t* pop)
     return pop->individuals[i];//pop->individuals[(i < pop->size - 1) ? i : pop->size - 1];
 }
 
-void next_generation (population_t* pop)
+void the_next_generation (population_t* pop)
 {
     float** new_genes;
     new_genes = SAFE_CALLOC (pop->size, sizeof (float*));
 
-    for (uint32_t i = 0; i < pop->size; ++i)
+    for (size_t i = 0; i < pop->size; ++i)
     {
         size_t buf_len = pop->individuals[i]->genes_count * sizeof (float);
         new_genes[i] = SAFE_MALLOC (buf_len);
         memcpy (new_genes[i], *(select_individual(pop)->genes), buf_len);
     }
 
-    for (uint32_t i = 0; i < pop->size; ++i)
+    for (size_t i = 0; i < pop->size; ++i)
     {
         free (*pop->individuals[i]->genes);
         *pop->individuals[i]->genes = new_genes[i];
