@@ -54,6 +54,14 @@ player_t* player_create_net (const neuralnet_t* net);
 player_t* player_create_human (void);
 
 /**
+ * \briefs Release resources of a player.
+ * \param player Player to kill.
+ * \pre player != NULL
+ * \post All player resources are freed.
+ */
+void player_destroy (player_t* player);
+
+/**
  * \brief Sets the color of a player.
  * \param player
  * \param color

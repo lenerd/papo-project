@@ -74,8 +74,16 @@ float gene_mutation_chance;
 * \pre genes != NULL
 * \pre update_fun != NULL
 */
-genome_t* create_genome (size_t genes_count, float** genes,
+genome_t* genome_create (size_t genes_count, float** genes,
                          genes_update_fun update_fun, void* update_arg);
+
+/**
+ * \brief Destroys a genome.
+ * \param genome The genome.
+ * \pre genome != NULL
+ * \post genome is freed.
+ */
+void genome_destroy (genome_t* genome);
 
 /**
 * \brief Creates and returns a population of genomes based on an array of
@@ -84,8 +92,16 @@ genome_t* create_genome (size_t genes_count, float** genes,
 * \pre genomes != NULL
 * \pre base_fitness >= 0
 */
-population_t* create_population (size_t population_size, genome_t** genomes,
+population_t* population_create (size_t size, genome_t** genomes,
                                  float base_fitness);
+
+/**
+ * \brief Release all resources of a population including the genomes.
+ * \param pop Population to free.
+ * \pre pop != NULL
+ * \post All resources are released.
+ */
+void population_destroy (population_t* pop);
 
 /**
  * \brief Mutates a given genome in-place.

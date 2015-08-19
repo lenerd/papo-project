@@ -36,12 +36,12 @@ int main()
 			genes[j] = random_value_0m(10000);
 		}
 		
-		genome_t* genome = create_genome(gene_count, &genes, NULL, NULL);
+		genome_t* genome = genome_create(gene_count, &genes, NULL, NULL);
 		genomes[i] =  genome;
 
 	}
 
-	pop = create_population(individual_count, genomes, 0);
+	pop = population_create(individual_count, genomes, 0);
 
 	int generations = 1000000;
 	struct timespec start, end, total;

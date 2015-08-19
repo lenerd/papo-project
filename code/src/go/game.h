@@ -39,6 +39,8 @@ typedef struct
 
     /** \brief Number of moves executed (including passed moves) */
     uint64_t move_cnt;
+    /** \brief Number of passes. */
+    uint64_t pass_cnt;
     /** \brief Maximum of moves allowed. */
     uint64_t move_limit;
 } game_t;

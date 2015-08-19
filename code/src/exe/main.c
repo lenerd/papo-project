@@ -132,10 +132,10 @@ int main (int argc, char** argv)
 			
 			for(int k = 0; k < net_count; ++k)
 			{
-				//genomes[k] = create_genome();
+				//genomes[k] = genome_create();
 			}			
 		
-			population_t* population = create_population(net_count, genomes, 0);
+			population_t* population = population_create(net_count, genomes, 0);
 		
 			//Make next generation	
 			the_next_generation(population);

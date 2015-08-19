@@ -111,7 +111,23 @@ struct timespec div_timespec (struct timespec t, uint64_t d)
     return t;
 }
 
+double timespec_to_double (struct timespec t)
+{
+    double d = t.tv_nsec;
+    d /= 1000000000;
+    d += t.tv_sec;
+    return d;
+}
+
+uint64_t timespec_to_uint64 (struct timespec t)
+{
+    uint64_t u = t.tv_sec;
+    u *= 1000000000;
+    u += t.tv_nsec;
+    return u;
+}
+
 void print_time (struct timespec time)
 {
-    printf("%lu.%9lu\n", time.tv_sec, time.tv_nsec);
+    printf("%lu.%09lu\n", time.tv_sec, time.tv_nsec);
 }

@@ -1,15 +1,16 @@
 #include "genetic_algorithm.h"
 #include "util/util.h"
+#include "util/math_ext.h"
+
+#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include "util/math_ext.h"
-#include "genetic_algorithm.h"
 
 float mutation_crossover_ratio = 1.0f;
 float gene_mutation_chance = 0.01f;
 
-genome_t* create_genome (size_t genes_count, float** genes,
+genome_t* genome_create (size_t genes_count, float** genes,
                          genes_update_fun update_fun, void* update_arg)
 {
     genome_t* genome = SAFE_MALLOC (sizeof (genome_t));
@@ -22,18 +23,35 @@ genome_t* create_genome (size_t genes_count, float** genes,
     return genome;
 }
 
-population_t* create_population (size_t population_size, genome_t** genomes,
+void genome_destroy (genome_t* genome)
+{
+    assert (genome != NULL);
+
+    free (genome);
+}
+
+population_t* population_create (size_t size, genome_t** genomes,
                                  float base_fitness)
 {
     population_t* pop = SAFE_MALLOC (sizeof (population_t));
 
-    pop->size = population_size;
+    pop->size = size;
     pop->individuals = genomes;
     pop->generation = 0;
     pop->base_fitness = base_fitness;
     pop->total_fitness = 0.0f;
     pop->avg_fitness = 0.0f;
     return pop;
+}
+
+void population_destroy (population_t* pop)
+{
+    assert (pop != NULL);
+
+    for (size_t i = 0; i < pop->size; ++i)
+        if (pop->individuals[i] != NULL)
+            genome_destroy (pop->individuals[i]);
+    free (pop);
 }
 
 void mutate_genome (genome_t* genome)

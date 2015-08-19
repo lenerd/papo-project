@@ -161,6 +161,13 @@ player_t* player_create_human (void)
     return player_create (&human_move, NULL);
 }
 
+void player_destroy (player_t* player)
+{
+    assert (player != NULL);
+
+    free (player);
+}
+
 position_t player_move (const player_t* player, const board_t* board)
 {
     assert (player != NULL);

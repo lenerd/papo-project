@@ -22,6 +22,7 @@ game_t* game_create (player_t* black, player_t* white, size_t board_size, uint64
     game->passed = false;
 
     game->move_cnt = 0;
+    game->pass_cnt = 0;
     game->move_limit = move_limit;
 
     return game;
@@ -52,10 +53,11 @@ void game_step (game_t* game)
     else
     {
         board_pass (game->board);
+        ++game->pass_cnt;
         if (game->passed)
             game->finished = true;
         game->passed = true;
-        fprintf(stdout, "player %u passed\n", game->turn);
+        // fprintf(stdout, "player %u passed\n", game->turn);
     }
 
     game->turn = game->turn == c_black ? c_white : c_black;

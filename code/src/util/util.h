@@ -141,4 +141,8 @@ struct timespec div_timespec (struct timespec t, uint64_t d);
  */
 void print_time (struct timespec time);
 
+double timespec_to_double (struct timespec t);
+
+uint64_t timespec_to_uint64 (struct timespec t);
+
 #endif /* UTIL_H */
