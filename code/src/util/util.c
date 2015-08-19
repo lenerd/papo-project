@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 
@@ -90,6 +91,24 @@ struct timespec diff_timespec (struct timespec start, struct timespec end)
         diff.tv_nsec = end.tv_nsec - start.tv_nsec;
     }
     return diff;
+}
+
+struct timespec sum_timespec (struct timespec t1, struct timespec t2)
+{
+    struct timespec sum;
+    sum.tv_nsec = t1.tv_nsec + t2.tv_nsec;
+    sum.tv_sec = sum.tv_nsec / 1000000000;
+    sum.tv_nsec %= 1000000000;
+    sum.tv_sec += t1.tv_sec + t2.tv_sec;
+    return sum;
+}
+
+struct timespec div_timespec (struct timespec t, uint64_t d)
+{
+    t.tv_nsec /= d;
+    t.tv_nsec += (t.tv_sec % d) * 1000000000 / d;
+    t.tv_sec /= d;
+    return t;
 }
 
 void print_time (struct timespec time)

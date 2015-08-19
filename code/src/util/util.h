@@ -8,6 +8,7 @@
  */
 
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -114,6 +115,22 @@ size_t max_size (const size_t* array, size_t n);
  * \return end - start
  */
 struct timespec diff_timespec (struct timespec start, struct timespec end);
+
+/**
+ * \brief Calculates the sum between two timestamps.
+ * \param start First timestamp.
+ * \param end Second timestamp.
+ * \return t1 + t2
+ */
+struct timespec sum_timespec (struct timespec t1, struct timespec t2);
+
+/**
+ * \brief Calculates the quotient of a time and an integer
+ * \param t First timestamp.
+ * \param d divisor
+ * \return t / d
+ */
+struct timespec div_timespec (struct timespec t, uint64_t d);
 
 /**
  * \brief Prints time to stdout.
