@@ -150,4 +150,12 @@ float* sigmoidize_inplace (float* array, const size_t size);
  */
 float* desigmoidize_inplace (float* array, const size_t size);
 
+/**
+* \brief Computer the factorial of a given number
+* 
+* Works in place.
+* \param number the number whose factorial should be computed
+*/
+unsigned long long factorial (int number);
+
 #endif /* MATH_EXT_H */

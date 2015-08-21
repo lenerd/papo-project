@@ -39,6 +39,11 @@ if (CHECK_FOUND)
     target_link_libraries (check_util ${LIBS})
     add_test (check_util ${CMAKE_CURRENT_BINARY_DIR}/check_util)
 
+    #genetic test
+    add_executable (check_genetic check_genetic.c)
+    target_link_libraries (check_genetic ${LIBS})
+    add_test (check_genetic ${CMAKE_CURRENT_BINARY_DIR}/check_genetic)
+
     # feel free to add more tests :)
 
 endif (CHECK_FOUND)
