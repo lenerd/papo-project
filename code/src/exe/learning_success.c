@@ -56,13 +56,13 @@ float compute_probability(uint8_t game_count, uint8_t games_won)
 
 int main()
 {
-	uint8_t generations = 100;
+	uint8_t generations = 100000000000000;
 	uint8_t nets_per_party = 10;
-	uint8_t board_size = 4;
-	uint8_t game_count = 100;
+	uint8_t board_size = 6;
+	uint8_t game_count = (nets_per_party * (nets_per_party + 1)) / 2;
 	uint8_t games_won = 0;
 	const size_t layers = 5;
-	const size_t neurons_per_layer[] = {16, 16, 16, 16, 16} ;
+	const size_t neurons_per_layer[] = {36, 36, 36, 36, 36} ;
 	
 	//Make nets and backpropagate
 	nnet_set_t* trained_nets = nnet_set_create(nets_per_party);	
@@ -100,7 +100,28 @@ int main()
 	population_t* population = population_create(nets_per_party, genomes, 0);
 	
 	for(int i = 0; i < generations; ++i)
+	{
+		for(int j = 0; j < nets_per_party; ++j)
+		{
+			player_t* player1 = player_create_net(trained_nets->nets[j]);
+
+			for(int k = j; k < nets_per_party; ++k)
+			{
+				player_t* player2 = player_create_net(trained_nets->nets[k]);	
+			
+				game_t* game = game_create(player1, player2, board_size, 5000);
+			
+				while(!game->finished)
+					game_step(game);
+
+				int score = game_score(game);
+				population->individuals[j]->fitness += score;
+				population->individuals[k]->fitness -= score;
+			}
+		}
+
 		the_next_generation(population);
+	}
 
 	for(int i = 0;  i < nets_per_party; ++i)
 		trained_nets->nets[i] = nnet_create_buffer(layers, neurons_per_layer, *genomes[i]->genes);
@@ -109,13 +130,13 @@ int main()
 	free(genomes);
 
 	//Play and count victories
-	for(int i = 0; i < nets_per_party; ++i)
+	for(int j = 0; j < nets_per_party; ++j)
 	{
-		player_t* trained = player_create_net(trained_nets->nets[i]);
+		player_t* trained = player_create_net(trained_nets->nets[j]);
 
-		for(int j = 0; j < nets_per_party; ++j)
+		for(int k = 0; k < nets_per_party; ++k)
 		{
-			player_t* untrained = player_create_net(untrained_nets->nets[j]);
+			player_t* untrained = player_create_net(untrained_nets->nets[k]);
 			
 			game_t* game = game_create(trained, untrained, board_size, 5000);
 			while(!game->finished)
@@ -130,7 +151,8 @@ int main()
 		
 		player_destroy(trained);
 	}
-	
+
+
 	//See if the probability is low enough
 	float prob = compute_probability(game_count, games_won);
 	if(prob < 0.05 && (games_won > (game_count /2)))	
