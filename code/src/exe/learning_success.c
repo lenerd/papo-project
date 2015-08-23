@@ -26,7 +26,7 @@
 
 float compute_probability(uint8_t game_count, uint8_t games_won)
 {	
-	float probability;
+	float probability = 0;
 	
 	/*
  	 * Formula:
