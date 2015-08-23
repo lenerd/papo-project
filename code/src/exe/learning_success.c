@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 #include "go/board.h"
 #include "go/game.h"
@@ -24,9 +25,9 @@
  *   safely say that the unsupervised learning is successful.
  */
 
-float compute_probability(uint8_t game_count, uint8_t games_won)
+float compute_probability(uint64_t game_count, uint64_t games_won)
 {	
-	float probability = 0;
+	float probability = 0.0f;
 	
 	/*
  	 * Formula:
@@ -41,26 +42,27 @@ float compute_probability(uint8_t game_count, uint8_t games_won)
 
 	if((game_count - games_won) < games_won)
 	{
-		for(int i = 0; i < (game_count - games_won); ++i)
-			probability += factorial(game_count) / (factorial(i) - factorial(game_count - i)); 
+		for(uint64_t i = 0; i < (game_count - games_won); ++i)
+			probability += (float)(factorial(game_count)) / (float)((factorial(i) - factorial(game_count - i))); 
 	}
 	else
 	{
-		for(int i = 0; i < games_won; ++i)
-			probability += factorial(game_count) / (factorial(i) - factorial(game_count - i));
+		for(uint64_t i = 0; i < games_won; ++i)
+			probability += (float)(factorial(game_count)) / (float)((factorial(i) - factorial(game_count - i)));
 	}
 
-	probability = probability * 2 * (1/ exp2(game_count));
+	probability = probability * 2 * (1/ exp2f((float)game_count));
 	return probability;
 }
 
 int main()
 {
-	uint8_t generations = 100000000000000;
-	uint8_t nets_per_party = 10;
-	uint8_t board_size = 6;
-	uint8_t game_count = (nets_per_party * (nets_per_party + 1)) / 2;
-	uint8_t games_won = 0;
+	// uint64_t generations = 100000000000000;
+	uint64_t generations = 100;
+	size_t nets_per_party = 10;
+	size_t board_size = 6;
+	uint64_t game_count = (nets_per_party * (nets_per_party + 1)) / 2;
+	uint64_t games_won = 0;
 	const size_t layers = 5;
 	const size_t neurons_per_layer[] = {36, 36, 36, 36, 36} ;
 	
@@ -72,21 +74,21 @@ int main()
 	for(int i = 0; i < 50; ++i)
 		training_data->data[i] = td_generate_nxn_nxn(board_size);
 
-	for(int i = 0; i < trained_nets->size; ++i)
+	for(size_t i = 0; i < trained_nets->size; ++i)
 	{
 		trained_nets->nets[i] = nnet_create_random(layers, neurons_per_layer);
 		
-		for(int j = 0; j < training_data->size; ++j)
+		for(size_t j = 0; j < training_data->size; ++j)
 		{
 			nnet_backpropagate(trained_nets->nets[i], training_data->data[j]->input, training_data->data[j]->expected);
 		}
 	}
 
-	for(int i = 0; i < untrained_nets->size; ++i)
+	for(size_t i = 0; i < untrained_nets->size; ++i)
 	{
 		untrained_nets->nets[i] = nnet_create_random(layers, neurons_per_layer);
 		
-		for(int j = 0; j < training_data->size; ++j)
+		for(size_t j = 0; j < training_data->size; ++j)
 		{
 			nnet_backpropagate(untrained_nets->nets[i], training_data->data[j]->input, training_data->data[j]->expected);
 		}
@@ -96,18 +98,18 @@ int main()
 
 	//Do unsupervised learning
 	genome_t** genomes = SAFE_MALLOC(nets_per_party * sizeof(genome_t*));
-	for(int i = 0; i < nets_per_party; ++i)
+	for(size_t i = 0; i < nets_per_party; ++i)
 		genomes[i] = genome_create(trained_nets->nets[i]->edge_count, &trained_nets->nets[i]->edge_buf, &update_neuralnet, trained_nets->nets[i]);
 	
 	population_t* population = population_create(nets_per_party, genomes, 0);
 	
-	for(int i = 0; i < generations; ++i)
+	for(uint64_t i = 0; i < generations; ++i)
 	{
-		for(int j = 0; j < nets_per_party; ++j)
+		for(size_t j = 0; j < nets_per_party; ++j)
 		{
 			player_t* player1 = player_create_net(trained_nets->nets[j]);
 
-			for(int k = j; k < nets_per_party; ++k)
+			for(size_t k = j; k < nets_per_party; ++k)
 			{
 				player_t* player2 = player_create_net(trained_nets->nets[k]);	
 			
@@ -116,9 +118,9 @@ int main()
 				while(!game->finished)
 					game_step(game);
 
-				int score = game_score(game);
-				population->individuals[j]->fitness += score;
-				population->individuals[k]->fitness -= score;
+				int64_t score = game_score(game);
+				population->individuals[j]->fitness += (float)score;
+				population->individuals[k]->fitness -= (float)score;
                 game_destroy (game);
                 player_destroy (player2);
 			}
@@ -136,11 +138,11 @@ int main()
 	free(genomes);
 
 	//Play and count victories
-	for(int j = 0; j < nets_per_party; ++j)
+	for(size_t j = 0; j < nets_per_party; ++j)
 	{
 		player_t* trained = player_create_net(trained_nets->nets[j]);
 
-		for(int k = 0; k < nets_per_party; ++k)
+		for(size_t k = 0; k < nets_per_party; ++k)
 		{
 			player_t* untrained = player_create_net(untrained_nets->nets[k]);
 			
@@ -148,7 +150,7 @@ int main()
 			while(!game->finished)
 				game_step(game);
 
-			int score = game_score(game);
+			int64_t score = game_score(game);
 			if(score > 0)
 				++games_won;
 
@@ -162,10 +164,10 @@ int main()
 
 	//See if the probability is low enough
 	float prob = compute_probability(game_count, games_won);
-	if(prob < 0.05 && (games_won > (game_count /2)))	
-		printf("The training is effective: the hypothesis that the nets are equally strong before and after unsupervised learning was rejected. \n Significance: %0.2f, Number of nets: %d, Number of games: %d, Games won by trained nets: %d \n", prob, (2*nets_per_party), game_count, games_won);
+	if(prob < 0.05f && (2 * games_won > game_count))	
+		printf("The training is effective: the hypothesis that the nets are equally strong before and after unsupervised learning was rejected. \n Significance: %0.2f, Number of nets: %zu, Number of games: %" PRIu64 ", Games won by trained nets: %" PRIu64 " \n", (double)prob, (2*nets_per_party), game_count, games_won);
 	else
-		printf("No such luck! Training seems to have no effect. Try again maybe? \n Significance: %0.3f, Number of nets: %d, Number of games: %d, Games won by trained nets: %d \n", prob, (2*nets_per_party), game_count, games_won);
+		printf("No such luck! Training seems to have no effect. Try again maybe? \n Significance: %0.3f, Number of nets: %zu, Number of games: %" PRIu64 ", Games won by trained nets: %" PRIu64 " \n", (double)prob, (2*nets_per_party), game_count, games_won);
 
 
 	nnet_set_destroy(trained_nets);

@@ -111,11 +111,11 @@ float* desigmoidize_inplace (float* array, const size_t size)
     return array;
 }
 
-unsigned long long factorial(int number)
+uint64_t factorial(uint64_t number)
 {
-	unsigned long long result = 1;
+	uint64_t result = 1;
 
-	for(int i = 2; i <= number; ++i)
+	for(uint64_t i = 2; i <= number; ++i)
 		result = result * i;
 
 	return result;

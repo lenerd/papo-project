@@ -12,6 +12,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 
 /**
@@ -156,6 +157,6 @@ float* desigmoidize_inplace (float* array, const size_t size);
 * Works in place.
 * \param number the number whose factorial should be computed
 */
-unsigned long long factorial (int number);
+uint64_t factorial (uint64_t number);
 
 #endif /* MATH_EXT_H */
