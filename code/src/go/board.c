@@ -119,6 +119,8 @@ bool board_legal_placement (const board_t* board, size_t x, size_t y,
         return false;
     if (board_test_suicide (board, x, y, color))
         return false;
+    if (board_test_ko (board, x, y, color))
+        return false;
     return true;
 }
 
@@ -213,6 +215,17 @@ bool board_test_suicide (const board_t* board, size_t x, size_t y,
 
     return !other_lib && !last_lib_enemy &&
            (last_lib || (!last_lib && (enemy_cnt == 4)));
+}
+
+bool board_test_ko (const board_t* board, size_t x, size_t y, color_t color)
+{
+    assert (board != NULL);
+    assert (x < board->size);
+    assert (y < board->size);
+
+    // TODO: implement
+
+    return false;
 }
 
 size_t board_get_group_id (const board_t* board, size_t x, size_t y)

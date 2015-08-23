@@ -158,6 +158,20 @@ bool board_test_suicide (const board_t* board, size_t x, size_t y,
                          color_t color);
 
 /**
+ * \brief Checks if placing a stone at given position would be a violation to
+ * the ko rule.
+ * \param board Board to place one.
+ * \param x x coordinate
+ * \param y y coordinate
+ * \param color Color of the stone to place.
+ * \return True if it would violate ko, else false.
+ * \pre board != NULL
+ * \pre x < board->size
+ * \pre y < board->size
+ */
+bool board_test_ko (const board_t* board, size_t x, size_t y, color_t color);
+
+/**
  * \brief Places a stone on given position.
  * \pre board_legal_placement(board, x, y, color) == true
  * \pre board != NULL

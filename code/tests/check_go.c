@@ -147,6 +147,36 @@ START_TEST (test_board_suicide)
 }
 END_TEST
 
+START_TEST (test_board_ko)
+{
+    board_place (board, 0, 1);
+    board_place (board, 0, 2);
+    board_place (board, 1, 0);
+    board_place (board, 1, 3);
+    board_place (board, 2, 1);
+    board_place (board, 2, 2);
+    board_place (board, 1, 2);
+    /* Board:
+     *  01234
+     * 0 bw  
+     * 1b Bw 
+     * 2 bw  
+     * 3     
+     * 4     
+     */
+    board_place (board, 1, 1);
+    /* Board:
+     *  01234
+     * 0 bw  
+     * 1bW w 
+     * 2 bw  
+     * 3     
+     * 4     
+     */
+    ck_assert (board_test_ko (board, 1, 2, c_black));
+}
+END_TEST
+
 START_TEST (test_board_pass)
 {
     uint8_t* buffer =
@@ -599,6 +629,7 @@ Suite* make_go_suite (void)
     tcase_add_test (tc_board, test_board_init);
     tcase_add_test (tc_board, test_board_placement);
     tcase_add_test (tc_board, test_board_suicide);
+    tcase_add_test (tc_board, test_board_ko);
     tcase_add_test (tc_board, test_board_pass);
     tcase_add_test (tc_board, test_board_liberties);
     tcase_add_test (tc_board, test_board_capture);
