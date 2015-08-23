@@ -174,6 +174,11 @@ START_TEST (test_board_ko)
      * 4     
      */
     ck_assert (board_test_ko (board, 1, 2, c_black));
+    ck_assert (!board_legal_placement (board, 1, 2, c_black));
+    board_place (board, 4, 4);
+    board_place (board, 4, 0);
+    ck_assert (!board_test_ko (board, 1, 2, c_black));
+    ck_assert (board_legal_placement (board, 1, 2, c_black));
 }
 END_TEST
 
