@@ -92,6 +92,8 @@ int main()
 		}
 	}
 
+    dataset_destroy (training_data);
+
 	//Do unsupervised learning
 	genome_t** genomes = SAFE_MALLOC(nets_per_party * sizeof(genome_t*));
 	for(int i = 0; i < nets_per_party; ++i)
@@ -117,14 +119,18 @@ int main()
 				int score = game_score(game);
 				population->individuals[j]->fitness += score;
 				population->individuals[k]->fitness -= score;
+                game_destroy (game);
+                player_destroy (player2);
 			}
+            player_destroy (player1);
 		}
 
 		the_next_generation(population);
 	}
 
-	for(int i = 0;  i < nets_per_party; ++i)
-		trained_nets->nets[i] = nnet_create_buffer(layers, neurons_per_layer, *genomes[i]->genes);
+    // nets should be updated automatically
+	// for(int i = 0;  i < nets_per_party; ++i)
+	// 	trained_nets->nets[i] = nnet_create_buffer(layers, neurons_per_layer, *genomes[i]->genes);
 
 	population_destroy(population);
 	free(genomes);
@@ -146,6 +152,7 @@ int main()
 			if(score > 0)
 				++games_won;
 
+            game_destroy (game);
 			player_destroy(untrained);
 		}
 		
