@@ -103,7 +103,8 @@ START_TEST(test_selection)
 
 	for(int i = 0; i < 1000; ++i)
 	{
-		genome_t* ind = select_individual(pop);
+        float total = total_fitness (pop);
+		genome_t* ind = select_individual(pop, total);
 		
 		if(*ind->genes == genes1)
 			++count1;

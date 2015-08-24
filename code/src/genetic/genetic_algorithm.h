@@ -133,11 +133,20 @@ void mutate_genome (genome_t* genome);
 genome_t* select_individual (population_t* pop, float total_fitness);
 
 /**
-* \brief Advances a given population one generation with mutation/crossovers
-* defining the genomes of the next generation.
-* \param pop Population to advance.
-* \pre pop != NULL
-*/
+ * \brief Advances a given population one generation with mutation/crossovers
+ * defining the genomes of the next generation.
+ * \param pop Population to advance.
+ * \pre pop != NULL
+ */
 void the_next_generation (population_t* pop);
+
+/**
+ * \brief Calculates the total fitness of a population.
+ * \param pop
+ * \return total fitness
+ * \pre pop != NULL
+ * \post total fitness >= 0
+ */
+float total_fitness (const population_t* pop);
 
 #endif /* GENETIC_ALGORITHM_H */
