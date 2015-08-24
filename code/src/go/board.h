@@ -87,6 +87,11 @@ typedef struct
 
     /** \brief 2D interface to mark_buf */
     uint8_t** mark_grid;
+
+
+    bool ko;
+    size_t ko_placed;
+    size_t ko_captured;
 } board_t;
 
 
@@ -163,13 +168,12 @@ bool board_test_suicide (const board_t* board, size_t x, size_t y,
  * \param board Board to place one.
  * \param x x coordinate
  * \param y y coordinate
- * \param color Color of the stone to place.
  * \return True if it would violate ko, else false.
  * \pre board != NULL
  * \pre x < board->size
  * \pre y < board->size
  */
-bool board_test_ko (const board_t* board, size_t x, size_t y, color_t color);
+bool board_test_ko (const board_t* board, size_t x, size_t y);
 
 /**
  * \brief Places a stone on given position.

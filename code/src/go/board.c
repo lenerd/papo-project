@@ -13,6 +13,8 @@
 
 const size_t invalid_1d = SIZE_MAX;
 
+static void set_ko (board_t* board, size_t placed, size_t captured);
+static void clean_ko (board_t* board);
 
 void board_print (const board_t* board, FILE* file)
 {
@@ -119,7 +121,7 @@ bool board_legal_placement (const board_t* board, size_t x, size_t y,
         return false;
     if (board_test_suicide (board, x, y, color))
         return false;
-    if (board_test_ko (board, x, y, color))
+    if (board_test_ko (board, x, y))
         return false;
     return true;
 }
@@ -127,6 +129,8 @@ bool board_legal_placement (const board_t* board, size_t x, size_t y,
 void board_place_color (board_t* board, size_t x, size_t y, color_t color)
 {
     assert (board_legal_placement (board, x, y, color));
+
+    clean_ko (board);
 
     board->grid[x][y] = (pos_state_t) color;
     size_t pos = board_2d_to_1d (board, x, y);
@@ -217,15 +221,58 @@ bool board_test_suicide (const board_t* board, size_t x, size_t y,
            (last_lib || (!last_lib && (enemy_cnt == 4)));
 }
 
-bool board_test_ko (const board_t* board, size_t x, size_t y, color_t color)
+static void set_ko (board_t* board, size_t placed, size_t captured)
+{
+    assert (board != NULL);
+    assert (placed < board->buf_size);
+    assert (captured < board->buf_size);
+    assert (placed != captured);
+
+    board->ko_placed = placed;
+    board->ko_captured = captured;
+    board->ko = true;
+}
+
+static void clean_ko (board_t* board)
+{
+    assert (board != NULL);
+
+    if (board->ko)
+    {
+        board->ko_placed = invalid_1d;
+        board->ko_placed = invalid_1d;
+        board->ko = false;
+    }
+}
+
+bool board_test_ko (const board_t* board, size_t x, size_t y)
 {
     assert (board != NULL);
     assert (x < board->size);
     assert (y < board->size);
 
-    // TODO: implement
+    if (!board->ko)
+        return false;
 
-    return false;
+    size_t placed = board->ko_placed;
+    size_t captured = board->ko_captured;
+
+    if (board_2d_to_1d (board, x, y) != captured)
+        return false;
+
+    if (board->group_liberties[board->group_id[placed]] > 1)
+        return false;
+
+    pos_state_t ps = board->buffer[placed];
+
+    /* group size > 1 ? */
+    if (board->buffer[board_1d_right (board, placed)] == ps ||
+        board->buffer[board_1d_bot (board, placed)] == ps ||
+        board->buffer[board_1d_left (board, placed)] == ps ||
+        board->buffer[board_1d_top (board, placed)] == ps)
+        return false;
+
+    return true;
 }
 
 size_t board_get_group_id (const board_t* board, size_t x, size_t y)
@@ -281,6 +328,7 @@ uint64_t board_capture (board_t* board, size_t x, size_t y)
     size_t top = board_1d_top (board, pos);
     size_t bot = board_1d_bot (board, pos);
     size_t group;
+    size_t ko_captured;
 
     size_t n[4] = {left, right, top, bot};
     for (size_t x = 0; x < 4; ++x)
@@ -289,7 +337,10 @@ uint64_t board_capture (board_t* board, size_t x, size_t y)
         {
             group = board->group_id[n[x]];
             if (board_num_liberties (board, group) == 0)
+            {
                 stones_captured += board_capture_group (board, group);
+                ko_captured = n[x];
+            }
         }
     }
 
@@ -313,6 +364,12 @@ uint64_t board_capture (board_t* board, size_t x, size_t y)
     else
         board->black_captured =
             (uint16_t)(board->black_captured + stones_captured);
+
+    /* set ko */
+    if (stones_captured == 1)
+    {
+        set_ko (board, pos, ko_captured);
+    }
 
     return stones_captured;
 }
