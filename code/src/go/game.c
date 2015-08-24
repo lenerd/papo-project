@@ -5,9 +5,10 @@
 #include <stdint.h>
 
 
-game_t* game_create (player_t* black, player_t* white, size_t board_size, uint64_t move_limit)
+game_t* game_create (player_t* black, player_t* white, size_t board_size,
+                     uint64_t move_limit)
 {
-    game_t* game = SAFE_MALLOC (sizeof(game_t));
+    game_t* game = SAFE_MALLOC (sizeof (game_t));
 
     game->black = black;
     game->white = white;
@@ -18,7 +19,7 @@ game_t* game_create (player_t* black, player_t* white, size_t board_size, uint64
     game->turn = c_black;
 
     game->finished = false;
-    
+
     game->passed = false;
 
     game->move_cnt = 0;
