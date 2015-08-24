@@ -89,10 +89,10 @@ void mutate_genome (genome_t* genome)
 //
 // }
 
-genome_t* select_individual (population_t* pop)
+genome_t* select_individual (population_t* pop, float total_fitness)
 {
     float r = random_value_01 () *
-              (pop->total_fitness + (float) pop->size * pop->base_fitness);
+              (total_fitness + (float) pop->size * pop->base_fitness);
     float f = 0.0f;
     for (size_t i = 0; i < pop->size; ++i)
     {
@@ -103,16 +103,28 @@ genome_t* select_individual (population_t* pop)
     return pop->individuals[pop->size - 1];
 }
 
+float total_fitness (const population_t* pop)
+{
+    assert (pop != NULL);
+
+    float sum = 0.0f;
+    for (size_t i = 0; i < pop->size; ++i)
+        sum += pop->individuals[i]->fitness;
+    return sum;
+}
+
 void the_next_generation (population_t* pop)
 {
     float** new_genes;
     new_genes = SAFE_CALLOC (pop->size, sizeof (float*));
 
+    float total = total_fitness (pop);
+
     for (size_t i = 0; i < pop->size; ++i)
     {
         size_t buf_len = pop->individuals[i]->genes_count * sizeof (float);
         new_genes[i] = SAFE_MALLOC (buf_len);
-        memcpy (new_genes[i], *(select_individual (pop)->genes), buf_len);
+        memcpy (new_genes[i], *(select_individual (pop, total)->genes), buf_len);
     }
 
     for (size_t i = 0; i < pop->size; ++i)

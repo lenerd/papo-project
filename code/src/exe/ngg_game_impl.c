@@ -127,13 +127,14 @@ int unsupervised (options_t* opts)
                 game_destroy (game);
                 player_destroy (p1);
                 player_destroy (p2);
-                genomes[net_1]->fitness += (float) score;
-                genomes[net_2]->fitness -= (float) score;
                 if (score > 0)
                     ++wins[net_1];
                 else if (score < 0)
                     ++wins[net_2];
             }
+
+        for (size_t net = 0; net < set->size; ++net)
+            pop->individuals[net]->fitness = (float) wins[net];
 
         game_cnt += set->size * (set->size - 1);
 

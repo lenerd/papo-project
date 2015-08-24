@@ -118,17 +118,19 @@ void mutate_genome (genome_t* genome);
 // genome_t* crossover_genomes(genome_t* father, genome_t* mother);
 
 /**
-* \brief Returns a random genome based on fittnesses
-*        Returns a random genome (individual) of the given population where
-*fitter ones have a higher chance to be returned.
-*		 This method supports fitnesses of 0 as long as base_fitness is bigger
-*than 0.
-*		 If Fitnesses are always bigger than zero you should use 0 as
-*base_fitness.
-* \pre pop != NULL
-* \pre base_fitness >= 0
-*/
-genome_t* select_individual (population_t* pop);
+ * \brief Returns a random genome based on fittnesses
+ *
+ * Returns a random genome (individual) of the given population where fitter
+ * ones have a higher chance to be returned. This method supports fitnesses of 0
+ * as long as base_fitness is bigger than 0. If Fitnesses are always bigger than
+ * zero you should use 0 as base_fitness.
+ * \param pop
+ * \param total_fitness
+ * \pre pop != NULL
+ * \pre base_fitness >= 0
+ * \pre total_fitness = sum of individual fitnesses
+ */
+genome_t* select_individual (population_t* pop, float total_fitness);
 
 /**
 * \brief Advances a given population one generation with mutation/crossovers
