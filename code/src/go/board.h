@@ -88,9 +88,11 @@ typedef struct
     /** \brief 2D interface to mark_buf */
     uint8_t** mark_grid;
 
-
+    /** \brief Flag set if ko is to be checked. */
     bool ko;
+    /** \brief Index of the placed stone in a ko situation. */
     size_t ko_placed;
+    /** \brief Index of the captured stone in a ko situation. */
     size_t ko_captured;
 } board_t;
 
