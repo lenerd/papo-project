@@ -65,7 +65,7 @@ START_TEST(test_mutation)
 	genome_t* genome = genome_create(genes_count, &genes_p, &do_nothing, NULL);
 
 	for(int i = 0; i < 1000; ++i)
-		mutate_genome(genome);
+		mutate_genome(genome, 0.01f);
 
 	ck_assert(!((*genome->genes)[0] < genes[0]) && !((*genome->genes)[0] > genes[0]));
 	ck_assert(!((*genome->genes)[1] < genes[1]) && !((*genome->genes)[1] > genes[1]));

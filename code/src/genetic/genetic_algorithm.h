@@ -54,6 +54,9 @@ typedef struct
      * possible. */
     float base_fitness;
 
+    /** \brief Chance that a gene mutates. */
+    float mutation_chance;
+
 } population_t;
 
 /** \brief Percentage, how many mutations happen to create new genomes compared
@@ -61,8 +64,6 @@ typedef struct
  * that a mutation and a 70% chance that a crossover happens to create a new
  * genome in an advancement of the population. */
 float mutation_crossover_ratio;
-/** \brief Chance for each gene in a genome to mutate */
-float gene_mutation_chance;
 
 /**
 * \brief Creates and returns a genome with given genes.
@@ -108,7 +109,7 @@ void population_destroy (population_t* pop);
  * \param genome Genome to mutate.
  * \pre gen != NULL
  */
-void mutate_genome (genome_t* genome);
+void mutate_genome (genome_t* genome, float mutation_chance);
 
 // /**
 // * \brief Creates and returns a crossover child of the given two genomes.

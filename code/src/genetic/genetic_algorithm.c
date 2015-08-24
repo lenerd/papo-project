@@ -8,7 +8,6 @@
 #include <string.h>
 
 float mutation_crossover_ratio = 1.0f;
-float gene_mutation_chance = 0.01f;
 
 genome_t* genome_create (size_t genes_count, float** genes,
                          genes_update_fun update_fun, void* update_arg)
@@ -39,8 +38,12 @@ population_t* population_create (size_t size, genome_t** genomes,
     pop->individuals = genomes;
     pop->generation = 0;
     pop->base_fitness = base_fitness;
+    pop->mutation_chance = 0.01f;
+
+    // FIXME: remove ?
     pop->total_fitness = 0.0f;
     pop->avg_fitness = 0.0f;
+
     return pop;
 }
 
@@ -54,11 +57,11 @@ void population_destroy (population_t* pop)
     free (pop);
 }
 
-void mutate_genome (genome_t* genome)
+void mutate_genome (genome_t* genome, float mutation_chance)
 {
     for (size_t i = 0; i < genome->genes_count; i++)
     {
-        if (random_value_01 () < gene_mutation_chance)
+        if (random_value_01 () < mutation_chance)
         {
             (*genome->genes)[i] += inverse_sigmoid (random_value_01 ());
         }
@@ -133,7 +136,7 @@ void the_next_generation (population_t* pop)
         *pop->individuals[i]->genes = new_genes[i];
         if (pop->individuals[i]->update_fun != NULL)
             pop->individuals[i]->update_fun (pop->individuals[i]->update_arg);
-        mutate_genome (pop->individuals[i]);
+        mutate_genome (pop->individuals[i], pop->mutation_chance);
     }
 
     free (new_genes);
