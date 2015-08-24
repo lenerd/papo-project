@@ -575,6 +575,7 @@ END_TEST
 
 
 // Tests for game_controller.c
+#if 0
 START_TEST (test_play)
 {
     size_t layers[] = {board->buf_size, 5, 5, 2};
@@ -617,6 +618,7 @@ START_TEST (test_result_init)
     ck_assert (test_result->score_white == 0);
 }
 END_TEST
+#endif
 
 
 Suite* make_go_suite (void)
@@ -624,7 +626,7 @@ Suite* make_go_suite (void)
     Suite* s;
     TCase* tc_board;
     TCase* tc_record;
-    TCase* tc_game;
+    // TCase* tc_game;
     s = suite_create ("Go");
 
     /* Test case for board */
@@ -649,14 +651,14 @@ Suite* make_go_suite (void)
     tcase_add_test (tc_record, test_record_content);
     suite_add_tcase (s, tc_record);
 
-    /* Test case for game_controller */
-    tc_game = tcase_create ("Game Controller");
-    tcase_add_checked_fixture (tc_game, setup, teardown);
+    // /* Test case for game_controller */
+    // tc_game = tcase_create ("Game Controller");
+    // tcase_add_checked_fixture (tc_game, setup, teardown);
 
-    tcase_add_test (tc_game, test_play);
-    tcase_add_test (tc_game, test_genmove);
-    tcase_add_test (tc_game, test_result_init);
-    suite_add_tcase (s, tc_game);
+    // tcase_add_test (tc_game, test_play);
+    // tcase_add_test (tc_game, test_genmove);
+    // tcase_add_test (tc_game, test_result_init);
+    // suite_add_tcase (s, tc_game);
 
     return s;
 }
