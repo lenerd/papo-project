@@ -57,11 +57,12 @@ float compute_probability(uint64_t game_count, uint64_t games_won)
 
 int main()
 {
+    srand ((unsigned int)time(0));
 	// uint64_t generations = 100000000000000;
 	uint64_t generations = 100;
 	size_t nets_per_party = 10;
 	size_t board_size = 6;
-	uint64_t game_count = (nets_per_party * (nets_per_party + 1)) / 2;
+	uint64_t game_count = nets_per_party * nets_per_party;
 	uint64_t games_won = 0;
 	const size_t layers = 5;
 	const size_t neurons_per_layer[] = {36, 36, 36, 36, 36} ;
@@ -129,10 +130,6 @@ int main()
 
 		the_next_generation(population);
 	}
-
-    // nets should be updated automatically
-	// for(int i = 0;  i < nets_per_party; ++i)
-	// 	trained_nets->nets[i] = nnet_create_buffer(layers, neurons_per_layer, *genomes[i]->genes);
 
 	population_destroy(population);
 	free(genomes);
