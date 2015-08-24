@@ -259,7 +259,8 @@ void nnet_to_file (const neuralnet_t* net, FILE* file, bool binary)
         for (size_t gap = 0; gap < net->layer_count - 1; ++gap)
         {
             fprintf (file, "# edges from layer %zu to %zu\n", gap, gap + 1);
-            for (uint32_t from = 0; from < net->neurons_per_layer[gap] + 1; ++from)
+            for (uint32_t from = 0; from < net->neurons_per_layer[gap] + 1;
+                 ++from)
             {
                 for (uint32_t to = 0; to < net->neurons_per_layer[gap + 1];
                      ++to)
@@ -447,18 +448,9 @@ float* nnet_calculate_output (const neuralnet_t* net, const float* input)
 
     for (size_t gap = 0; gap < net->layer_count - 1; ++gap)
     {
-#if 1
-        /*
-         * About 25k moves/s faster with -O3
-         */
-        memset (current_result_2, 0x00, net->neurons_per_layer[gap + 1] * sizeof(float));
-
         for (size_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to)
-        {
-
-            current_result_2[to] = net->edges[gap][net->neurons_per_layer[gap]][to];
-
-        }
+            current_result_2[to] =
+                net->edges[gap][net->neurons_per_layer[gap]][to];
 
         for (size_t from = 0; from < net->neurons_per_layer[gap]; ++from)
         {
@@ -469,20 +461,6 @@ float* nnet_calculate_output (const neuralnet_t* net, const float* input)
             }
         }
         sigmoidize_inplace (current_result_2, net->neurons_per_layer[gap + 1]);
-#else
-        for (size_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to)
-        {
-            current_result_2[to] = 0.0f;
-
-            for (size_t from = 0; from < net->neurons_per_layer[gap]; ++from)
-            {
-                current_result_2[to] +=
-                    current_result_1[from] * net->edges[gap][from][to];
-            }
-
-            current_result_2[to] = sigmoid (current_result_2[to]);
-        }
-#endif
 
         swap_float_buffer (&current_result_1, &current_result_2);
     }
@@ -506,7 +484,8 @@ void nnet_print (const neuralnet_t* net)
         {
             printf ("\n\t\tTo Neuron %d:", to);
 
-            printf (" TH %f EWs", (double)net->edges[gap][net->neurons_per_layer[gap]][to]);
+            printf (" TH %f EWs",
+                    (double) net->edges[gap][net->neurons_per_layer[gap]][to]);
 
             for (uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from)
             {
