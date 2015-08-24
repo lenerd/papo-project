@@ -237,14 +237,14 @@ size_t board_get_group_id (const board_t* board, size_t x, size_t y)
     return board->group_id[board_2d_to_1d (board, x, y)];
 }
 
-uint16_t board_capture_group (board_t* board, size_t group)
+uint64_t board_capture_group (board_t* board, size_t group)
 {
     assert (board != NULL);
     assert (group < board->buf_size);
     assert (board->buffer[group] != ps_empty);
     assert (group == board->group_id[group]);
 
-    uint16_t stones_captured = 0;
+    uint64_t stones_captured = 0;
     size_t tmp_next;
 
     board->group_id[group] = invalid_1d;

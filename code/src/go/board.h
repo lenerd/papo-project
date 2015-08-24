@@ -241,7 +241,7 @@ void board_capture (board_t* board, size_t x, size_t y);
  * \pre board->buffer[group] != ps_empty
  * \post All positions previously belonging to the group are now empty.
  */
-uint16_t board_capture_group (board_t* board, size_t group);
+uint64_t board_capture_group (board_t* board, size_t group);
 
 /**
 * \brief Returns the final score from black's perspective including komi.
