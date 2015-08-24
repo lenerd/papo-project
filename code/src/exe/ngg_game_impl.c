@@ -49,7 +49,7 @@ int check_board_size (nnet_set_t* set, size_t board_size)
     {
         if (set->nets[i]->neurons_per_layer[0] != board_size * board_size ||
             set->nets[i]->neurons_per_layer[set->nets[i]->layer_count - 1] !=
-                board_size * board_size)
+                board_size * board_size + 1)
         {
             fprintf (stderr, "net #%zu has an illegal number of i/o neurons\n",
                      i);
@@ -85,6 +85,7 @@ int unsupervised (options_t* opts)
     /* stats */
     uint64_t* wins = SAFE_MALLOC (set->size * sizeof(uint64_t));
     uint64_t move_cnt = 0;
+    uint64_t play_cnt = 0;
     uint64_t pass_cnt = 0;
     uint64_t game_cnt = 0;
     struct timespec game_time = {0, 0};
@@ -121,6 +122,7 @@ int unsupervised (options_t* opts)
 
                 int64_t score = game_score (game);
                 move_cnt += game->move_cnt;
+                play_cnt += game->play_cnt;
                 pass_cnt += game->pass_cnt;
                 game_destroy (game);
                 player_destroy (p1);
@@ -148,6 +150,7 @@ int unsupervised (options_t* opts)
         printf ("moves: %" PRIu64 "\n", move_cnt);
         printf ("moves/s: %f\n", (double)move_cnt / timespec_to_double(game_time));
         printf ("moves/game: %f\n", (double)move_cnt / (double)game_cnt);
+        printf ("plays: %" PRIu64 "\n", play_cnt);
         printf ("passes: %" PRIu64 "\n", pass_cnt);
         printf ("passes/s: %f\n", (double)pass_cnt / timespec_to_double(game_time));
         printf ("passes/game: %f\n", (double)pass_cnt / (double)game_cnt);

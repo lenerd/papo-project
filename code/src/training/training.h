@@ -102,7 +102,7 @@ void td_destroy (training_data_t* data);
  * \param n Size of the board.
  * \return training data
  */
-training_data_t* td_generate_nxn_nxn (size_t n);
+training_data_t* td_generate_nxn_nxnp1 (size_t n);
 
 #if 0
 /**

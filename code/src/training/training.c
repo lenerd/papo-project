@@ -210,9 +210,9 @@ static training_data_t* td_from_file (FILE* file)
     return td;
 }
 
-training_data_t* td_generate_nxn_nxn (size_t n)
+training_data_t* td_generate_nxn_nxnp1 (size_t n)
 {
-    training_data_t* data = td_create (n * n, n * n);
+    training_data_t* data = td_create (n * n, n * n + 1);
     board_t* board = board_create (n);
 
     // TODO: seeding ?
@@ -246,6 +246,7 @@ training_data_t* td_generate_nxn_nxn (size_t n)
             break;
         }
     }
+    data->expected[n * n] = 1.0f;
 
     board_destroy (board);
     return data;

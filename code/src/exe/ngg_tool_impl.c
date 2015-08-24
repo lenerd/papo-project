@@ -84,7 +84,7 @@ int generate_training_data (options_t* opts)
     dataset_t* set = dataset_create (opts->n);
 
     for (size_t i = 0; i < opts->n; ++i)
-        set->data[i] = td_generate_nxn_nxn (opts->board_size);
+        set->data[i] = td_generate_nxn_nxnp1 (opts->board_size);
 
     dataset_to_file (set, opts->out_path);
 

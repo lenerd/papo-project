@@ -55,7 +55,8 @@ static position_t net_move (const player_t* player, const board_t* board)
     neuralnet_t* net = (neuralnet_t*) player->move_context;
 
     assert (net->neurons_per_layer[0] == board->buf_size);
-    assert (net->neurons_per_layer[net->layer_count - 1] == board->buf_size);
+    assert (net->neurons_per_layer[net->layer_count - 1] ==
+            board->buf_size + 1);
 
     float* in = board_to_nnet (board, player->color);
     float* out = nnet_calculate_output (net, in);
@@ -70,7 +71,8 @@ static position_t net_move (const player_t* player, const board_t* board)
     for (size_t i = board->buf_size - 1; i < board->buf_size; --i)
     {
         pos = board_1d_to_2d (board, idx[i]);
-        if (board_legal_placement (board, pos.x, pos.y, player->color))
+        if (idx[i] == board->buf_size ||
+            board_legal_placement (board, pos.x, pos.y, player->color))
             break;
     }
 

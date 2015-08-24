@@ -22,6 +22,7 @@ game_t* game_create (player_t* black, player_t* white, size_t board_size, uint64
     game->passed = false;
 
     game->move_cnt = 0;
+    game->play_cnt = 0;
     game->pass_cnt = 0;
     game->move_limit = move_limit;
 
@@ -49,6 +50,7 @@ void game_step (game_t* game)
     {
         board_place (game->board, pos.x, pos.y);
         game->passed = false;
+        ++game->play_cnt;
     }
     else
     {

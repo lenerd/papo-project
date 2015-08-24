@@ -65,7 +65,7 @@ int main()
 	uint64_t game_count = nets_per_party * nets_per_party;
 	uint64_t games_won = 0;
 	const size_t layers = 5;
-	const size_t neurons_per_layer[] = {36, 36, 36, 36, 36} ;
+	const size_t neurons_per_layer[] = {36, 36, 36, 36, 37} ;
 	
 	//Make nets and backpropagate
 	nnet_set_t* trained_nets = nnet_set_create(nets_per_party);	
@@ -73,7 +73,7 @@ int main()
 
 	dataset_t* training_data = dataset_create(50);
 	for(int i = 0; i < 50; ++i)
-		training_data->data[i] = td_generate_nxn_nxn(board_size);
+		training_data->data[i] = td_generate_nxn_nxnp1(board_size);
 
 	for(size_t i = 0; i < trained_nets->size; ++i)
 	{

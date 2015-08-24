@@ -37,8 +37,10 @@ typedef struct
     /** \brief Whether the last move was passed. */
     bool passed;
 
-    /** \brief Number of moves executed (including passed moves) */
+    /** \brief Number of moves executed (play_cnt + pass_cnt) */
     uint64_t move_cnt;
+    /** \brief Number of plays. */
+    uint64_t play_cnt;
     /** \brief Number of passes. */
     uint64_t pass_cnt;
     /** \brief Maximum of moves allowed. */
