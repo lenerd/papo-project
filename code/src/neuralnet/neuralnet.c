@@ -453,6 +453,13 @@ float* nnet_calculate_output (const neuralnet_t* net, const float* input)
          */
         memset (current_result_2, 0x00, net->neurons_per_layer[gap + 1] * sizeof(float));
 
+        for (size_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to)
+        {
+
+            current_result_2 = net->edges[gap][net->neurons_per_layer[gap]][to];
+
+        }
+
         for (size_t from = 0; from < net->neurons_per_layer[gap]; ++from)
         {
             for (size_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to)
@@ -485,7 +492,6 @@ float* nnet_calculate_output (const neuralnet_t* net, const float* input)
                                  net->neurons_per_layer[net->layer_count - 1]);
 }
 
-
 void nnet_print (const neuralnet_t* net)
 {
     assert (net != NULL);
@@ -499,6 +505,8 @@ void nnet_print (const neuralnet_t* net)
         for (uint32_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to)
         {
             printf ("\n\t\tTo Neuron %d:", to);
+
+            printf (" TH %f EWs", (double)net-edges[gap][net->neurons_per_layer[gap]][to]);
 
             for (uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from)
             {
