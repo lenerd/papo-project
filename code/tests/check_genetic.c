@@ -45,7 +45,7 @@ START_TEST(test_population_type)
 	ck_assert(pop != NULL);
 	ck_assert(pop->size == size);
 	ck_assert(!(pop->base_fitness < 1.0f) && !(pop->base_fitness > 1.0f));
-	ck_assert(!(pop->avg_fitness < 1.0f) && !(pop->avg_fitness > 1.0f));
+	ck_assert(!(pop->avg_fitness < 0.0f) && !(pop->avg_fitness > 0.0f));
 	ck_assert(pop->total_fitness = (float)size);
 	ck_assert(pop->individuals[2]->genes[3] == genomes[2]->genes[3]);
 	ck_assert(pop->individuals[2]->genes[4] == genomes[2]->genes[4]);
@@ -76,7 +76,7 @@ END_TEST
 
 START_TEST(test_selection)
 {
-	size_t size = 9;
+	size_t size = 3;
 	float genes1[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	float genes2[9] = {11, 12, 13, 14, 15, 16, 17, 18, 19};
 	float genes3[9] = {21, 22, 23, 24, 25, 26, 27, 28, 29};	
@@ -85,9 +85,9 @@ START_TEST(test_selection)
     float* genes3_p = genes3;
 
 	genome_t** genomes = SAFE_MALLOC(size*sizeof(genome_t*));
-	genomes[0] = genome_create(size, &genes1_p, &do_nothing, NULL);
-	genomes[1] = genome_create(size, &genes2_p, &do_nothing, NULL);
-	genomes[2] = genome_create(size, &genes3_p, &do_nothing, NULL);
+	genomes[0] = genome_create(9, &genes1_p, &do_nothing, NULL);
+	genomes[1] = genome_create(9, &genes2_p, &do_nothing, NULL);
+	genomes[2] = genome_create(9, &genes3_p, &do_nothing, NULL);
 
 	ck_assert(genomes != NULL);
 
