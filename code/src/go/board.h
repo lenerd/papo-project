@@ -223,12 +223,13 @@ size_t board_get_group_id (const board_t* board, size_t x, size_t y);
  * \param board Context of operation.
  * \param x x coordinate.
  * \param y y coordinate.
+ * \return Number of stones captured.
  * \pre board != NULL
  * \pre x < board->size
  * \pre y < board->size
  * \post board->white_captured and board->black_captured are update.
  */
-void board_capture (board_t* board, size_t x, size_t y);
+uint64_t board_capture (board_t* board, size_t x, size_t y);
 
 /**
  * \brief Removes all stones of a group from the board.

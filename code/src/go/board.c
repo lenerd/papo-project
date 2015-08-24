@@ -265,7 +265,7 @@ uint64_t board_capture_group (board_t* board, size_t group)
     return stones_captured;
 }
 
-void board_capture (board_t* board, size_t x, size_t y)
+uint64_t board_capture (board_t* board, size_t x, size_t y)
 {
     assert (board != NULL);
     assert (x < board->size);
@@ -274,15 +274,13 @@ void board_capture (board_t* board, size_t x, size_t y)
 
     color_t state = (color_t) board_position_state (board, x, y);
     color_t enemy = state == c_white ? c_black : c_white;
-    uint16_t stones_captured = 0;
+    uint64_t stones_captured = 0;
     size_t pos = board_2d_to_1d (board, x, y);
     size_t left = board_1d_left (board, pos);
     size_t right = board_1d_right (board, pos);
     size_t top = board_1d_top (board, pos);
     size_t bot = board_1d_bot (board, pos);
     size_t group;
-
-    bool captured = false;
 
     size_t n[4] = {left, right, top, bot};
     for (size_t x = 0; x < 4; ++x)
@@ -291,16 +289,12 @@ void board_capture (board_t* board, size_t x, size_t y)
         {
             group = board->group_id[n[x]];
             if (board_num_liberties (board, group) == 0)
-            {
-                stones_captured = (uint16_t)(
-                    stones_captured + board_capture_group (board, group));
-                captured = true;
-            }
+                stones_captured += board_capture_group (board, group);
         }
     }
 
     /* update liberties */
-    if (captured)
+    if (stones_captured)
     {
         for (size_t i = 0; i < board->buf_size; ++i)
         {
@@ -319,6 +313,8 @@ void board_capture (board_t* board, size_t x, size_t y)
     else
         board->black_captured =
             (uint16_t)(board->black_captured + stones_captured);
+
+    return stones_captured;
 }
 
 uint16_t flood_fill (const board_t* board, size_t index, uint8_t* owner)
