@@ -8,7 +8,7 @@
 START_TEST (test_misc)
 {
     size_t size[] = {1, 3, 3, 7};
-    ck_assert (nnet_edge_count (4, size) == 33);
+    ck_assert (nnet_edge_count (4, size) == 46);
     ck_assert (nnet_node_count (4, size) == 14);
 }
 END_TEST
@@ -19,7 +19,7 @@ START_TEST (test_construction)
     neuralnet_t* net = nnet_create_random (4, size);
 
     ck_assert (net->layer_count == 4);
-    ck_assert (net->edge_count == 33);
+    ck_assert (net->edge_count == 46);
     ck_assert (memcmp (size, net->neurons_per_layer,
                        net->layer_count * sizeof (size_t)) == 0);
 
@@ -37,12 +37,15 @@ START_TEST (test_pointer)
     ck_assert (net->edge_helper[2] - net->edge_buf == 6);
     ck_assert (net->edge_helper[3] - net->edge_buf == 9);
     ck_assert (net->edge_helper[4] - net->edge_buf == 12);
-    ck_assert (net->edge_helper[5] - net->edge_buf == 19);
-    ck_assert (net->edge_helper[6] - net->edge_buf == 26);
+    ck_assert (net->edge_helper[5] - net->edge_buf == 15);
+    ck_assert (net->edge_helper[6] - net->edge_buf == 18);
+    ck_assert (net->edge_helper[7] - net->edge_buf == 25);
+    ck_assert (net->edge_helper[8] - net->edge_buf == 32);
+    ck_assert (net->edge_helper[9] - net->edge_buf == 39);
 
     ck_assert (net->edges[0] - net->edge_helper == 0);
-    ck_assert (net->edges[1] - net->edge_helper == 1);
-    ck_assert (net->edges[2] - net->edge_helper == 4);
+    ck_assert (net->edges[1] - net->edge_helper == 2);
+    ck_assert (net->edges[2] - net->edge_helper == 6);
 
     nnet_destroy (net);
 }

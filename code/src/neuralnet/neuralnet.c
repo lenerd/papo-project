@@ -134,7 +134,7 @@ size_t nnet_edge_count (size_t layer_count, const size_t* neurons_per_layer)
 {
     size_t cnt = 0;
     for (size_t i = 0; i < layer_count - 1; ++i)
-        cnt += neurons_per_layer[i] * neurons_per_layer[i + 1];
+        cnt += (neurons_per_layer[i] + 1) * neurons_per_layer[i + 1];
     return cnt;
 }
 
@@ -157,13 +157,13 @@ static void build_pointer (neuralnet_t* net)
     {
         net->edges[gap] = net->edge_helper + cnt_from;
         size_t cnt_to = net->neurons_per_layer[gap + 1];
-        for (size_t from = 0; from < net->neurons_per_layer[gap]; ++from)
+        for (size_t from = 0; from < net->neurons_per_layer[gap] + 1; ++from)
         {
             net->edge_helper[cnt_from] = current_gap + from * cnt_to;
             ++cnt_from;
         }
         current_gap +=
-            net->neurons_per_layer[gap] * net->neurons_per_layer[gap + 1];
+            (net->neurons_per_layer[gap] + 1) * net->neurons_per_layer[gap + 1];
     }
 }
 
@@ -179,7 +179,7 @@ static neuralnet_t* allocate_neural_net (const size_t layer_count,
 
     size_t edge_cnt = nnet_edge_count (layer_count, neurons_per_layer);
     size_t help_len = nnet_node_count (layer_count, neurons_per_layer) -
-                      neurons_per_layer[layer_count - 1];
+                      neurons_per_layer[layer_count - 1] + layer_count - 1;
 
     net->layer_count = layer_count;
     net->edge_count = edge_cnt;
@@ -198,7 +198,7 @@ static neuralnet_t* allocate_neural_net (const size_t layer_count,
 void init_neural_net (neuralnet_t* net)
 {
     for (size_t gap = 0; gap < net->layer_count - 1; ++gap)
-        for (size_t from = 0; from < net->neurons_per_layer[gap]; ++from)
+        for (size_t from = 0; from < net->neurons_per_layer[gap] + 1; ++from)
             for (size_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to)
                 net->edges[gap][from][to] = random_value_mm (-1.0f, 1.0f);
 }
@@ -259,7 +259,7 @@ void nnet_to_file (const neuralnet_t* net, FILE* file, bool binary)
         for (size_t gap = 0; gap < net->layer_count - 1; ++gap)
         {
             fprintf (file, "# edges from layer %zu to %zu\n", gap, gap + 1);
-            for (uint32_t from = 0; from < net->neurons_per_layer[gap]; ++from)
+            for (uint32_t from = 0; from < net->neurons_per_layer[gap] + 1; ++from)
             {
                 for (uint32_t to = 0; to < net->neurons_per_layer[gap + 1];
                      ++to)
@@ -401,7 +401,7 @@ neuralnet_t* nnet_from_file (FILE* file, bool binary)
         for (size_t gap = 0; gap < layer_count - 1; ++gap)
         {
             skip_comments (file);
-            for (size_t from = 0; from < neurons_per_layer[gap]; ++from)
+            for (size_t from = 0; from < neurons_per_layer[gap] + 1; ++from)
             {
                 for (size_t to = 0; to < neurons_per_layer[gap + 1]; ++to)
                 {

@@ -5,6 +5,7 @@
  * \file
  * \brief Contains everything required for neural networks.
  * \author Armin Schaare <3schaare@informatik.uni-hamburg.de>
+ * \author Lennart Braun <3braun@informatik.uni-hamburg.de>
  * \ingroup neuralnet
  */
 
@@ -53,7 +54,7 @@ typedef struct
      * edges[x][y][z] = edge weight between neuron y on layer x and neuron z on
      * layer x + 1.
      * * 0 <= x < layer_count
-     * * 0 <= y < neurons_per_layer[x]
+     * * 0 <= y < neurons_per_layer[x] + 1  # last entry contains the bias
      * * 0 <= z < neurons_per_layer[x+1]
      */
     float*** edges;
@@ -96,7 +97,7 @@ void nnet_set_destroy (nnet_set_t* set);
  * Calculates the amount of edges in a neuralnetwork with given properties.
  *
  * \f[
- * \sum_{l = 0}^{layer\_count - 2} neurons\_per\_layer[l] \cdot
+ * \sum_{l = 0}^{layer\_count - 2} (neurons\_per\_layer[l] + 1) \cdot
  * neurons\_per\_layer[l+1]
  * \f]
  * \param layer_count        Number of layers.
