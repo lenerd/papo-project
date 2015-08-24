@@ -116,7 +116,7 @@ void nnet_backpropagate (neuralnet_t* net, const float* input,
                 learn_rate * errors[last][to] * fout->values[last - 1][from];
         }
 
-        net->edges[last - 1][net->neurons_per_layer[last - 1]][to] += learn_rate * errors[last][to] // bias
+        net->edges[last - 1][net->neurons_per_layer[last - 1]][to] += learn_rate * errors[last][to]; // bias
     }
 
     // Calculating intermediate errors of all remaining layers
@@ -149,7 +149,7 @@ void nnet_backpropagate (neuralnet_t* net, const float* input,
                     learn_rate * errors[layer][current] * fout->values[layer - 1][left];
             }
 
-            net->edges[last - 1][net->neurons_per_layer[layer - 1]][current] += learn_rate * errors[layer][current] // bias
+            net->edges[last - 1][net->neurons_per_layer[layer - 1]][current] += learn_rate * errors[layer][current]; // bias
 
         }
     }
