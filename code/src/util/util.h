@@ -130,7 +130,7 @@ struct timespec sum_timespec (struct timespec t1, struct timespec t2);
  * \param d divisor
  * \return t / d
  */
-struct timespec div_timespec (struct timespec t, uint64_t d);
+struct timespec div_timespec (struct timespec t, int64_t d);
 
 /**
  * \brief Prints time to stdout.

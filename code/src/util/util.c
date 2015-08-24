@@ -103,9 +103,9 @@ struct timespec sum_timespec (struct timespec t1, struct timespec t2)
     return sum;
 }
 
-struct timespec div_timespec (struct timespec t, uint64_t d)
+struct timespec div_timespec (struct timespec t, int64_t d)
 {
-    t.tv_nsec /= d;
+    t.tv_nsec = t.tv_nsec / d;
     t.tv_nsec += (t.tv_sec % d) * 1000000000 / d;
     t.tv_sec /= d;
     return t;
@@ -113,17 +113,17 @@ struct timespec div_timespec (struct timespec t, uint64_t d)
 
 double timespec_to_double (struct timespec t)
 {
-    double d = t.tv_nsec;
-    d /= 1000000000;
-    d += t.tv_sec;
+    double d = (double)t.tv_nsec;
+    d /= 1000000000.0;
+    d += (double)t.tv_sec;
     return d;
 }
 
 uint64_t timespec_to_uint64 (struct timespec t)
 {
-    uint64_t u = t.tv_sec;
+    uint64_t u = (uint64_t)t.tv_sec;
     u *= 1000000000;
-    u += t.tv_nsec;
+    u += (uint64_t)t.tv_nsec;
     return u;
 }
 
