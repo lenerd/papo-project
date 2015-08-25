@@ -34,6 +34,7 @@ typedef struct
     bool set_s;
 
     bool verbose;
+    bool human_readable;
 } options_t;
 
 

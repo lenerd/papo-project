@@ -22,6 +22,10 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
         opts->b_out = true;
         break;
 
+    case 'h':  // human readable
+        opts->human_readable = true;
+        break;
+
     case 'i':  // input
         if (strlen (arg) > 0)
         {

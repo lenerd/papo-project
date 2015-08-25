@@ -138,25 +138,32 @@ int unsupervised (options_t* opts)
 
         game_cnt += set->size * (set->size - 1);
 
-        printf ("#\twins\tscores:\n");
-        for (size_t net = 0; net < set->size; ++net)
-            printf ("%2zu\t%" PRId64 "\t%f\n", net, wins[net], (double)genomes[net]->fitness);
+        if (opts->human_readable)
+        {
+            printf ("#\twins\tscores:\n");
+            for (size_t net = 0; net < set->size; ++net)
+                printf ("%2zu\t%" PRId64 "\t%f\n", net, wins[net], (double)genomes[net]->fitness);
 
-        /* print stats */
-        putchar ('\n');
-        printf ("game time: ");
-        print_time (game_time);
-        printf ("games: %" PRIu64 "\n", game_cnt);
-        printf ("games/s: %f\n", (double)game_cnt / timespec_to_double(game_time));
-        printf ("moves: %" PRIu64 "\n", move_cnt);
-        printf ("moves/s: %f\n", (double)move_cnt / timespec_to_double(game_time));
-        printf ("moves/game: %f\n", (double)move_cnt / (double)game_cnt);
-        printf ("plays: %" PRIu64 "\n", play_cnt);
-        printf ("passes: %" PRIu64 "\n", pass_cnt);
-        printf ("passes/s: %f\n", (double)pass_cnt / timespec_to_double(game_time));
-        printf ("passes/game: %f\n", (double)pass_cnt / (double)game_cnt);
-        printf ("passes/moves: %f\n", (double)pass_cnt / (double)move_cnt);
-        // print_time (div_timespec (game_time, game_cnt));
+            /* print stats */
+            putchar ('\n');
+            printf ("game time: ");
+            print_time (game_time);
+            printf ("games: %" PRIu64 "\n", game_cnt);
+            printf ("games/s: %f\n", (double)game_cnt / timespec_to_double(game_time));
+            printf ("moves: %" PRIu64 "\n", move_cnt);
+            printf ("moves/s: %f\n", (double)move_cnt / timespec_to_double(game_time));
+            printf ("moves/game: %f\n", (double)move_cnt / (double)game_cnt);
+            printf ("plays: %" PRIu64 "\n", play_cnt);
+            printf ("passes: %" PRIu64 "\n", pass_cnt);
+            printf ("passes/s: %f\n", (double)pass_cnt / timespec_to_double(game_time));
+            printf ("passes/game: %f\n", (double)pass_cnt / (double)game_cnt);
+            printf ("passes/moves: %f\n", (double)pass_cnt / (double)move_cnt);
+            // print_time (div_timespec (game_time, game_cnt));
+        }
+        else
+        {
+            // TODO: CSV output
+        }
     }
 
     population_destroy (pop);
