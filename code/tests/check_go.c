@@ -179,6 +179,38 @@ START_TEST (test_board_ko)
     board_place (board, 4, 0);
     ck_assert (!board_test_ko (board, 1, 2));
     ck_assert (board_legal_placement (board, 1, 2, c_black));
+
+    board_destroy (board);
+    board = board_create (5);
+
+    board_place (board, 0, 1);
+    board_place (board, 0, 2);
+    board_place (board, 1, 0);
+    board_place (board, 1, 3);
+    board_place (board, 2, 1);
+    board_place (board, 2, 2);
+    board_place (board, 1, 2);
+    /* Board:
+     *  01234
+     * 0 bw  
+     * 1b Bw 
+     * 2 bw  
+     * 3     
+     * 4     
+     */
+    board_place (board, 1, 1);
+    /* Board:
+     *  01234
+     * 0 bw  
+     * 1bW w 
+     * 2 bw  
+     * 3     
+     * 4     
+     */
+    board_pass (board);
+
+    ck_assert (!board_test_ko (board, 1, 2));
+    ck_assert (board_legal_placement (board, 1, 2, c_black));
 }
 END_TEST
 

@@ -156,6 +156,7 @@ void board_pass (board_t* board)
     assert (board != NULL);
 
     board->turn = (board->turn == c_black) ? c_white : c_black;
+    clean_ko (board);
 }
 
 uint16_t board_num_liberties (const board_t* board, size_t group)
