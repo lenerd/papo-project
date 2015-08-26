@@ -45,6 +45,8 @@ static int ascii_recorder (recorder_t* rec, position_t pos, bool end)
 static int sgf_recorder (recorder_t* rec, position_t pos, bool end)
 {
     assert (rec != NULL);
+
+    // TODO: implementation
     
     return 0;
 }
