@@ -21,7 +21,9 @@ int main (void)
 
     game_t* game = game_create (p1, p2, 5, 10);
     FILE* file = fopen ("record", "w");
+    FILE* file2 = fopen ("game.sgf", "w");
     game_add_recorder (game, recorder_ascii_create(game, file));
+    game_add_recorder (game, recorder_sgf_create(game, file2));
 
     while (!game->finished)
     {
@@ -38,6 +40,7 @@ int main (void)
     game_destroy (game);
     nnet_destroy (net);
     fclose (file);
+    fclose (file2);
 
     return EXIT_SUCCESS;
 }

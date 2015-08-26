@@ -46,8 +46,21 @@ static int sgf_recorder (recorder_t* rec, position_t pos, bool end)
 {
     assert (rec != NULL);
 
-    // TODO: implementation
-    
+    const game_t* game = rec->game;
+
+    if (end)
+    {
+        fprintf (rec->file, ")\n");
+    }
+    else
+    {
+        if (game->passed)
+            fprintf (rec->file, ";%s[]", game->turn == c_black ? "B" : "W");
+        else
+            fprintf (rec->file, "; %s[%c%c]", game->turn == c_black ? "B" : "W",
+                     'a' + (int) pos.y, 'a' + (int) pos.x);
+    }
+
     return 0;
 }
 
@@ -86,6 +99,9 @@ recorder_t* recorder_sgf_create (const game_t* game, FILE* file)
 
     recorder_t* rec = recorder_create (game, file);
     rec->func = &sgf_recorder;
+
+    fprintf (file, "(;FF[4]SZ[%zu]", game->board->size);
+
     return rec;
 }
 
