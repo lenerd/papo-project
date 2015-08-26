@@ -1,4 +1,6 @@
 #include "game.h"
+#include "board.h"
+#include "record.h"
 #include "util/util.h"
 
 #include <assert.h>
@@ -41,6 +43,11 @@ void game_destroy (game_t* game)
     assert (game != NULL);
 
     board_destroy (game->board);
+
+    for (size_t i = 0; i < 2; ++i)
+        if (game->recorders[i] != NULL)
+            recorder_destroy (game->recorders[i]);
+
     free (game);
 }
 
@@ -72,14 +79,41 @@ void game_step (game_t* game)
         // fprintf(stdout, "player %u passed\n", game->turn);
     }
 
+    /* record move */
+    for (size_t i = 0; i < 2; ++i)
+        if (game->recorders[i] != NULL)
+            game->recorders[i]->func (game->recorders[i], pos, false);
+
     game->turn = game->turn == c_black ? c_white : c_black;
     ++game->move_cnt;
     if (game->move_cnt == game->move_limit)
         game->finished = true;
+
+    /* record result */
+    if (game->finished)
+        for (size_t i = 0; i < 2; ++i)
+            if (game->recorders[i] != NULL)
+                game->recorders[i]->func (game->recorders[i], pos, true);
 }
 
 
 int64_t game_score (const game_t* game)
 {
+    assert (game != NULL);
+
     return board_score (game->board);
+}
+
+int game_add_recorder (game_t* game, recorder_t* rec)
+{
+    assert (game != NULL);
+    assert (rec != NULL);
+
+    for (size_t i = 0; i < 2; ++i)
+        if (game->recorders[i] == NULL)
+        {
+            game->recorders[i] = rec;
+            return 0;
+        }
+    return 1;
 }

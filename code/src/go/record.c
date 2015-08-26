@@ -1,6 +1,91 @@
 #include "record.h"
+#include "game.h"
+#include "util/util.h"
+
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+struct ascii_rec_arg
+{
+    FILE* file;
+};
+
+static int ascii_recorder (recorder_t* rec, position_t pos, bool end)
+{
+    assert (rec != NULL);
+
+    const game_t* game = rec->game;
+
+    if (end)
+    {
+        fprintf (rec->file, "end of game\n");
+        // TODO: print score
+    }
+    else
+    {
+        if (game->passed)
+        {
+            fprintf (rec->file, "%s: passed\n",
+                     game->turn == c_black ? "black" : "white");
+        }
+        else
+        {
+            fprintf (rec->file, "%s: %zu-%zu:\n",
+                     game->turn == c_black ? "black" : "white", pos.x, pos.y);
+            board_print (game->board, rec->file);
+        }
+
+        fprintf (rec->file, "\n");
+    }
+
+    return 0;
+}
+
+static int sgf_recorder (recorder_t* rec, position_t pos, bool end)
+{
+    assert (rec != NULL);
+    
+    return 0;
+}
+
+static recorder_t* recorder_create (const game_t* game, FILE* file)
+{
+    assert (game != NULL);
+    assert (file != NULL);
+    
+    recorder_t* rec = SAFE_CALLOC (sizeof (recorder_t), 1);
+    rec->game = game;
+    rec->file = file;
+    return rec;
+}
+
+void recorder_destroy (recorder_t* rec)
+{
+    assert (rec != NULL);
+
+    free (rec);
+}
+
+recorder_t* recorder_ascii_create (const game_t* game, FILE* file)
+{
+    assert (game != NULL);
+    assert (file != NULL);
+
+    recorder_t* rec = recorder_create (game, file);
+    rec->func = &ascii_recorder;
+    return rec;
+}
+
+recorder_t* recorder_sgf_create (const game_t* game, FILE* file)
+{
+    assert (game != NULL);
+    assert (file != NULL);
+
+    recorder_t* rec = recorder_create (game, file);
+    rec->func = &sgf_recorder;
+    return rec;
+}
 
 
 FILE* create_file (const char* file_name)

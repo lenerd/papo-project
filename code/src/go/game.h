@@ -9,12 +9,13 @@
  * \ingroup go
  */
 
-#include "player.h"
 #include "board.h"
+#include "player.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+typedef struct recorder recorder_t;
 
 /**
  * \brief Represents a game.
@@ -28,7 +29,7 @@ typedef struct
 
     /** \brief Board to play on. */
     board_t* board;
-    /** \brief Whose turn it is. */
+    /** \brief Specifies next player to place a stone. */
     color_t turn;
 
     /** \brief Whether the game is finished. */
@@ -37,6 +38,10 @@ typedef struct
     /** \brief Whether the last move was passed. */
     bool passed;
 
+    /** \brief Recorder slots */
+    recorder_t* recorders[2];
+
+    /* stats */
     /** \brief Number of moves executed (play_cnt + pass_cnt) */
     uint64_t move_cnt;
     /** \brief Number of plays. */
@@ -87,5 +92,15 @@ void game_step (game_t* game);
  * \pre game != NULL
  */
 int64_t game_score (const game_t* game);
+
+/**
+ * \brief Add a recorder to game.
+ * \param game Game.
+ * \param rec Recorder.
+ * \return 0 if successful else != 0
+ * \pre game != NULL
+ * \pre rec != NULL
+ */
+int game_add_recorder (game_t* game, recorder_t* rec);
 
 #endif /* GAME_H */
