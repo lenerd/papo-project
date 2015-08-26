@@ -2,15 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/**
-* \file
-* \brief
-* \author Theresa Eimer <3eimer@informatik.uni-hamburg.de>
-*/
 
-/**
-* \brief creates a .sgf file and deals with the setup
-*/
 FILE* create_file(const char* file_name)
 {
 	FILE* record = fopen(file_name, "a");
@@ -33,10 +25,6 @@ FILE* create_file(const char* file_name)
 	// fclose(record);	
     return record;
 }
-
-/**
-* \brief Writes moves into the created file (only use for legal moves without passing!)
-*/
 
 void write_move(FILE* record, color_t color, uint8_t x, uint8_t y){
 	
