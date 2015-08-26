@@ -1,6 +1,7 @@
 #include "game.h"
 #include "util/util.h"
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -8,6 +9,10 @@
 game_t* game_create (player_t* black, player_t* white, size_t board_size,
                      uint64_t move_limit)
 {
+    assert (black != NULL);
+    assert (white != NULL);
+    assert (board_size > 1);
+
     game_t* game = SAFE_MALLOC (sizeof (game_t));
 
     game->black = black;
@@ -33,6 +38,8 @@ game_t* game_create (player_t* black, player_t* white, size_t board_size,
 
 void game_destroy (game_t* game)
 {
+    assert (game != NULL);
+
     board_destroy (game->board);
     free (game);
 }
@@ -40,6 +47,8 @@ void game_destroy (game_t* game)
 
 void game_step (game_t* game)
 {
+    assert (game != NULL);
+
     if (game->finished)
         return;
 
