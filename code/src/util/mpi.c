@@ -5,8 +5,8 @@
 
 void create_partition (partition_t* part, const process_info_t* pinfo, size_t n)
 {
-    size_t q = n / pinfo->mpi_size;
-    size_t r = n % pinfo->mpi_size;
+    size_t q = n / (size_t)pinfo->mpi_size;
+    size_t r = n % (size_t)pinfo->mpi_size;
     part->start = (size_t)pinfo->mpi_rank * q;
     part->start += (size_t)pinfo->mpi_rank < r ? (size_t)pinfo->mpi_rank : r;
     part->end = (size_t)(pinfo->mpi_rank + 1) * q;
@@ -23,8 +23,8 @@ int broadcast_neuralnet (neuralnet_t** netp, int root)
 
     neuralnet_t* net;
     size_t layer_count;
-    size_t* neurons_per_layer;
-    float* edges;
+    size_t* neurons_per_layer = NULL;
+    float* edges = NULL;
     size_t edge_count;
 
     if (mpi_rank == root)
@@ -42,8 +42,8 @@ int broadcast_neuralnet (neuralnet_t** netp, int root)
         neurons_per_layer = SAFE_MALLOC (layer_count * sizeof (size_t));
         edges = SAFE_MALLOC (edge_count * sizeof (float));
     }
-    rc = MPI_Bcast (neurons_per_layer, layer_count, MPI_UINT64_T, root, MPI_COMM_WORLD);
-    rc = MPI_Bcast (edges, edge_count, MPI_FLOAT, root, MPI_COMM_WORLD);
+    rc = MPI_Bcast (neurons_per_layer, (int)layer_count, MPI_UINT64_T, root, MPI_COMM_WORLD);
+    rc = MPI_Bcast (edges, (int)edge_count, MPI_FLOAT, root, MPI_COMM_WORLD);
 
     if (mpi_rank != root)
     {
@@ -64,7 +64,7 @@ int broadcast_nnet_set (nnet_set_t** setp, int root)
     MPI_Comm_rank (MPI_COMM_WORLD, &mpi_rank);
 
     size_t size;
-    nnet_set_t* set;
+    nnet_set_t* set = NULL;
 
     if (mpi_rank == root)
     {

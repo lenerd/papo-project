@@ -263,13 +263,13 @@ int unsupervised (options_t* opts, int argc, char** argv)
 
         if (pinfo.mpi_rank == 0)
         {
-            MPI_Reduce (MPI_IN_PLACE, wins, set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+            MPI_Reduce (MPI_IN_PLACE, wins, (int)set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
             for (size_t net = 0; net < set->size; ++net)
                 pop->individuals[net]->fitness = (float) wins[net];
         }
         else
         {
-            MPI_Reduce (wins, NULL, set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+            MPI_Reduce (wins, NULL, (int)set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
         }
 
         /* end generation time */
