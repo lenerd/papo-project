@@ -211,6 +211,34 @@ START_TEST (test_board_ko)
 
     ck_assert (!board_test_ko (board, 1, 2));
     ck_assert (board_legal_placement (board, 1, 2, c_black));
+
+    board_destroy (board);
+    board = board_create (5);
+
+    board_place (board, 1, 1);
+    board_place (board, 2, 1);
+    board_place (board, 2, 0);
+    board_place (board, 3, 0);
+    board_place (board, 0, 0);
+    /* Board:
+     *  01234
+     * 0b    
+     * 1 b   
+     * 2Bw   
+     * 3w    
+     * 4     
+     */
+    board_place (board, 1, 0);
+    /* Board:
+     *  01234
+     * 0b    
+     * 1Wb   
+     * 2 w   
+     * 3w    
+     * 4     
+     */
+    ck_assert (board_test_ko (board, 2, 0));
+    ck_assert (!board_legal_placement (board, 2, 0, c_black));
 }
 END_TEST
 

@@ -70,6 +70,7 @@ board_t* board_create (size_t size)
     board->turn = c_black;
     board->black_captured = 0;
     board->white_captured = 0;
+    board->ko = false;
 
     board->buffer = SAFE_CALLOC (board->buf_size, sizeof (uint8_t));
 
@@ -267,11 +268,15 @@ bool board_test_ko (const board_t* board, size_t x, size_t y)
     pos_state_t ps = board->buffer[placed];
 
     /* group size > 1 ? */
-    if (board->buffer[board_1d_right (board, placed)] == ps ||
-        board->buffer[board_1d_bot (board, placed)] == ps ||
-        board->buffer[board_1d_left (board, placed)] == ps ||
-        board->buffer[board_1d_top (board, placed)] == ps)
-        return false;
+    size_t left = board_1d_left (board, placed);
+    size_t right = board_1d_right (board, placed);
+    size_t top = board_1d_top (board, placed);
+    size_t bot = board_1d_bot (board, placed);
+    size_t n[4] = {left, right, top, bot};
+
+    for (size_t x = 0; x < 4; ++x)
+        if (n[x] != invalid_1d && board->buffer[n[x]] == ps)
+            return false;
 
     return true;
 }
