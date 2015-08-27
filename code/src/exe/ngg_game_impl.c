@@ -208,6 +208,7 @@ int unsupervised (options_t* opts)
         }
     }
 
+    free (wins);
     population_destroy (pop);
     free (genomes);
     nnet_set_to_file (set, opts->out_path, opts->b_out);
