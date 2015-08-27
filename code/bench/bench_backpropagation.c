@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 199309L
+// #define _POSIX_C_SOURCE 199309L
 
 #include "neuralnet/neuralnet.h"
 #include "util/util.h"

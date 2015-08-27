@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 void* safe_malloc (size_t size, const char* file, unsigned long line)

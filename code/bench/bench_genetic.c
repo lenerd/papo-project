@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 199309L
+// #define _POSIX_C_SOURCE 199309L
 
 #include "genetic/genetic_algorithm.h"
 #include "util/util.h"

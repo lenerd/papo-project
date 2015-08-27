@@ -1,4 +1,4 @@
-#define _DEFAULT_SOURCE
+// #define _DEFAULT_SOURCE
 #include <check.h>
 #include <math.h>
 #include <stdlib.h>
