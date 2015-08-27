@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 
 game_t* game_create (player_t* black, player_t* white, size_t board_size,
@@ -33,6 +34,8 @@ game_t* game_create (player_t* black, player_t* white, size_t board_size,
     game->play_cnt = 0;
     game->pass_cnt = 0;
     game->move_limit = move_limit;
+
+    memset (game->recorders, 0x00, 2 * sizeof(recorder_t*));
 
     return game;
 }
