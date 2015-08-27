@@ -101,23 +101,23 @@ static position_t human_move (const player_t* player, const board_t* board)
     board_print (board, stdout);
 
     if (player->color == c_black)
-        printf ("You are black.\n");
+        printf ("\nYou are black.\n");
     else
-        printf ("You are white.\n");
+        printf ("\nYou are white.\n");
 
-    printf ("Enter row (0-%zu,p): ", board->size - 1);
+    printf ("\nEnter x-position (0-%zu,p): ", board->size - 1);
     line = readline(NULL);
     pass = strcmp (line, "p") ==  0;
-    sscanf (line, "%zu", &pos.x);
+    sscanf (line, "%zu", &pos.y);
     free (line);
 
     if (pass)
         return pos;
 
-    printf ("Enter column (0-%zu,p): ", board->size - 1);
+    printf ("Enter y-position (0-%zu,p): ", board->size - 1);
     line = readline (NULL);
     pass = strcmp (line, "p") ==  0;
-    sscanf (line, "%zu", &pos.y);
+    sscanf (line, "%zu", &pos.x);
     free (line);
 
     if (pass)
@@ -127,17 +127,21 @@ static position_t human_move (const player_t* player, const board_t* board)
     {
         printf ("The position %zu - %zu is invalid.\n", pos.x, pos.y);
 
-        line = readline("Enter row: ");
-        pass = strcmp (line, "p") ==  0;
-        sscanf (line, "%zu", &pos.x);
-        free (line);
-        if (pass)
-            return pos;
-
-        line = readline ("Enter column: ");
+        printf ("\nEnter x-position (0-%zu,p): ", board->size - 1);
+        line = readline(NULL);
         pass = strcmp (line, "p") ==  0;
         sscanf (line, "%zu", &pos.y);
         free (line);
+
+        if (pass)
+            return pos;
+
+        printf ("Enter y-position (0-%zu,p): ", board->size - 1);
+        line = readline (NULL);
+        pass = strcmp (line, "p") ==  0;
+        sscanf (line, "%zu", &pos.x);
+        free (line);
+
         if (pass)
             return pos;
     }
