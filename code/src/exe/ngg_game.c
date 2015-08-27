@@ -103,7 +103,7 @@ int main (int argc, char** argv)
     struct argp argp = {options, &parse_opt, 0, 0, 0, 0, 0};
     argp_parse (&argp, argc, argv, 0, 0, &opts);
 
-    int ret = unsupervised (&opts);
+    int ret = unsupervised (&opts, argc, argv);
 
     return ret;
 }

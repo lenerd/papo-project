@@ -17,6 +17,9 @@ set (CMAKE_C_FLAGS
 set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
 set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
 
+# mpi
+find_package (MPI REQUIRED)
+include_directories (${MPI_INCLUDE_PATH})
 
 # build project
 add_subdirectory (src)

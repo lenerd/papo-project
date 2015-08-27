@@ -41,6 +41,6 @@ typedef struct
 void init_opts (options_t* opts);
 void cleanup_opts (options_t* opts);
 
-int unsupervised (options_t* opts);
+int unsupervised (options_t* opts, int argc, char** argv);
 
 #endif /* NGG_GAME_H */
