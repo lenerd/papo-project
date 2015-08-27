@@ -98,6 +98,7 @@ int main (int argc, char** argv)
          "number of generations", 0},
         {"board-size", 's', "NUM", 0, "size of the used go board", 0},
         {"verbose", 'v', 0, 0, "more prints more information", 0},
+        {"human-readable", 'h', 0, 0, "human readable output, no csv", 0},
         {0, 0, 0, 0, 0, 0}};
     struct argp argp = {options, &parse_opt, 0, 0, 0, 0, 0};
     argp_parse (&argp, argc, argv, 0, 0, &opts);
