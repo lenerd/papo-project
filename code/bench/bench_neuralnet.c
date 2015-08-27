@@ -41,7 +41,7 @@ int main (void)
     nnet_destroy(net);
 
     diff = diff_timespec(start, end);
-    print_time(diff);
+    print_time(diff, stdout);
     }
 #endif
 

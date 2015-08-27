@@ -61,6 +61,74 @@ int check_board_size (nnet_set_t* set, size_t board_size)
 }
 
 
+typedef struct
+{
+    uint64_t generation;
+    uint64_t game_cnt;
+    uint64_t play_cnt;
+    uint64_t pass_cnt;
+
+    struct timespec generation_time;
+    struct timespec game_time;
+} generation_stats_t;
+
+
+void human_output (generation_stats_t* stats, FILE* file)
+{
+    uint64_t move_cnt = stats->play_cnt + stats->pass_cnt;
+
+    /* print stats */
+    fprintf (file, "==============\n");
+    fprintf (file, "generation %zu\n\n", stats->generation);
+    fprintf (file, "generation time: ");
+    print_time (stats->generation_time, file);
+    fputc ('\n', file);
+    fprintf (file, "game time: ");
+    print_time (stats->game_time, file);
+    fputc ('\n', file);
+    fprintf (file, "games: %" PRIu64 "\n", stats->game_cnt);
+    fprintf (file, "games/s: %f\n",
+             (double) stats->game_cnt / timespec_to_double (stats->game_time));
+    fprintf (file, "moves: %" PRIu64 "\n", move_cnt);
+    fprintf (file, "moves/s: %f\n",
+             (double) move_cnt / timespec_to_double (stats->game_time));
+    fprintf (file, "moves/game: %f\n",
+             (double) move_cnt / (double) stats->game_cnt);
+    fprintf (file, "plays: %" PRIu64 "\n", stats->play_cnt);
+    fprintf (file, "passes: %" PRIu64 "\n", stats->pass_cnt);
+    fprintf (file, "passes/s: %f\n",
+             (double) stats->pass_cnt / timespec_to_double (stats->game_time));
+    fprintf (file, "passes/game: %f\n",
+             (double) stats->pass_cnt / (double) stats->game_cnt);
+    fprintf (file, "passes/moves: %f\n",
+             (double) stats->pass_cnt / (double) move_cnt);
+}
+
+void csv_header (FILE* file)
+{
+    fprintf (file, "# generation \\t generation time \\t game time \\t game "
+                   "count \\t play "
+                   "count \\t pass count\n");
+}
+
+void csv_line (generation_stats_t* stats, FILE* file)
+{
+    char delimiter = ',';
+    fprintf (file, "%" PRId64, stats->generation);
+    fputc (delimiter, file);
+    fprintf (file, "%f", timespec_to_double (stats->generation_time));
+    fputc (delimiter, file);
+    fprintf (file, "%f", timespec_to_double (stats->game_time));
+    fputc (delimiter, file);
+    fprintf (file, "%" PRId64, stats->game_cnt);
+    fputc (delimiter, file);
+    fprintf (file, "%" PRId64, stats->play_cnt);
+    fputc (delimiter, file);
+    fprintf (file, "%" PRId64, stats->pass_cnt);
+    putchar ('\n');
+}
+
+
 int unsupervised (options_t* opts)
 {
     int ret = unsupervised_check_options (opts);
@@ -68,7 +136,7 @@ int unsupervised (options_t* opts)
         return ret;
 
     /* seed random number generator */
-    srand ((unsigned int) time(0));
+    srand ((unsigned int) time (0));
 
     /* load neural networks */
     nnet_set_t* set = nnet_set_from_file (opts->in_path, opts->b_in);
@@ -88,43 +156,34 @@ int unsupervised (options_t* opts)
     population_t* pop = population_create (set->size, genomes, 1.0f);
 
     /* fitness values */
-    uint64_t* wins = SAFE_MALLOC (set->size * sizeof(uint64_t));
+    uint64_t* wins = SAFE_MALLOC (set->size * sizeof (uint64_t));
 
     /* statistic */
-    uint64_t move_cnt = 0;
-    uint64_t play_cnt = 0;
-    uint64_t pass_cnt = 0;
+    generation_stats_t stats;
     uint64_t game_cnt = set->size * (set->size - 1);
-    uint64_t move_total = 0;
-    uint64_t play_total = 0;
-    uint64_t pass_total = 0;
-    uint64_t game_total = 0;
-    struct timespec gen_time = {0, 0};
-    struct timespec total_time = {0, 0};
     struct timespec start, end;
+    struct timespec start2, end2;
+    struct timespec diff;
 
     /* csv header */
     if (!opts->human_readable)
-        printf ("# generation,time,plays,passes\n");
+        csv_header (stdout);
 
     for (size_t gen = 0; gen < opts->n; ++gen)
     {
-        if (opts->human_readable)
-        {
-            printf ("==============\n");
-            printf ("generation %zu\n", gen);
-        }
+        /* reset stats */
+        memset (wins, 0x00, set->size * sizeof (uint64_t));
+        memset (&stats, 0x00, sizeof (generation_stats_t));
+        stats.generation = gen;
+        stats.game_cnt = game_cnt;
+
+        /* start generation time */
+        clock_gettime (CLOCK_MONOTONIC, &start2);
 
         if (gen)
         {
             the_next_generation (pop);
         }
-
-        /* reset stats */
-        memset (wins, 0x00, set->size * sizeof(uint64_t));
-        move_cnt = 0;
-        play_cnt = 0;
-        pass_cnt = 0;
 
         for (size_t net_1 = 0; net_1 < set->size; ++net_1)
         {
@@ -137,17 +196,17 @@ int unsupervised (options_t* opts)
                 player_t* p2 = player_create_net (set->nets[net_2]);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
 
-                // timespec_get (&start, TIME_UTC);
+                /* start game_time */
                 clock_gettime (CLOCK_MONOTONIC, &start);
 
                 /* play */
                 while (!game->finished)
                     game_step (game);
 
-                // timespec_get (&end, TIME_UTC);
+                /* end game_time */
                 clock_gettime (CLOCK_MONOTONIC, &end);
-                gen_time = diff_timespec (start, end);
-                total_time = sum_timespec (total_time, gen_time);
+                diff = diff_timespec (start, end);
+                stats.game_time = sum_timespec (stats.game_time, diff);
 
                 /* update fitness */
                 int64_t score = game_score (game);
@@ -157,9 +216,8 @@ int unsupervised (options_t* opts)
                     ++wins[net_2];
 
                 /* update generation stats */
-                move_cnt += game->move_cnt;
-                play_cnt += game->play_cnt;
-                pass_cnt += game->pass_cnt;
+                stats.play_cnt += game->play_cnt;
+                stats.pass_cnt += game->pass_cnt;
 
                 game_destroy (game);
                 player_destroy (p2);
@@ -168,46 +226,25 @@ int unsupervised (options_t* opts)
             player_destroy (p1);
         }
 
-        /* accumulated stats */
-        move_total += move_cnt;
-        play_total += play_cnt;
-        pass_total += pass_cnt;
+        /* end generation time */
+        clock_gettime (CLOCK_MONOTONIC, &end2);
+        diff = diff_timespec (start2, end2);
+        stats.generation_time = sum_timespec (stats.generation_time, diff);
 
         for (size_t net = 0; net < set->size; ++net)
             pop->individuals[net]->fitness = (float) wins[net];
-
-        game_total += game_cnt;
 
         if (opts->human_readable)
         {
             printf ("#\twins\tscores:\n");
             for (size_t net = 0; net < set->size; ++net)
-                printf ("%2zu\t%" PRId64 "\t%f\n", net, wins[net], (double)genomes[net]->fitness);
-
-            /* print stats */
-            putchar ('\n');
-            printf ("game time: ");
-            print_time (total_time);
-            printf ("games: %" PRIu64 "\n", game_total);
-            printf ("games/s: %f\n", (double)game_total / timespec_to_double(total_time));
-            printf ("moves: %" PRIu64 "\n", move_total);
-            printf ("moves/s: %f\n", (double)move_total / timespec_to_double(total_time));
-            printf ("moves/game: %f\n", (double)move_total / (double)game_total);
-            printf ("plays: %" PRIu64 "\n", play_total);
-            printf ("passes: %" PRIu64 "\n", pass_total);
-            printf ("passes/s: %f\n", (double)pass_total / timespec_to_double(total_time));
-            printf ("passes/game: %f\n", (double)pass_total / (double)game_total);
-            printf ("passes/moves: %f\n", (double)pass_total / (double)move_total);
-            // print_time (div_timespec (game_time, game_total));
+                printf ("%2zu\t%" PRId64 "\t%f\n", net, wins[net],
+                        (double) genomes[net]->fitness);
+            human_output (&stats, stdout);
         }
         else
         {
-            // TODO: CSV output
-            printf ("%" PRId64 ",", gen);
-            printf ("%f,", timespec_to_double (gen_time));
-            printf ("%" PRId64 ",", play_cnt);
-            printf ("%" PRId64, pass_cnt);
-            putchar ('\n');
+            csv_line (&stats, stdout);
         }
     }
 

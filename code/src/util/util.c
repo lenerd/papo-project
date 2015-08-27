@@ -128,7 +128,7 @@ uint64_t timespec_to_uint64 (struct timespec t)
     return u;
 }
 
-void print_time (struct timespec time)
+void print_time (struct timespec time, FILE* file)
 {
-    printf("%lu.%09lu\n", time.tv_sec, time.tv_nsec);
+    fprintf(file, "%lu.%09lu", time.tv_sec, time.tv_nsec);
 }

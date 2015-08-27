@@ -9,6 +9,7 @@
 
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -133,13 +134,14 @@ struct timespec sum_timespec (struct timespec t1, struct timespec t2);
 struct timespec div_timespec (struct timespec t, int64_t d);
 
 /**
- * \brief Prints time to stdout.
+ * \brief Prints time to file.
  *
  * Time in seconds with nanosecond precision.
  * Format: \\d+\\\.\\d{9}
  * \param time Time to print.
+ * \param file
  */
-void print_time (struct timespec time);
+void print_time (struct timespec time, FILE* file);
 
 double timespec_to_double (struct timespec t);
 
