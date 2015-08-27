@@ -24,14 +24,16 @@ int main (void)
     for (int i = 0; i < 100; ++i)
         input[i] = random_value_mm(0,1);
 
-    timespec_get(&start, TIME_UTC);
+    // timespec_get(&start, TIME_UTC);
+    clock_gettime (CLOCK_MONOTONIC, &start);
     for (int i = 0; i < 1000; ++i)
     {
         output = nnet_calculate_output(net, input);
         free(input);
         input = output;
     }
-    timespec_get(&end, TIME_UTC);
+    // timespec_get(&end, TIME_UTC);
+    clock_gettime (CLOCK_MONOTONIC, &end);
 
     free(output);
     free(size);

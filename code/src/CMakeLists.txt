@@ -19,7 +19,7 @@ set (PROJECT_SOURCES
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_library (${PROJECT_NAME}_lib ${PROJECT_SOURCES})
-target_link_libraries (${PROJECT_NAME}_lib m readline)
+target_link_libraries (${PROJECT_NAME}_lib m rt readline)
 target_link_libraries (${PROJECT_NAME}_lib ${MPI_C_LIBRARIES})
 
 # executables

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 
 void init_opts (options_t* opts)
@@ -178,13 +179,15 @@ int unsupervised (options_t* opts, int argc, char** argv)
                 player_t* p2 = player_create_net (set->nets[net_2]);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
 
-                timespec_get (&start, TIME_UTC);
+                // timespec_get (&start, TIME_UTC);
+                clock_gettime (CLOCK_MONOTONIC, &start);
 
                 /* play */
                 while (!game->finished)
                     game_step (game);
 
-                timespec_get (&end, TIME_UTC);
+                // timespec_get (&end, TIME_UTC);
+                clock_gettime (CLOCK_MONOTONIC, &end);
                 gen_time = diff_timespec (start, end);
                 total_time = sum_timespec (total_time, gen_time);
 

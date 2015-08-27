@@ -1,4 +1,4 @@
-#define _GNU_SOURCE
+// #define _GNU_SOURCE
 
 #include "player.h"
 #include "go/board.h"
