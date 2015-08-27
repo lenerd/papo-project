@@ -198,13 +198,13 @@ int unsupervised (options_t* opts, int argc, char** argv)
     for (size_t gen = 0; gen < opts->n; ++gen)
     {
         /* reset stats */
-        memset (wins, 0x00, set->size * sizeof (uint64_t));
         memset (&stats, 0x00, sizeof (generation_stats_t));
         stats.generation = gen;
         stats.game_cnt = game_cnt;
 
         /* start generation time */
         clock_gettime (CLOCK_MONOTONIC, &start2);
+        memset (wins, 0x00, set->size * sizeof (uint64_t));
 
         if (gen)
         {
@@ -261,11 +261,6 @@ int unsupervised (options_t* opts, int argc, char** argv)
             player_destroy (p1);
         }
 
-        /* end generation time */
-        clock_gettime (CLOCK_MONOTONIC, &end2);
-        diff = diff_timespec (start2, end2);
-        stats.generation_time = sum_timespec (stats.generation_time, diff);
-
         if (pinfo.mpi_rank == 0)
         {
             MPI_Reduce (MPI_IN_PLACE, wins, set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -275,6 +270,22 @@ int unsupervised (options_t* opts, int argc, char** argv)
         else
         {
             MPI_Reduce (wins, NULL, set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+        }
+
+        /* end generation time */
+        clock_gettime (CLOCK_MONOTONIC, &end2);
+        diff = diff_timespec (start2, end2);
+        stats.generation_time = sum_timespec (stats.generation_time, diff);
+
+        if (pinfo.mpi_rank == 0)
+        {
+            MPI_Reduce (MPI_IN_PLACE, &stats.play_cnt, 1, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+            MPI_Reduce (MPI_IN_PLACE, &stats.pass_cnt, 1, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+        }
+        else
+        {
+            MPI_Reduce (&stats.play_cnt, NULL, 1, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+            MPI_Reduce (&stats.pass_cnt, NULL, 1, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
         }
 
         if (pinfo.mpi_rank == 0)
