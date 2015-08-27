@@ -63,6 +63,7 @@ int check_board_size (nnet_set_t* set, size_t board_size)
 }
 
 
+
 int unsupervised (options_t* opts, int argc, char** argv)
 {
     int ret, rc;
