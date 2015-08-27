@@ -4,6 +4,7 @@
 #include "go/player.h"
 #include "genetic/genetic_algorithm.h"
 #include "util/util.h"
+#include "util/mpi.h"
 
 #include <mpi.h>
 #include <stdint.h>
@@ -61,13 +62,20 @@ int check_board_size (nnet_set_t* set, size_t board_size)
 }
 
 
+
 int unsupervised (options_t* opts, int argc, char** argv)
 {
-    int ret = unsupervised_check_options (opts);
+    int ret, rc;
+    process_info_t pinfo;
+    partition_t part;
+    nnet_set_t* set = NULL;
+    genome_t** genomes = NULL;
+    population_t* pop = NULL;
+
+    ret = unsupervised_check_options (opts);
     if (ret)
         return ret;
 
-    int rc;
 
     rc = MPI_Init (&argc, &argv);
     if (rc != MPI_SUCCESS)
@@ -76,12 +84,14 @@ int unsupervised (options_t* opts, int argc, char** argv)
                  rc);
         return rc;
     }
+    MPI_Comm_rank (MPI_COMM_WORLD, &pinfo.mpi_rank);
+    MPI_Comm_size (MPI_COMM_WORLD, &pinfo.mpi_size);
 
     /* seed random number generator */
     srand ((unsigned int) time (0));
 
     /* load neural networks */
-    nnet_set_t* set = nnet_set_from_file (opts->in_path, opts->b_in);
+    set = nnet_set_from_file (opts->in_path, opts->b_in);
     ret = check_board_size (set, opts->board_size);
     if (ret)
     {
@@ -90,12 +100,15 @@ int unsupervised (options_t* opts, int argc, char** argv)
     }
 
     /* prepare population for the genetic algorithm */
-    genome_t** genomes = SAFE_MALLOC (set->size * sizeof (genome_t*));
-    for (size_t i = 0; i < set->size; ++i)
-        genomes[i] =
-            genome_create (set->nets[i]->edge_count, &set->nets[i]->edge_buf,
-                           &update_neuralnet, set->nets[i]);
-    population_t* pop = population_create (set->size, genomes, 1.0f);
+    if (pinfo.mpi_rank == 0)
+    {
+        genomes = SAFE_MALLOC (set->size * sizeof (genome_t*));
+        for (size_t i = 0; i < set->size; ++i)
+            genomes[i] =
+                genome_create (set->nets[i]->edge_count, &set->nets[i]->edge_buf,
+                               &update_neuralnet, set->nets[i]);
+        pop = population_create (set->size, genomes, 1.0f);
+    }
 
     /* fitness values */
     uint64_t* wins = SAFE_MALLOC (set->size * sizeof (uint64_t));
@@ -114,20 +127,38 @@ int unsupervised (options_t* opts, int argc, char** argv)
     struct timespec start, end;
 
     /* csv header */
-    if (!opts->human_readable)
-        printf ("# generation,time,plays,passes\n");
+    if (pinfo.mpi_rank == 0)
+    {
+        if (!opts->human_readable)
+            printf ("# generation,time,plays,passes\n");
+    }
+
+
+    create_partition (&part, &pinfo, set->size);
 
     for (size_t gen = 0; gen < opts->n; ++gen)
     {
-        if (opts->human_readable)
+        if (pinfo.mpi_rank == 0)
         {
-            printf ("==============\n");
-            printf ("generation %zu\n", gen);
+            if (opts->human_readable)
+            {
+                printf ("==============\n");
+                printf ("generation %zu\n", gen);
+            }
         }
 
         if (gen)
         {
-            the_next_generation (pop);
+            if (pinfo.mpi_rank == 0)
+            {
+                the_next_generation (pop);
+                broadcast_nnet_set (&set, 0);
+            }
+            else
+            {
+                nnet_set_destroy (set);
+                broadcast_nnet_set (&set, 0);
+            }
         }
 
         /* reset stats */
@@ -136,7 +167,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
         play_cnt = 0;
         pass_cnt = 0;
 
-        for (size_t net_1 = 0; net_1 < set->size; ++net_1)
+        for (size_t net_1 = part.start; net_1 < part.end; ++net_1)
         {
             player_t* p1 = player_create_net (set->nets[net_1]);
 
@@ -181,55 +212,69 @@ int unsupervised (options_t* opts, int argc, char** argv)
         play_total += play_cnt;
         pass_total += pass_cnt;
 
-        for (size_t net = 0; net < set->size; ++net)
-            pop->individuals[net]->fitness = (float) wins[net];
-
-        game_total += game_cnt;
-
-        if (opts->human_readable)
+        if (pinfo.mpi_rank == 0)
         {
-            printf ("#\twins\tscores:\n");
+            MPI_Reduce (MPI_IN_PLACE, wins, set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
             for (size_t net = 0; net < set->size; ++net)
-                printf ("%2zu\t%" PRId64 "\t%f\n", net, wins[net],
-                        (double) genomes[net]->fitness);
-
-            /* print stats */
-            putchar ('\n');
-            printf ("game time: ");
-            print_time (total_time);
-            printf ("games: %" PRIu64 "\n", game_total);
-            printf ("games/s: %f\n",
-                    (double) game_total / timespec_to_double (total_time));
-            printf ("moves: %" PRIu64 "\n", move_total);
-            printf ("moves/s: %f\n",
-                    (double) move_total / timespec_to_double (total_time));
-            printf ("moves/game: %f\n",
-                    (double) move_total / (double) game_total);
-            printf ("plays: %" PRIu64 "\n", play_total);
-            printf ("passes: %" PRIu64 "\n", pass_total);
-            printf ("passes/s: %f\n",
-                    (double) pass_total / timespec_to_double (total_time));
-            printf ("passes/game: %f\n",
-                    (double) pass_total / (double) game_total);
-            printf ("passes/moves: %f\n",
-                    (double) pass_total / (double) move_total);
-            // print_time (div_timespec (game_time, game_total));
+                pop->individuals[net]->fitness = (float) wins[net];
         }
         else
         {
-            // TODO: CSV output
-            printf ("%" PRId64 ",", gen);
-            printf ("%f,", timespec_to_double (gen_time));
-            printf ("%" PRId64 ",", play_cnt);
-            printf ("%" PRId64, pass_cnt);
-            putchar ('\n');
+            MPI_Reduce (wins, NULL, set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+        }
+
+        game_total += game_cnt;
+
+        if (pinfo.mpi_rank == 0)
+        {
+            if (opts->human_readable)
+            {
+                printf ("#\twins\tscores:\n");
+                for (size_t net = 0; net < set->size; ++net)
+                    printf ("%2zu\t%" PRId64 "\t%f\n", net, wins[net],
+                            (double) genomes[net]->fitness);
+
+                /* print stats */
+                putchar ('\n');
+                printf ("game time: ");
+                print_time (total_time);
+                printf ("games: %" PRIu64 "\n", game_total);
+                printf ("games/s: %f\n",
+                        (double) game_total / timespec_to_double (total_time));
+                printf ("moves: %" PRIu64 "\n", move_total);
+                printf ("moves/s: %f\n",
+                        (double) move_total / timespec_to_double (total_time));
+                printf ("moves/game: %f\n",
+                        (double) move_total / (double) game_total);
+                printf ("plays: %" PRIu64 "\n", play_total);
+                printf ("passes: %" PRIu64 "\n", pass_total);
+                printf ("passes/s: %f\n",
+                        (double) pass_total / timespec_to_double (total_time));
+                printf ("passes/game: %f\n",
+                        (double) pass_total / (double) game_total);
+                printf ("passes/moves: %f\n",
+                        (double) pass_total / (double) move_total);
+                // print_time (div_timespec (game_time, game_total));
+            }
+            else
+            {
+                // TODO: CSV output
+                printf ("%" PRId64 ",", gen);
+                printf ("%f,", timespec_to_double (gen_time));
+                printf ("%" PRId64 ",", play_cnt);
+                printf ("%" PRId64, pass_cnt);
+                putchar ('\n');
+            }
         }
     }
 
     free (wins);
-    population_destroy (pop);
-    free (genomes);
-    nnet_set_to_file (set, opts->out_path, opts->b_out);
+    if (pinfo.mpi_rank == 0)
+    {
+        population_destroy (pop);
+        free (genomes);
+        nnet_set_to_file (set, opts->out_path, opts->b_out);
+    }
     nnet_set_destroy (set);
 
     rc = MPI_Finalize ();
