@@ -5,6 +5,7 @@
 #include "genetic/genetic_algorithm.h"
 #include "util/util.h"
 
+#include <mpi.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdio.h>
@@ -129,11 +130,21 @@ void csv_line (generation_stats_t* stats, FILE* file)
 }
 
 
-int unsupervised (options_t* opts)
+int unsupervised (options_t* opts, int argc, char** argv)
 {
     int ret = unsupervised_check_options (opts);
     if (ret)
         return ret;
+
+    int rc;
+
+    rc = MPI_Init (&argc, &argv);
+    if (rc != MPI_SUCCESS)
+    {
+        fprintf (stderr, "[%s:%u] MPI_Init failed (%d)\n", __FILE__, __LINE__,
+                 rc);
+        return rc;
+    }
 
     /* seed random number generator */
     srand ((unsigned int) time (0));
@@ -253,6 +264,14 @@ int unsupervised (options_t* opts)
     free (genomes);
     nnet_set_to_file (set, opts->out_path, opts->b_out);
     nnet_set_destroy (set);
+
+    rc = MPI_Finalize ();
+    if (rc != MPI_SUCCESS)
+    {
+        fprintf (stderr, "[%s:%u] MPI_Finalize failed (%d)\n", __FILE__,
+                 __LINE__, rc);
+        return rc;
+    }
 
     return EXIT_SUCCESS;
 }
