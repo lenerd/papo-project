@@ -18,15 +18,17 @@ static void clean_ko (board_t* board);
 
 void board_print (const board_t* board, FILE* file)
 {
-    fputc (' ', file);
-    for (size_t y = 0; y < board->size; ++y)
-        fputc ('|', file);
+    fputc ('\n ', file);
+    for (size_t y = 0; y < board->size; ++y){
+        fputc (' ', file);
+        fputc (y + '0', file);
+    }
     fputc (' ', file);
     fputc ('\n', file);
     
     for (size_t x = 0; x < board->size; ++x)
     {
-        fputc ('-', file);
+        fputc (x + '0', file);
         for (size_t y = 0; y < board->size; ++y)
         {
             pos_state_t ps = board->grid[x][y];
@@ -40,21 +42,25 @@ void board_print (const board_t* board, FILE* file)
                     symbol = 'W';
                     break;
                 case ps_empty:
-                    symbol = ' ';
+                    symbol = '+';
                     break;
                 default:
                     symbol = '?';
                     break;
             }
+            fputc (' ', file);
             fputc (symbol, file);
         }
-        fputc ('-', file);
-        fputc ('\n', file);
+        fputc (' ', file);
+        fputc (x + '0', file);
+        fputc ('\n\n', file);
     }
 
     fputc (' ', file);
-    for (size_t y = 0; y < board->size; ++y)
-        fputc ('|', file);
+    for (size_t y = 0; y < board->size; ++y){
+        fputc (' ', file);
+        fputc (y + '0', file);
+    }
     fputc (' ', file);
     fputc ('\n', file);
 }
