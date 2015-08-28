@@ -12,10 +12,12 @@ set (VERSION_MINOR 1)
 
 # compile flags
 set (CMAKE_C_FLAGS
-    "${CMAKE_C_FLAGS} -D_GNU_SOURCE -ggdb3 -std=c11 -pedantic -Wall -Wextra -Wconversion -Wdouble-promotion -Wfloat-equal"
+    "${CMAKE_C_FLAGS} -ggdb3 -std=gnu11 -pedantic -Wall -Wextra -Wconversion -Wdouble-promotion -Wfloat-equal"
 )
-set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
-set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
+# set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+# set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2")
+set (CMAKE_C_FLAGS_DEBUG "-O0")
+set (CMAKE_C_FLAGS_RELEASE "-O3")
 
 
 # build project
