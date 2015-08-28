@@ -6,16 +6,17 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[english,ngerman]{babel}
+\usepackage{hyperref}
 \usepackage{color}
 \usepackage{graphicx}
-\usepackage{rotating}
-\usepackage{xspace} 
-\usepackage{epstopdf}
-\usepackage{hyperref}
-\usepackage{pmat}
-\usepackage{tikz}
-\usetikzlibrary{positioning}
-\usetikzlibrary{shapes}
+\usepackage[binary-units]{siunitx}
+% \usepackage{rotating}
+% \usepackage{xspace} 
+% \usepackage{epstopdf}
+% \usepackage{pmat}
+% \usepackage{tikz}
+% \usetikzlibrary{positioning}
+% \usetikzlibrary{shapes}
 
 \usepackage{multicol}
 \usepackage{algorithm}
@@ -31,6 +32,8 @@
 \algnewcommand\algorithmicendparfor{\textbf{end\ pardo}}
 \algrenewtext{ParDo}[1]{\algorithmicparfor\ #1\ \algorithmicpardo}
 \algrenewtext{EndParDo}{\algorithmicendparfor}
+\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen}
+\algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
 
 %%%Einige Einstellungen
 \mode<presentation>
