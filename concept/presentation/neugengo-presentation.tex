@@ -1,0 +1,50 @@
+\pdfminorversion=4
+%\documentclass[handout,xcolor=svgnames]{beamer}
+\documentclass[presentation,xcolor=svgnames,aspectratio=169]{beamer}
+
+\include{preface}
+
+\title{NeuGenGo}
+\subtitle{Kann unser neuronales Netz besser Go spielen als wir?}
+
+\author[L. Braun, A. Schaare, T. Eimer]{Lennart Braun, Armin Schaare, Theresa Eimer}
+
+\institute[]
+    {Universität Hamburg\\ 
+    Fakultät für Mathematik, Informatik und Naturwissenschaften\\
+    Fachbereich Informatik, Arbeitsbereich WR\\
+    Praktikum Parallele Programmierung SS 15}
+
+\date{9. September 2015}
+
+% PDF Dokumentinformationen: autorenspezifisch
+\hypersetup {
+    pdfauthor={Lennart Braun, Armin Schaare, Theresa Eimer},
+    % pdftitle={\title},
+    pdftitle = {\title -- \subtitle},
+    pdfsubject = {Universität Hamburg / MIN / FB18 / WR / Praktikum Parallele Programmierung / SS 15},
+    pdfkeywords = {parallel programming, neural networks, go},
+    plainpages = false, 
+    pdfstartpage = {1},
+    pdfpagelabels,
+    breaklinks = {true},
+}
+
+%\usepackage[style=alphabetic, backend=biber]{biblatex}
+%\addbibresource{../parallele-algorithmen.bib}
+
+\begin{document}
+
+\maketitle
+
+%\input{content/einleitung}
+\input{content/toc.tex}
+\input{content/problemstellung}
+\input{content/loesungsansatz}
+\input{content/parallelisierungsschema}
+\input{content/laufzeitmessungen}
+\input{content/leistungsanalyse}
+\input{content/skalierbarkeit}
+%\input{content/bibliography}
+
+\end{document}

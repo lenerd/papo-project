@@ -1,0 +1,98 @@
+\section{Parallelisierungsschema}
+
+%----------------------------------------------------------------------%SLIDE -
+\begin{frame}
+    \frametitle{Parallelisierungsschema}
+
+    Was ist parallelisierbar?
+    \begin{itemize}
+        \item[--]
+            Die Generationen sind inherent sequentiell
+        \item[+]
+            die einzelnen Spiele sind unabhängig voneinander
+            (\textbf{for} $net_a, net_b \in N_i$ \textbf{do})
+        \item[+]
+            die Ausgabeberechnung in den Neuronalen Netzwerken
+            (dreifache Schleife)
+    \end{itemize}
+\end{frame}
+%----------------------------------------------------------------------%SLIDE -
+
+%----------------------------------------------------------------------%SLIDE -
+\begin{frame}
+    \frametitle{Parallelisierung der Spielphase}
+    \framesubtitle{message passing}
+
+    Ziel: $n^2$ Spiele bei $n$ Netzen auf $p$ Prozesse zu verteilen
+
+    notwendige Kommunikation:
+    \begin{itemize}
+        \item die Netze $n \cdot \SI{1.59}{\kibi\byte}$
+        \item Anzahl der Siege $n \cdot \SI{8}{\byte}$ (uint8\_t verwenden?)
+    \end{itemize}
+    Probleme:
+    \begin{itemize}
+        \item neue Netzwerke in jeder Runde
+        \item unterschiedliche Laufzeit der Spiele \\
+            $\Rightarrow$ Wartezeiten bei Ringstruktur
+    \end{itemize}
+\end{frame}
+%----------------------------------------------------------------------%SLIDE -
+
+%----------------------------------------------------------------------%SLIDE -
+\begin{frame}
+    \frametitle{Parallelisierung der Spielphase}
+    \framesubtitle{message passing}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{algorithm}[H]
+            \caption{parallele Spielphase}
+            \begin{algorithmic}[1]
+                \For {Generation $i = 0$ bis $\ldots$}
+                    \State \Call{broadcast}{$N_i$, 0}
+                    \ParDo {$\forall net_a \in N_i$}
+                        \For {$\forall net_b \neq net_a \in N_i$}
+                            \State lass $net_a, net_b$ spielen
+                            \State zähle die Siege ($wins$)
+                        \EndFor
+                    \EndParDo
+                    \State \Call{reduce}{$wins$}
+                    \IIf {rank = 0}
+                        generiere $N_{i+1}$
+                    \EndIIf
+                \EndFor
+            \end{algorithmic}
+        \end{algorithm}
+
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item Jeder Prozess erhält alle Netze.
+            \item Gleichmäßige Verteilung der äußeren Schleife (Zeile 3).
+        \end{itemize}
+    \end{columns}
+\end{frame}
+%----------------------------------------------------------------------%SLIDE -
+
+%----------------------------------------------------------------------%SLIDE -
+\begin{frame}
+    \frametitle{Parallelisierung der Spielphase}
+    \framesubtitle{Spurdatenanalyse}
+
+    \begin{figure}
+        \centering
+        TODO: Visualisierung durch Vampir
+        \caption{Vampir}
+    \end{figure}
+
+\end{frame}
+%----------------------------------------------------------------------%SLIDE -
+
+%----------------------------------------------------------------------%SLIDE -
+\begin{frame}
+    \frametitle{Parallelisierung der neuronalen Netzwerke}
+    \framesubtitle{shared memory}
+
+    TODO:
+\end{frame}
+%----------------------------------------------------------------------%SLIDE -
