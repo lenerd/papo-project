@@ -1,0 +1,48 @@
+% -*- coding: utf-8 -*-
+%UTF-8: äöüß
+% !TEX root = ./main.tex
+%preface.tex
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english,ngerman]{babel}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{xspace} 
+\usepackage{epstopdf}
+\usepackage{hyperref}
+\usepackage{pmat}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes}
+
+\usepackage{multicol}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\floatname{algorithm}{Algorithmus}
+% declaration of the new block
+\algblock{ParDo}{EndParDo}
+% customising the new block
+\algnewcommand\algorithmicparfor{\textbf{for}}
+\algnewcommand\algorithmicpardo{\textbf{pardo}}
+\algnewcommand\algorithmicendparfor{\textbf{end\ pardo}}
+\algrenewtext{ParDo}[1]{\algorithmicparfor\ #1\ \algorithmicpardo}
+\algrenewtext{EndParDo}{\algorithmicendparfor}
+
+%%%Einige Einstellungen
+\mode<presentation>
+{
+    \usetheme{CambridgeUS}
+    % \usecolortheme[named=DarkGreen]{structure}
+    \usecolortheme{seahorse}
+    \useinnertheme{default}
+    \useoutertheme{infolines}
+
+    % Disable navigation bar
+    \setbeamertemplate{navigation symbols}{}
+
+    %\setbeamercovered{transparent}
+}
