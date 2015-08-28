@@ -106,9 +106,8 @@ void human_output (generation_stats_t* stats, FILE* file)
 
 void csv_header (FILE* file)
 {
-    fprintf (file, "# generation \\t generation time \\t game time \\t game "
-                   "count \\t play "
-                   "count \\t pass count\n");
+    fprintf (file, "# generation,generation time,game time,game count,play "
+                   "count,pass count\n");
 }
 
 void csv_line (generation_stats_t* stats, FILE* file)
