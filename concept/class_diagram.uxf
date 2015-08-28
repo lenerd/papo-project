@@ -4,83 +4,105 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>400</x>
-      <y>320</y>
-      <w>100</w>
-      <h>100</h>
+      <x>260</x>
+      <y>220</y>
+      <w>180</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>Game
 --
-black
-white
-board
+-black: Player
+-white: Player
+-board: Board
+-recorders: Recorder[]
+-turn: color_t
+-finished: bool
+-statistic
 --
-step()</panel_attributes>
++step()
++score()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>650</x>
-      <y>320</y>
-      <w>100</w>
-      <h>30</h>
+      <x>500</x>
+      <y>130</y>
+      <w>150</w>
+      <h>120</h>
     </coordinates>
-    <panel_attributes>Board</panel_attributes>
+    <panel_attributes>Board
+--
+-grid
+-groups
+-liberties
+--
++place(x, y, color)
++score()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>650</x>
-      <y>380</y>
-      <w>100</w>
-      <h>60</h>
+      <x>500</x>
+      <y>280</y>
+      <w>130</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>Player
 --
+-color: color_t
 --
-move()</panel_attributes>
++move(board)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>580</x>
-      <y>600</y>
-      <w>100</w>
-      <h>30</h>
+      <x>790</x>
+      <y>370</y>
+      <w>220</w>
+      <h>100</h>
     </coordinates>
-    <panel_attributes>Neuralnet</panel_attributes>
+    <panel_attributes>Neuralnet
+--
+-layout
+-edges: float***
+--
+calculate_output(input)
+backpropagate(input, target)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>570</x>
-      <y>510</y>
+      <x>620</x>
+      <y>400</y>
       <w>130</w>
-      <h>30</h>
+      <h>50</h>
     </coordinates>
-    <panel_attributes>NeuralnetPlayer</panel_attributes>
+    <panel_attributes>NeuralnetPlayer
+--
+-neuralnet
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>630</x>
-      <y>430</y>
-      <w>90</w>
-      <h>100</h>
+      <x>570</x>
+      <y>340</y>
+      <w>140</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>70.0;10.0;70.0;40.0;10.0;40.0;10.0;80.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0;120.0;30.0;120.0;60.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>710</x>
-      <y>510</y>
+      <x>470</x>
+      <y>400</y>
       <w>130</w>
       <h>30</h>
     </coordinates>
@@ -90,52 +112,52 @@ move()</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>690</x>
-      <y>430</y>
-      <w>110</w>
-      <h>100</h>
+      <x>530</x>
+      <y>340</y>
+      <w>70</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;40.0;90.0;40.0;90.0;80.0</additional_attributes>
+    <additional_attributes>50.0;10.0;50.0;30.0;10.0;30.0;10.0;60.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>620</x>
-      <y>530</y>
-      <w>30</w>
-      <h>90</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>490</x>
-      <y>390</y>
-      <w>180</w>
+      <x>740</x>
+      <y>420</y>
+      <w>70</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;160.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>490</x>
-      <y>320</y>
-      <w>180</w>
+      <x>430</x>
+      <y>290</y>
+      <w>90</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;160.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>690</x>
-      <y>340</y>
+      <x>430</x>
+      <y>220</y>
+      <w>90</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>240</y>
       <w>30</w>
       <h>60</h>
     </coordinates>
@@ -145,34 +167,83 @@ move()</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>400</x>
-      <y>240</y>
-      <w>100</w>
-      <h>30</h>
+      <x>260</x>
+      <y>100</y>
+      <w>180</w>
+      <h>90</h>
     </coordinates>
-    <panel_attributes>Recorder</panel_attributes>
+    <panel_attributes>Recorder
+--
+-file: FILE
+-game: Game
+--
+write_move (x, y, color)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>490</x>
-      <y>240</y>
-      <w>230</w>
-      <h>100</h>
+      <x>430</x>
+      <y>140</y>
+      <w>90</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>210.0;80.0;210.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>70.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>440</x>
-      <y>260</y>
+      <x>380</x>
+      <y>180</y>
       <w>30</w>
-      <h>80</h>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>70</x>
+      <y>90</y>
+      <w>130</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>ASCIIRecorder</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>70</x>
+      <y>150</y>
+      <w>130</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>SGFRecorder</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>190</x>
+      <y>130</y>
+      <w>90</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>70.0;10.0;40.0;10.0;40.0;40.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>190</x>
+      <y>100</y>
+      <w>90</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>70.0;40.0;40.0;40.0;40.0;10.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>
