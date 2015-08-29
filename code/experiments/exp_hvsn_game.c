@@ -22,8 +22,8 @@ int main (void)
     game_t* game = game_create (p1, p2, 5, 10);
     FILE* file = fopen ("record", "w");
     FILE* file2 = fopen ("game.sgf", "w");
-    game_add_recorder (game, recorder_ascii_create(game, file));
-    game_add_recorder (game, recorder_sgf_create(game, file2));
+    game_add_recorder (game, recorder_ascii_create(game->board, file));
+    game_add_recorder (game, recorder_sgf_create(game->board, file2));
 
     while (!game->finished)
     {

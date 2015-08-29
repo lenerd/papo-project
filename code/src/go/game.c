@@ -85,7 +85,7 @@ void game_step (game_t* game)
     /* record move */
     for (size_t i = 0; i < 2; ++i)
         if (game->recorders[i] != NULL)
-            game->recorders[i]->func (game->recorders[i], pos, false);
+            game->recorders[i]->func (game->recorders[i], pos, game->passed, false);
 
     game->turn = game->turn == c_black ? c_white : c_black;
     ++game->move_cnt;
@@ -96,7 +96,7 @@ void game_step (game_t* game)
     if (game->finished)
         for (size_t i = 0; i < 2; ++i)
             if (game->recorders[i] != NULL)
-                game->recorders[i]->func (game->recorders[i], pos, true);
+                game->recorders[i]->func (game->recorders[i], pos, game->passed, true);
 }
 
 
