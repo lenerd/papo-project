@@ -23,6 +23,13 @@ set (CMAKE_C_FLAGS_RELEASE "-O3")
 find_package (MPI REQUIRED)
 include_directories (${MPI_INCLUDE_PATH})
 
+if (VAMPIR)
+    message ("Building with VampirTrace support.")
+    set (CMAKE_C_FLAGS "-vt:cc ${CMAKE_C_COMPILER} ${CMAKE_C_FLAGS}")
+    set (CMAKE_C_COMPILER "vtcc")
+endif (VAMPIR)
+
+
 # build project
 add_subdirectory (src)
 
