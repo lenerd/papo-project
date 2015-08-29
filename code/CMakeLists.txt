@@ -19,6 +19,12 @@ set (CMAKE_C_FLAGS
 set (CMAKE_C_FLAGS_DEBUG "-O0")
 set (CMAKE_C_FLAGS_RELEASE "-O3")
 
+if (VAMPIR)
+    message ("Building with VampirTrace support.")
+    set (CMAKE_C_FLAGS "-vt:cc ${CMAKE_C_COMPILER} ${CMAKE_C_FLAGS}")
+    set (CMAKE_C_COMPILER "vtcc")
+endif (VAMPIR)
+
 
 # build project
 add_subdirectory (src)
