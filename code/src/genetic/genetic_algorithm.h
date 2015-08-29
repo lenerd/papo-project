@@ -92,9 +92,10 @@ void genome_destroy (genome_t* genome);
 * \pre population_size > 0
 * \pre genomes != NULL
 * \pre base_fitness >= 0
+* \pre 0 <= mutation_chance <= 1
 */
 population_t* population_create (size_t size, genome_t** genomes,
-                                 float base_fitness);
+                                 float base_fitness, float mutation_chance);
 
 /**
  * \brief Release all resources of a population including the genomes.

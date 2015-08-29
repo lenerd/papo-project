@@ -40,7 +40,7 @@ START_TEST(test_population_type)
 
 	ck_assert(genomes != NULL);
 
-	population_t* pop = population_create(size, genomes, 1);
+	population_t* pop = population_create(size, genomes, 1, 0.01f);
 
 	ck_assert(pop != NULL);
 	ck_assert(pop->size == size);
@@ -91,7 +91,7 @@ START_TEST(test_selection)
 
 	ck_assert(genomes != NULL);
 
-	population_t* pop = population_create(size, genomes, 1);
+	population_t* pop = population_create(size, genomes, 1, 0.01f);
 
 	pop->individuals[0]->fitness = 5;
 	pop->individuals[1]->fitness = 50;

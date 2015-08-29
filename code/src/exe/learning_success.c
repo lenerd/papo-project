@@ -102,7 +102,7 @@ int main()
 	for(size_t i = 0; i < nets_per_party; ++i)
 		genomes[i] = genome_create(trained_nets->nets[i]->edge_count, &trained_nets->nets[i]->edge_buf, &update_neuralnet, trained_nets->nets[i]);
 	
-	population_t* population = population_create(nets_per_party, genomes, 0);
+	population_t* population = population_create(nets_per_party, genomes, 0, 0.01f);
 	
 	for(uint64_t i = 0; i < generations; ++i)
 	{

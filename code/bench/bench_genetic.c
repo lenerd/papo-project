@@ -41,7 +41,7 @@ int main()
 
 	}
 
-	pop = population_create(individual_count, genomes, 0);
+	pop = population_create(individual_count, genomes, 0, 0.01f);
 
 	int generations = 1000000;
 	struct timespec start, end, total;
@@ -65,6 +65,8 @@ int main()
 	per_gen.tv_nsec = total.tv_nsec /generations;
 
 	printf("The total time was %lu s %lu ns for %d generations, \n That's %lu s %lu ns per generation", total.tv_sec, total.tv_nsec, generations, per_gen.tv_sec, per_gen.tv_nsec);
+
+    population_destroy (pop);
 
 	return EXIT_SUCCESS;
 }

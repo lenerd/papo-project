@@ -30,7 +30,7 @@ void genome_destroy (genome_t* genome)
 }
 
 population_t* population_create (size_t size, genome_t** genomes,
-                                 float base_fitness)
+                                 float base_fitness, float mutation_chance)
 {
     population_t* pop = SAFE_MALLOC (sizeof (population_t));
 
@@ -38,7 +38,7 @@ population_t* population_create (size_t size, genome_t** genomes,
     pop->individuals = genomes;
     pop->generation = 0;
     pop->base_fitness = base_fitness;
-    pop->mutation_chance = 0.01f;
+    pop->mutation_chance = mutation_chance;
 
     // FIXME: remove ?
     pop->total_fitness = 0.0f;
