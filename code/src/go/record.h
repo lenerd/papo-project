@@ -24,7 +24,7 @@ typedef struct recorder recorder_t;
  * \param pos Position moved to.
  * \return 0 if success, else != 0
  */
-typedef int (*record_func)(recorder_t* rec, position_t pos, bool end);
+typedef int (*record_func)(recorder_t* rec, position_t pos, bool passed, bool end);
 
 /**
  * \brief Represents a player in a game.
@@ -33,7 +33,7 @@ struct recorder
 {
     record_func func;
     FILE* file;
-    const game_t* game;
+    const board_t* board;
 };
 
 
@@ -45,7 +45,7 @@ struct recorder
  * \pre game != NULL
  * \pre file != NULL
  */
-recorder_t* recorder_ascii_create (const game_t* game, FILE* file);
+recorder_t* recorder_ascii_create (const board_t* board, FILE* file);
 
 /**
  * \brief Creates a recorder printing in SGF to file.
@@ -55,7 +55,7 @@ recorder_t* recorder_ascii_create (const game_t* game, FILE* file);
  * \pre game != NULL
  * \pre file != NULL
  */
-recorder_t* recorder_sgf_create (const game_t* game, FILE* file);
+recorder_t* recorder_sgf_create (const board_t* board, FILE* file);
 
 /**
  * \brief Destroys a recorder.

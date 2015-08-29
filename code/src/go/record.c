@@ -11,11 +11,11 @@ struct ascii_rec_arg
     FILE* file;
 };
 
-static int ascii_recorder (recorder_t* rec, position_t pos, bool end)
+static int ascii_recorder (recorder_t* rec, position_t pos, bool passed, bool end)
 {
     assert (rec != NULL);
 
-    const game_t* game = rec->game;
+    const board_t* board = rec->board;
 
     if (end)
     {
@@ -24,16 +24,16 @@ static int ascii_recorder (recorder_t* rec, position_t pos, bool end)
     }
     else
     {
-        if (game->passed)
+        if (passed)
         {
             fprintf (rec->file, "%s: passed\n",
-                     game->turn == c_black ? "black" : "white");
+                     board->turn == c_black ? "black" : "white");
         }
         else
         {
             fprintf (rec->file, "%s: %zu-%zu:\n",
-                     game->turn == c_black ? "black" : "white", pos.x, pos.y);
-            board_print (game->board, rec->file);
+                     board->turn == c_black ? "black" : "white", pos.x, pos.y);
+            board_print (board, rec->file);
         }
 
         fprintf (rec->file, "\n");
@@ -42,11 +42,11 @@ static int ascii_recorder (recorder_t* rec, position_t pos, bool end)
     return 0;
 }
 
-static int sgf_recorder (recorder_t* rec, position_t pos, bool end)
+static int sgf_recorder (recorder_t* rec, position_t pos, bool passed, bool end)
 {
     assert (rec != NULL);
 
-    const game_t* game = rec->game;
+    const board_t* board = rec->board;
 
     if (end)
     {
@@ -54,23 +54,23 @@ static int sgf_recorder (recorder_t* rec, position_t pos, bool end)
     }
     else
     {
-        if (game->passed)
-            fprintf (rec->file, ";%s[]", game->turn == c_black ? "B" : "W");
+        if (passed)
+            fprintf (rec->file, ";%s[]", board->turn == c_black ? "B" : "W");
         else
-            fprintf (rec->file, "; %s[%c%c]", game->turn == c_black ? "B" : "W",
+            fprintf (rec->file, "; %s[%c%c]", board->turn == c_black ? "B" : "W",
                      'a' + (int) pos.y, 'a' + (int) pos.x);
     }
 
     return 0;
 }
 
-static recorder_t* recorder_create (const game_t* game, FILE* file)
+static recorder_t* recorder_create (const board_t* board, FILE* file)
 {
-    assert (game != NULL);
+    assert (board != NULL);
     assert (file != NULL);
     
     recorder_t* rec = SAFE_CALLOC (sizeof (recorder_t), 1);
-    rec->game = game;
+    rec->board = board;
     rec->file = file;
     return rec;
 }
@@ -82,25 +82,25 @@ void recorder_destroy (recorder_t* rec)
     free (rec);
 }
 
-recorder_t* recorder_ascii_create (const game_t* game, FILE* file)
+recorder_t* recorder_ascii_create (const board_t* board, FILE* file)
 {
-    assert (game != NULL);
+    assert (board != NULL);
     assert (file != NULL);
 
-    recorder_t* rec = recorder_create (game, file);
+    recorder_t* rec = recorder_create (board, file);
     rec->func = &ascii_recorder;
     return rec;
 }
 
-recorder_t* recorder_sgf_create (const game_t* game, FILE* file)
+recorder_t* recorder_sgf_create (const board_t* board, FILE* file)
 {
-    assert (game != NULL);
+    assert (board != NULL);
     assert (file != NULL);
 
-    recorder_t* rec = recorder_create (game, file);
+    recorder_t* rec = recorder_create (board, file);
     rec->func = &sgf_recorder;
 
-    fprintf (file, "(;FF[4]SZ[%zu]", game->board->size);
+    fprintf (file, "(;FF[4]SZ[%zu]", board->size);
 
     return rec;
 }

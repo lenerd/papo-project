@@ -175,7 +175,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
             genomes[i] =
                 genome_create (set->nets[i]->edge_count, &set->nets[i]->edge_buf,
                                &update_neuralnet, set->nets[i]);
-        pop = population_create (set->size, genomes, 1.0f);
+        pop = population_create (set->size, genomes, 1.0f, 0.01f);
     }
 
     /* fitness values */
