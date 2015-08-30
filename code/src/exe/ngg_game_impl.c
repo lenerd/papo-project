@@ -144,12 +144,19 @@ int unsupervised (options_t* opts, int argc, char** argv)
         return ret;
 
 
-    rc = MPI_Init (&argc, &argv);
+    int provided;
+    rc = MPI_Init_thread (&argc, &argv, MPI_THREAD_FUNNELED, &provided);
     if (rc != MPI_SUCCESS)
     {
         fprintf (stderr, "[%s:%u] MPI_Init failed (%d)\n", __FILE__, __LINE__,
                  rc);
         return rc;
+    }
+    if (provided != MPI_THREAD_FUNNELED)
+    {
+        fprintf (stderr, "[%s:%u] MPI doesn't support MPI_THREAD_FUNNELED\n",
+                 __FILE__, __LINE__);
+        return 1;
     }
     MPI_Comm_rank (MPI_COMM_WORLD, &pinfo.mpi_rank);
     MPI_Comm_size (MPI_COMM_WORLD, &pinfo.mpi_size);

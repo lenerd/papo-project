@@ -448,19 +448,18 @@ float* nnet_calculate_output (const neuralnet_t* net, const float* input)
 
     for (size_t gap = 0; gap < net->layer_count - 1; ++gap)
     {
+        #pragma omp parallel for
         for (size_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to)
+        {
             current_result_2[to] =
                 net->edges[gap][net->neurons_per_layer[gap]][to];
-
-        for (size_t from = 0; from < net->neurons_per_layer[gap]; ++from)
-        {
-            for (size_t to = 0; to < net->neurons_per_layer[gap + 1]; ++to)
+            for (size_t from = 0; from < net->neurons_per_layer[gap]; ++from)
             {
                 current_result_2[to] +=
                     current_result_1[from] * net->edges[gap][from][to];
             }
+            current_result_2[to] = sigmoid (current_result_2[to]);
         }
-        sigmoidize_inplace (current_result_2, net->neurons_per_layer[gap + 1]);
 
         swap_float_buffer (&current_result_1, &current_result_2);
     }
