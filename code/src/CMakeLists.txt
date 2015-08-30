@@ -12,7 +12,6 @@ set (PROJECT_SOURCES
     neuralnet/neuralnet.c
     neuralnet/learning.c
     training/training.c
-    example/example.c
 )
 
 # Find includes in corresponding build directories

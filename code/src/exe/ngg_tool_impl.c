@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 
 void init_opts (options_t* opts)
@@ -46,6 +47,8 @@ int create_networks (options_t* opts)
     if (ret)
         return ret;
 
+    srand ((unsigned) time (0));
+
     nnet_set_t* set = nnet_set_create (opts->n);
     for (size_t i = 0; i < opts->n; ++i)
     {
@@ -80,6 +83,8 @@ int generate_training_data (options_t* opts)
     }
     if (ret)
         return ret;
+
+    srand ((unsigned) time (0));
 
     dataset_t* set = dataset_create (opts->n);
 
