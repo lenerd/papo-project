@@ -27,11 +27,14 @@ typedef struct
 
     size_t n;
 
+    unsigned seed;
+
     bool set_a;
     bool set_i;
     bool set_n;
     bool set_o;
     bool set_s;
+    bool set_seed;
 
     bool verbose;
     bool human_readable;

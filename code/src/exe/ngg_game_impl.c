@@ -135,7 +135,10 @@ int unsupervised (options_t* opts)
         return ret;
 
     /* seed random number generator */
-    srand ((unsigned int) time (0));
+    if (opts->set_seed)
+        srand (opts->seed);
+    else
+        srand ((unsigned int) time (0));
 
     /* load neural networks */
     nnet_set_t* set = nnet_set_from_file (opts->in_path, opts->b_in);
