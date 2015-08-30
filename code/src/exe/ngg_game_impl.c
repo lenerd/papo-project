@@ -130,7 +130,6 @@ void csv_line (generation_stats_t* stats, FILE* file)
 }
 
 
-
 int unsupervised (options_t* opts, int argc, char** argv)
 {
     int ret, rc;
@@ -156,7 +155,19 @@ int unsupervised (options_t* opts, int argc, char** argv)
     MPI_Comm_size (MPI_COMM_WORLD, &pinfo.mpi_size);
 
     /* seed random number generator */
-    srand ((unsigned int) time (0));
+    if (opts->set_seed)
+        srand (opts->seed);
+    else
+    {
+        unsigned seed = 0;
+        if (pinfo.mpi_rank == 0)
+        {
+            srand ((unsigned) time (0));
+            seed = (unsigned) random ();
+        }
+        MPI_Bcast (&seed, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+        srand (seed);
+    }
 
     /* load neural networks */
     set = nnet_set_from_file (opts->in_path, opts->b_in);
@@ -168,15 +179,12 @@ int unsupervised (options_t* opts, int argc, char** argv)
     }
 
     /* prepare population for the genetic algorithm */
-    if (pinfo.mpi_rank == 0)
-    {
-        genomes = SAFE_MALLOC (set->size * sizeof (genome_t*));
-        for (size_t i = 0; i < set->size; ++i)
-            genomes[i] =
-                genome_create (set->nets[i]->edge_count, &set->nets[i]->edge_buf,
-                               &update_neuralnet, set->nets[i]);
-        pop = population_create (set->size, genomes, 1.0f, 0.01f);
-    }
+    genomes = SAFE_MALLOC (set->size * sizeof (genome_t*));
+    for (size_t i = 0; i < set->size; ++i)
+        genomes[i] =
+            genome_create (set->nets[i]->edge_count, &set->nets[i]->edge_buf,
+                           &update_neuralnet, set->nets[i]);
+    pop = population_create (set->size, genomes, 1.0f, 0.01f);
 
     /* fitness values */
     uint64_t* wins = SAFE_MALLOC (set->size * sizeof (uint64_t));
@@ -190,7 +198,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
 
     /* csv header */
     if (pinfo.mpi_rank == 0 && !opts->human_readable)
-            csv_header (stdout);
+        csv_header (stdout);
 
     create_partition (&part, &pinfo, set->size);
 
@@ -206,18 +214,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
         memset (wins, 0x00, set->size * sizeof (uint64_t));
 
         if (gen)
-        {
-            if (pinfo.mpi_rank == 0)
-            {
-                the_next_generation (pop);
-                broadcast_nnet_set (&set, 0);
-            }
-            else
-            {
-                nnet_set_destroy (set);
-                broadcast_nnet_set (&set, 0);
-            }
-        }
+            the_next_generation (pop);
 
         for (size_t net_1 = part.start; net_1 < part.end; ++net_1)
         {
@@ -262,13 +259,15 @@ int unsupervised (options_t* opts, int argc, char** argv)
 
         if (pinfo.mpi_rank == 0)
         {
-            MPI_Reduce (MPI_IN_PLACE, wins, (int)set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+            MPI_Reduce (MPI_IN_PLACE, wins, (int) set->size, MPI_UINT64_T,
+                        MPI_SUM, 0, MPI_COMM_WORLD);
             for (size_t net = 0; net < set->size; ++net)
                 pop->individuals[net]->fitness = (float) wins[net];
         }
         else
         {
-            MPI_Reduce (wins, NULL, (int)set->size, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+            MPI_Reduce (wins, NULL, (int) set->size, MPI_UINT64_T, MPI_SUM, 0,
+                        MPI_COMM_WORLD);
         }
 
         /* end generation time */
@@ -278,13 +277,17 @@ int unsupervised (options_t* opts, int argc, char** argv)
 
         if (pinfo.mpi_rank == 0)
         {
-            MPI_Reduce (MPI_IN_PLACE, &stats.play_cnt, 1, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
-            MPI_Reduce (MPI_IN_PLACE, &stats.pass_cnt, 1, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+            MPI_Reduce (MPI_IN_PLACE, &stats.play_cnt, 1, MPI_UINT64_T, MPI_SUM,
+                        0, MPI_COMM_WORLD);
+            MPI_Reduce (MPI_IN_PLACE, &stats.pass_cnt, 1, MPI_UINT64_T, MPI_SUM,
+                        0, MPI_COMM_WORLD);
         }
         else
         {
-            MPI_Reduce (&stats.play_cnt, NULL, 1, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
-            MPI_Reduce (&stats.pass_cnt, NULL, 1, MPI_UINT64_T, MPI_SUM, 0, MPI_COMM_WORLD);
+            MPI_Reduce (&stats.play_cnt, NULL, 1, MPI_UINT64_T, MPI_SUM, 0,
+                        MPI_COMM_WORLD);
+            MPI_Reduce (&stats.pass_cnt, NULL, 1, MPI_UINT64_T, MPI_SUM, 0,
+                        MPI_COMM_WORLD);
         }
 
         if (pinfo.mpi_rank == 0)
