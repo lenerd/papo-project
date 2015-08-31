@@ -9,6 +9,7 @@ set (PROJECT_SOURCES
     util/util.c
     util/math_ext.c
     util/mpi.c
+    util/scheduler.c
     neuralnet/neuralnet.c
     neuralnet/learning.c
     training/training.c
