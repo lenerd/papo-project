@@ -257,18 +257,10 @@ int unsupervised (options_t* opts, int argc, char** argv)
             player_destroy (p1);
         }
 
-        if (pinfo.mpi_rank == 0)
-        {
-            MPI_Reduce (MPI_IN_PLACE, wins, (int) set->size, MPI_UINT64_T,
-                        MPI_SUM, 0, MPI_COMM_WORLD);
-            for (size_t net = 0; net < set->size; ++net)
-                pop->individuals[net]->fitness = (float) wins[net];
-        }
-        else
-        {
-            MPI_Reduce (wins, NULL, (int) set->size, MPI_UINT64_T, MPI_SUM, 0,
-                        MPI_COMM_WORLD);
-        }
+        MPI_Allreduce (MPI_IN_PLACE, wins, (int) set->size, MPI_UINT64_T,
+                       MPI_SUM, MPI_COMM_WORLD);
+        for (size_t net = 0; net < set->size; ++net)
+            pop->individuals[net]->fitness = (float) wins[net];
 
         /* end generation time */
         clock_gettime (CLOCK_MONOTONIC, &end2);
