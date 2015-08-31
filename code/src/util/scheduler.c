@@ -2,12 +2,14 @@
 #include "util/scheduler.h"
 #include "util/util.h"
 
-queued_game_t* init_queue_element(game_t* game)
+queued_game_t* init_queue_element(int p1, int p2)
 {
 	queued_game_t* element = SAFE_MALLOC(sizeof(queued_game_t));
 	
 	element->priority = 0;
-	element->game = game;
+	element->p1 = p1;
+	element->p2 = p2;
+	element->next_game = NULL;
 
 	return element;
 }
@@ -18,7 +20,7 @@ game_queue_t* init_queue()
 
 	queue->first = NULL;
 	queue->last = NULL;
-	queue->game_count = 0;
+	queue->empty = true;
 
 	return queue;
 }
@@ -34,15 +36,19 @@ void add_game(game_queue_t* queue, queued_game_t* game)
 	{
 		queue->first = game;
 		queue->last = queue->first;
+		queue->empty = false;
 	}	
 	
 }
 
-game_t* select_next(game_queue_t* queue)
+queued_game_t* select_next(game_queue_t* queue)
 {
 	queued_game_t* ret =  queue->first;
 	queue->first = queue->first->next_game;
+	
+	if(queue->first == NULL)
+		queue->empty = true;	
 
-	return ret->game;
+	return ret;
 }
 

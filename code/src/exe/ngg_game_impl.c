@@ -5,6 +5,7 @@
 #include "genetic/genetic_algorithm.h"
 #include "util/util.h"
 #include "util/mpi.h"
+#include "util/scheduler.h"
 
 #include <mpi.h>
 #include <stdint.h>
@@ -215,7 +216,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
 
         if (gen)
             the_next_generation (pop);
-
+	/*
         for (size_t net_1 = part.start; net_1 < part.end; ++net_1)
         {
             player_t* p1 = player_create_net (set->nets[net_1]);
@@ -226,28 +227,28 @@ int unsupervised (options_t* opts, int argc, char** argv)
                     continue;
                 player_t* p2 = player_create_net (set->nets[net_2]);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
-
+	
                 /* start game_time */
-                clock_gettime (CLOCK_MONOTONIC, &start);
+//                clock_gettime (CLOCK_MONOTONIC, &start);
 
                 /* play */
-                while (!game->finished)
+/*                while (!game->finished)
                     game_step (game);
 
                 /* end game_time */
-                clock_gettime (CLOCK_MONOTONIC, &end);
+/*                clock_gettime (CLOCK_MONOTONIC, &end);
                 diff = diff_timespec (start, end);
                 stats.game_time = sum_timespec (stats.game_time, diff);
 
                 /* update fitness */
-                int64_t score = game_score (game);
+/*                int64_t score = game_score (game);
                 if (score > 0)
                     ++wins[net_1];
                 else if (score < 0)
                     ++wins[net_2];
 
                 /* update generation stats */
-                stats.play_cnt += game->play_cnt;
+/*                stats.play_cnt += game->play_cnt;
                 stats.pass_cnt += game->pass_cnt;
 
                 game_destroy (game);
@@ -255,7 +256,62 @@ int unsupervised (options_t* opts, int argc, char** argv)
             }
 
             player_destroy (p1);
-        }
+        }*/ 
+	
+	//Create queue
+	game_queue_t* queue = init_queue();
+
+	//Queues all games
+	for (size_t net_1 = part.start; net_1 < part.end; ++net_1)
+        {
+            for (size_t net_2 = 0; net_2 < set->size; ++net_2)
+            {
+		if(net_1 == net_2)
+			continue;
+
+		queued_game_t* element = init_queue_element(net_1, net_2);
+		add_game(queue, element);
+	    }
+	}
+
+	//Grab one queue element at a time and play the game	
+	while(!queue->empty)
+	{
+		//Sensitive
+		queued_game_t* element = select_next(queue);
+		//Sensitive over
+		
+		player_t* player1 = player_create(set->nets[element->p1]);
+		player_t* player2 = player_create(set->nets[element->p2]);
+
+		game_t* game = game_create(player1, player2, opts->board_size, 1024);
+
+		/* start game_time */
+                clock_gettime (CLOCK_MONOTONIC, &start);
+
+		while(!game->finished)
+			game_step(game); 
+
+		/* end game_time */
+                clock_gettime (CLOCK_MONOTONIC, &end);
+                diff = diff_timespec (start, end);
+                stats.game_time = sum_timespec (stats.game_time, diff);
+
+                /* update fitness */
+                int64_t score = game_score (game);
+                if (score > 0)
+                    ++wins[element->p1];
+                else if (score < 0)
+                    ++wins[element->p2];
+
+                /* update generation stats */
+                stats.play_cnt += game->play_cnt;
+                stats.pass_cnt += game->pass_cnt;
+
+                game_destroy (game);
+		player_destroy (player1;
+                player_destroy (player2);
+	}
 
         if (pinfo.mpi_rank == 0)
         {
