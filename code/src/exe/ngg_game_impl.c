@@ -216,7 +216,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
         if (gen)
             the_next_generation (pop);
 
-#if 0
+#if 1
         size_t net_1 = part.start_x;
         size_t net_2 = part.start_y;
         size_t count = 0;
@@ -266,7 +266,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
             player_destroy (p1);
         }
 #endif
-
+#if 0
         // Create queue
         game_queue_t* queue = init_queue (set->size * (set->size - 1));
 
@@ -322,6 +322,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
             player_destroy (player1);
             player_destroy (player2);
         }
+#endif
 
         MPI_Allreduce (MPI_IN_PLACE, wins, (int) set->size, MPI_UINT64_T,
                        MPI_SUM, MPI_COMM_WORLD);
