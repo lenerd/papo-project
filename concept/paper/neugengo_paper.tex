@@ -14,8 +14,13 @@
 \section{Die Idee}
 %Was es tun soll, wieso wir das machen, eine kurze Einleitung eben
 
+Neuronale Netze wurden in den letzten Jahren immer wieder für verschiedene Problemstellungen benutzt. Es wurde festgestellt, dass sie auch komplizierte Aufgaben lösen können, vorausgesetzt sie werden gut genug trainiert. Go zu spielen ist ein sehr komplexe Aufgabe, die wir unter anderem genau aus diesem Grund ausgewählt haben. Wegen der vielen Zugmöglichkeiten und dem mit 19x19 Punkten sehr großen Spielbrett, gibt es für Go noch keine Computer, die Menschen deutlich übertreffen oder sogar eine perfekte Strategie spielen können. Dieses Ziel wäre natürlich etwas hoch gegriffen, doch mit diesem Projekt wollten wir sehen, ob sich neuronale Netze überhaupt gegenseitig so trainieren können, dass sie bessere Ergebnisse erzielen. Dazu wurden zwei Tools benutzt, das erste ist dafür zuständig die Netze zu erstellen und mit Hilfe von Supervised Learning auf die Regeln von Go zu trainieren. Das zweite Tool lässt die Netze dann gegeneinander antreten und rekombiniert sie mit Hilfe eines genetischen Algorithmus. Die so entstandenen Netze können gespeichert werden und auch gegen einen menschlichen Gegner antreten.
+
 \section{Über Go}
 %Kurze Beschreibung der Regeln und unsere Umsetzung
+Go ist ein asiatisches Brettspiel, das normalerweise auf Brettern von 19x19 oder 9x9 Schnittpunkten gespielt wird. Es gibt zwei Spieler, einer spielt schwarze, der andere weiße Steine. Nacheinander legt zuerst der schwarze, dann der weiße Spieler, je einen Stein auf einen Schnittpunkt. Ist ein Stein umzingelt, sind also alle seine vier direkt angrenzenden Schnittpunkte von gegnerischen Steinen besetzt, so ist er geschlagen und wird vom Brett genommen. Zusammen mit dem auf die selbe Weiße umzingelten Gebiet am Ende des Spieles, bilden die geschlagenen Steine die Punktzahl der Spieler. Wer mehr Punkte hat gewinnt. Eine Sonderregel ist hier das Ko. Es ist möglich in eine Endlosschleife zu geraten, indem ein Stein immer wieder geschlagen und zurückgeschlagen wird. Damit das nicht passiert, darf in dieser Situation nicht sofort zurückgeschlagen werden, sondern erst einen Zug später um dem Gegner die Möglichkeit zu geben die Lücke zu schließen. 
+\\
+Um das Spiel etwas zu vereinfachen und schneller Ergebnisse zu sehen, arbeiten wir mit 9x9 Spielbrettern. Außerdem gibt es ein Zuglimit für die Spiele, damit es keine Endlosschleifen gibt, die trotz Ko auftreten können. Ansonsten haben wir uns aber bemüht die Go Regeln möglichst gut umzusetzen, damit die Spielstärke auch realistisch beurteilt werden kann.
 
 \section{Unser Programm}
 
