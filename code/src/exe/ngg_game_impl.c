@@ -201,7 +201,6 @@ int unsupervised (options_t* opts, int argc, char** argv)
         csv_header (stdout);
 
     create_partition (&part, &pinfo, set->size);
-
     for (size_t gen = 0; gen < opts->n; ++gen)
     {
         /* reset stats */
@@ -216,14 +215,21 @@ int unsupervised (options_t* opts, int argc, char** argv)
         if (gen)
             the_next_generation (pop);
 
-        for (size_t net_1 = part.start; net_1 < part.end; ++net_1)
+        size_t net_1 = part.start_x;
+        size_t net_2 = part.start_y;
+        size_t count = 0;
+
+        for (; count < part.len; net_1 = (net_1 + 1) % set->size)
         {
             player_t* p1 = player_create_net (set->nets[net_1]);
 
-            for (size_t net_2 = 0; net_2 < set->size; ++net_2)
+            for (; net_2 < set->size && count < part.len; ++net_2)
             {
+                ++count;
+
                 if (net_1 == net_2)
                     continue;
+
                 player_t* p2 = player_create_net (set->nets[net_2]);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
 
@@ -253,6 +259,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
                 game_destroy (game);
                 player_destroy (p2);
             }
+            net_2 = 0;
 
             player_destroy (p1);
         }

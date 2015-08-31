@@ -17,8 +17,9 @@ typedef struct
 process_info_t;
 typedef struct
 {
-    size_t start;
-    size_t end;
+    size_t start_x;
+    size_t start_y;
+    size_t len;
 }
 partition_t;
 

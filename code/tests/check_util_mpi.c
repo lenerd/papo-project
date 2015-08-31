@@ -11,26 +11,35 @@ START_TEST (test_partition)
     process_info_t pinfo1 = { 1, 4 };
     process_info_t pinfo2 = { 2, 4 };
     process_info_t pinfo3 = { 3, 4 };
-    size_t n = 15;
+    size_t n = 5;
 
     partition_t part;
 
     create_partition (&part, &pinfo0, n);
-    ck_assert (part.start == 0);
-    ck_assert (part.end == 4);
+    ck_assert (part.start_x == 0);
+    ck_assert (part.start_y == 0);
+    ck_assert (part.len == 7);
 
     create_partition (&part, &pinfo1, n);
-    ck_assert (part.start == 4);
-    ck_assert (part.end == 8);
+    ck_assert (part.start_x == 1);
+    ck_assert (part.start_y == 2);
+    ck_assert (part.len == 6);
 
     create_partition (&part, &pinfo2, n);
-    ck_assert (part.start == 8);
-    ck_assert (part.end == 12);
+    ck_assert (part.start_x == 2);
+    ck_assert (part.start_y == 3);
+    ck_assert (part.len == 6);
 
     create_partition (&part, &pinfo3, n);
-    ck_assert (part.start == 12);
-    ck_assert (part.end == 15);
+    ck_assert (part.start_x == 3);
+    ck_assert (part.start_y == 4);
+    ck_assert (part.len == 6);
 
+    process_info_t pinfo4 = { 0, 1 };
+    create_partition (&part, &pinfo4, n);
+    ck_assert (part.start_x == 0);
+    ck_assert (part.start_y == 0);
+    ck_assert (part.len == 25);
 }
 END_TEST
 
