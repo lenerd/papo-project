@@ -69,8 +69,20 @@ typedef struct
     uint64_t pass_cnt;
 
     struct timespec generation_time;
-    struct timespec game_time;
 } generation_stats_t;
+
+
+void stats_add (generation_stats_t* dst, generation_stats_t* src)
+{
+    dst->generation =
+        dst->generation > src->generation ? dst->generation : src->generation;
+    dst->game_cnt += src->game_cnt;
+    dst->play_cnt += src->play_cnt;
+    dst->pass_cnt += src->pass_cnt;
+
+    dst->generation_time =
+        sum_timespec (dst->generation_time, src->generation_time);
+}
 
 
 void human_output (generation_stats_t* stats, FILE* file)
@@ -83,21 +95,19 @@ void human_output (generation_stats_t* stats, FILE* file)
     fprintf (file, "generation time: ");
     print_time (stats->generation_time, file);
     fputc ('\n', file);
-    fprintf (file, "game time: ");
-    print_time (stats->game_time, file);
     fputc ('\n', file);
     fprintf (file, "games: %" PRIu64 "\n", stats->game_cnt);
     fprintf (file, "games/s: %f\n",
-             (double) stats->game_cnt / timespec_to_double (stats->game_time));
+             (double) stats->game_cnt / timespec_to_double (stats->generation_time));
     fprintf (file, "moves: %" PRIu64 "\n", move_cnt);
     fprintf (file, "moves/s: %f\n",
-             (double) move_cnt / timespec_to_double (stats->game_time));
+             (double) move_cnt / timespec_to_double (stats->generation_time));
     fprintf (file, "moves/game: %f\n",
              (double) move_cnt / (double) stats->game_cnt);
     fprintf (file, "plays: %" PRIu64 "\n", stats->play_cnt);
     fprintf (file, "passes: %" PRIu64 "\n", stats->pass_cnt);
     fprintf (file, "passes/s: %f\n",
-             (double) stats->pass_cnt / timespec_to_double (stats->game_time));
+             (double) stats->pass_cnt / timespec_to_double (stats->generation_time));
     fprintf (file, "passes/game: %f\n",
              (double) stats->pass_cnt / (double) stats->game_cnt);
     fprintf (file, "passes/moves: %f\n",
@@ -116,8 +126,6 @@ void csv_line (generation_stats_t* stats, FILE* file)
     fprintf (file, "%" PRId64, stats->generation);
     fputc (delimiter, file);
     fprintf (file, "%f", timespec_to_double (stats->generation_time));
-    fputc (delimiter, file);
-    fprintf (file, "%f", timespec_to_double (stats->game_time));
     fputc (delimiter, file);
     fprintf (file, "%" PRId64, stats->game_cnt);
     fputc (delimiter, file);
@@ -162,9 +170,9 @@ int unsupervised (options_t* opts)
 
     /* statistic */
     generation_stats_t stats;
+    generation_stats_t total_stats = { 0, 0, 0, 0, {0, 0} };
     uint64_t game_cnt = set->size * (set->size - 1);
     struct timespec start, end;
-    struct timespec start2, end2;
     struct timespec diff;
 
     /* csv header */
@@ -180,7 +188,7 @@ int unsupervised (options_t* opts)
         stats.game_cnt = game_cnt;
 
         /* start generation time */
-        clock_gettime (CLOCK_MONOTONIC, &start2);
+        clock_gettime (CLOCK_MONOTONIC, &start);
 
         if (gen)
         {
@@ -198,17 +206,9 @@ int unsupervised (options_t* opts)
                 player_t* p2 = player_create_net (set->nets[net_2]);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
 
-                /* start game_time */
-                clock_gettime (CLOCK_MONOTONIC, &start);
-
                 /* play */
                 while (!game->finished)
                     game_step (game);
-
-                /* end game_time */
-                clock_gettime (CLOCK_MONOTONIC, &end);
-                diff = diff_timespec (start, end);
-                stats.game_time = sum_timespec (stats.game_time, diff);
 
                 /* update fitness */
                 int64_t score = game_score (game);
@@ -229,9 +229,10 @@ int unsupervised (options_t* opts)
         }
 
         /* end generation time */
-        clock_gettime (CLOCK_MONOTONIC, &end2);
-        diff = diff_timespec (start2, end2);
+        clock_gettime (CLOCK_MONOTONIC, &end);
+        diff = diff_timespec (start, end);
         stats.generation_time = sum_timespec (stats.generation_time, diff);
+        stats_add (&total_stats, &stats);
 
         for (size_t net = 0; net < set->size; ++net)
             pop->individuals[net]->fitness = (float) wins[net];
@@ -248,6 +249,12 @@ int unsupervised (options_t* opts)
         {
             csv_line (&stats, stdout);
         }
+    }
+
+    if (!opts->human_readable)
+    {
+        fprintf (stdout, "# total: ");
+        csv_line (&total_stats, stdout);
     }
 
     free (wins);
