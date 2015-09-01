@@ -1,0 +1,24 @@
+#!/bin/sh
+#SBATCH -N8
+#SBATCH --ntasks-per-node 12
+
+# script for measuring strong scaling
+# call from buil/src/
+# first cli parameter has to be nnet file
+# num procs,last generation,time,games,plays,passes
+
+input_nets="${1}"
+
+for i in $(seq 48 96); do
+    line="$i,$(
+        mpirun -np "$i" ./ngg_game -i "$input_nets" \
+                                   -o /dev/null \
+                                   -s 9 \
+                                   -n 10 \
+                                   --seed 42 \
+        | grep "total" \
+        | cut -d " " -f3
+    )"
+    echo "$line"
+done
+
