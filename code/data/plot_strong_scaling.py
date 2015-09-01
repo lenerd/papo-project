@@ -9,45 +9,47 @@ def plot_time(data, out):
     speedup = data[0, 2] / data[:, 2]
     efficiency = speedup / data[:, 0]
 
-    plt.close()
+    fig = plt.figure()
+    # fig.suptitle("Strong Scaling")
 
     # speedup per process
-    plt.subplot(2, 1, 1)
-    plt.plot(data[:, 0], speedup, 'x')
-    plt.plot(data[:, 0], data[:, 0])
-    plt.title("Speedup")
-    plt.xlabel("# Processes")
-    plt.ylabel("Speedup")
-    plt.legend(["measurements", "ideal speedup"], loc='best')
+    ax_sp = fig.add_subplot(2, 1, 1)
+    ax_sp.plot(data[:, 0], speedup, 'x')
+    ax_sp.plot(data[:, 0], data[:, 0])
+    ax_sp.set_title("Speedup")
+    ax_sp.set_xlabel("# Processes")
+    ax_sp.set_ylabel("Speedup")
+    ax_sp.legend(["measurements", "ideal speedup"], loc='best')
 
     # efficiency per process
-    plt.subplot(2, 1, 2)
-    plt.plot(data[:, 0], efficiency, 'x')
-    plt.title("Efficiency")
-    plt.xlabel("# Processes")
-    plt.ylabel("Efficiency")
-    plt.legend(["measurements"], loc='best')
+    ax_ef = fig.add_subplot(2, 1, 2)
+    ax_ef.plot(data[:, 0], efficiency, 'x')
+    ax_ef.set_title("Efficiency")
+    ax_ef.set_xlabel("# Processes")
+    ax_ef.set_ylabel("Efficiency")
+    ax_ef.legend(["measurements"], loc='best')
 
-    plt.tight_layout()
-    plt.savefig(out, papertype='a4')
+    fig.tight_layout()
+    fig.savefig(out, papertype='a4')
 
 
 def plot_moves(data, out):
     moves = data[0, 4] + data[0, 5]
     moves_per_s = moves / data[:, 2]
 
-    plt.close()
+    fig = plt.figure()
 
     # moves/s
-    plt.plot(data[:, 0], moves_per_s, 'x')
-    plt.plot(data[:, 0], moves_per_s[0] * data[:, 0])
-    plt.title("moves/s")
-    plt.xlabel("# Processes")
-    plt.ylabel("Moves/s")
-    plt.legend(["measurements", "linear"], loc='best')
+    ax_mo = fig.add_subplot(1, 1, 1)
+    ax_mo.plot(data[:, 0], moves_per_s, 'x')
+    ax_mo.plot(data[:60, 0], moves_per_s[0] * data[:60, 0])
+    ax_mo.set_title("Moves/s")
+    ax_mo.set_xlabel("# Processes")
+    ax_mo.set_ylabel("Moves/s")
+    ax_mo.legend(["measurements", "ideal"], loc='best')
 
-    plt.tight_layout()
-    plt.savefig(out, papertype='a4')
+    fig.tight_layout()
+    fig.savefig(out, papertype='a4')
 
 
 def main():
