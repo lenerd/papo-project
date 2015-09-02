@@ -15,12 +15,12 @@
 #include <string.h>
 #include <argp.h>
 
-//#include <inttypes.h>
-//#include <unistd.h>
+#include <inttypes.h>
+#include <unistd.h>
 
 static int parse_opt (int key, char* arg, struct argp_state* state){
 
-	options_t* opts = state->input;
+	hvsai_opts_t* opts = state->input;
     switch (key)
     {
     	case 'i':  // input
@@ -59,12 +59,9 @@ static int parse_opt (int key, char* arg, struct argp_state* state){
 
 }
 
-static void play(neuralnet_t* net){
+static int play(neuralnet_t* net){
 
 	player_t* p1 = player_create_human ();
-    // player_t* p2 = player_create_human ();
-    //size_t neurons[] = {81, 81, 81, 81, 81};
-    size_t neurons[] = {25, 25, 25, 25, 26};
     player_t* p2 = player_create_net (net);
 
     game_t* game = game_create (p1, p2, 5, 10);
@@ -78,55 +75,78 @@ static void play(neuralnet_t* net){
         game_step(game);
         printf("\n");
         board_print (game->board, stdout);
-        printf("\nScore: %" PRId64 "\n", game_score (game));
-        printf("Moves: %" PRId64 "\n", game->move_cnt);
+        printf("\nScore: %" PRId64 "", game_score (game));
+        printf("\nMoves: %" PRId64 "\n", game->move_cnt);
         usleep(200000);
     }
 
-    printf("\nScore: %" PRId64 "\n", game_score (game));
-    printf("Moves: %" PRId64 "\n", game->move_cnt);
+    printf("\nScore: %" PRId64 "", game_score (game));
+    printf("\nMoves: %" PRId64 "\n", game->move_cnt);
 
     game_destroy (game);
-    nnet_destroy (net);
     fclose (file);
     fclose (file2);
+
+    return 0;
 
 }
 
 int main(int argc, char** argv){
 
 	hvsai_opts_t opts;
+	opts.binary = 0;
 
     struct argp_option options[] = {
         {"in", 'i', "FILE", 0, "load neuralnets from file", 0},
         {"binary", 'b', 0, 0, "use binary files", 0},
         {"board-size", 's', "NUM", 0, "size of the used go board", 0},
-        {0, 0, 0, 0, 0, 0}};
+        {0}};
     struct argp argp = {options, &parse_opt, 0, 0, 0, 0, 0};
     argp_parse (&argp, argc, argv, 0, 0, &opts);
 
-    nnet_set_t* nets = nnet_set_from_file (opts->in_path, opts->b_in);
-
     int ret = EXIT_SUCCESS;
-    switch (opts.action)
-    {
-    case calc:
-        ret = calculate (&opts);
-        break;
-    case create:
-        ret = create_networks (&opts);
-        break;
-    case gen_data:
-        ret = generate_training_data (&opts);
-        break;
-    case train:
-        ret = train_networks (&opts);
-        break;
-    default:
-        break;
-    }
-    return ret;
 
-	return EXIT_SUCCESS;
+    if (!opts.set_i)
+    {
+        fprintf (stderr, "error: specify input file with -i\n");
+        ret = EXIT_FAILURE;
+    }
+    if (!opts.set_s)
+    {
+        fprintf (stderr, "error: specify size of board with -s\n");
+        ret = EXIT_FAILURE;
+    }
+    if (ret)
+        return ret;
+
+    printf("%s %d\n", opts.in_path, opts.binary);
+
+    nnet_set_t* nets = nnet_set_from_file (opts.in_path, opts.binary);
+
+    uint32_t i = 0;
+
+    while(true){
+
+    	printf("\nYou are now playing against neural net %u of the current set...", i);
+    	play(nets->nets[i % nets->size]);
+
+    	int8_t answered = -1;
+    	while(answered == -1){
+    		printf("\nDo you want to play against the next neural net? (Y/N)\n");
+	    	char ans = 'N';
+	    	scanf("%c", &ans);
+	    	if(ans == 'N' || ans == 'n')
+	    		answered = 1;
+	    	else if(ans == 'Y' || ans == 'y')
+	    		answered = 0;
+    	}
+    	if (answered == 1)
+    		break;
+    	++i;
+    }
+
+    printf("\nThanks for playing!\n");
+
+	return ret;
 
 }

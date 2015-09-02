@@ -1,6 +1,10 @@
 #ifndef NGG_HVSAI_H
 #define NGG_HVSAI_H
 
+#include <stdbool.h>
+#include <stddef.h>
+//#include <stdint.h>
+
 typedef struct{
 
 	char* in_path;
