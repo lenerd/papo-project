@@ -64,7 +64,7 @@ static int play(neuralnet_t* net){
 	player_t* p1 = player_create_human ();
     player_t* p2 = player_create_net (net);
 
-    game_t* game = game_create (p1, p2, 5, 10);
+    game_t* game = game_create (p1, p2, 5, 100);
     FILE* file = fopen ("record", "w");
     FILE* file2 = fopen ("game.sgf", "w");
     game_add_recorder (game, recorder_ascii_create(game->board, file));
