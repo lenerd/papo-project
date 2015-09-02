@@ -138,11 +138,6 @@ void csv_line (generation_stats_t* stats, FILE* file)
     putchar ('\n');
 }
 
-void print_part (partition_t* part)
-{
-    fprintf (stderr, "x=%zu, y=%zu, len=%zu\n", part->start_x, part->start_y, part->len);
-}
-
 int master (process_info_t* pinfo, nnet_set_t* set)
 {
     size_t games = set->size * set->size;
@@ -179,12 +174,10 @@ int worker (options_t* opts, process_info_t* pinfo, nnet_set_t* set,
             size_t* wins, generation_stats_t* stats)
 {
     partition_t part;
-    create_partition (&part, pinfo, set->size * set->size / 2);
+    create_partition (&part, pinfo, set->size);
 
     do
     {
-        fprintf (stderr, "%d: %p", pinfo->mpi_rank, &part);
-        print_part (&part);
         size_t net_1 = part.start_x;
         size_t net_2 = part.start_y;
         size_t count = 0;
