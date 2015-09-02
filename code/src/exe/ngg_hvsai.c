@@ -80,9 +80,6 @@ static int play(neuralnet_t* net){
         usleep(200000);
     }
 
-    printf("\nScore: %" PRId64 "", game_score (game));
-    printf("\nMoves: %" PRId64 "", game->move_cnt);
-
     game_destroy (game);
     fclose (file);
     fclose (file2);
