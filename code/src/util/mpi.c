@@ -5,13 +5,16 @@
 
 void create_partition (partition_t* part, const process_info_t* pinfo, size_t n)
 {
-    size_t problem_size = n * n;
-    size_t q = problem_size / (size_t) pinfo->mpi_size;
-    size_t r = problem_size % (size_t) pinfo->mpi_size;
-    size_t start = (size_t) pinfo->mpi_rank * q;
-    start += (size_t) pinfo->mpi_rank < r ? (size_t) pinfo->mpi_rank : r;
+    size_t mpi_size = (size_t) pinfo->mpi_size - 1;
+    size_t mpi_rank = (size_t) pinfo->mpi_rank - 1;
+
+    size_t problem_size = n;
+    size_t q = problem_size / mpi_size;
+    size_t r = problem_size % mpi_size;
+    size_t start = mpi_rank * q;
+    start += mpi_rank < r ? mpi_rank : r;
     size_t len = q;
-    len += (size_t) pinfo->mpi_rank < r ? 1 : 0;
+    len += mpi_rank < r ? 1 : 0;
 
     part->start_x = start / n;
     part->start_y = start % n;

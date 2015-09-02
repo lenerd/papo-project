@@ -138,6 +138,101 @@ void csv_line (generation_stats_t* stats, FILE* file)
     putchar ('\n');
 }
 
+void print_part (partition_t* part)
+{
+    fprintf (stderr, "x=%zu, y=%zu, len=%zu\n", part->start_x, part->start_y, part->len);
+}
+
+int master (process_info_t* pinfo, nnet_set_t* set)
+{
+    size_t games = set->size * set->size;
+    size_t start = set->size * set->size / 2;
+    size_t chunk_size = 50;
+    int sent_done = 0;
+    MPI_Status status;
+    partition_t part;
+
+    while (start < games)
+    {
+        part.start_x = start / set->size;
+        part.start_y = start % set->size;
+        part.len = games - start > chunk_size ? chunk_size : games - start;
+        MPI_Recv (NULL, 0, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD,
+                  &status);
+        MPI_Send (&part, 3, MPI_UINT64_T, status.MPI_SOURCE, 0, MPI_COMM_WORLD);
+
+        start += chunk_size;
+    }
+    part.len = 0;
+    while (sent_done < pinfo->mpi_size - 1)
+    {
+        MPI_Recv (NULL, 0, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD,
+                  &status);
+        MPI_Send (&part, 3, MPI_UINT64_T, status.MPI_SOURCE, 0, MPI_COMM_WORLD);
+        ++sent_done;
+    }
+
+    return 0;
+}
+
+int worker (options_t* opts, process_info_t* pinfo, nnet_set_t* set,
+            size_t* wins, generation_stats_t* stats)
+{
+    partition_t part;
+    create_partition (&part, pinfo, set->size * set->size / 2);
+
+    do
+    {
+        fprintf (stderr, "%d: %p", pinfo->mpi_rank, &part);
+        print_part (&part);
+        size_t net_1 = part.start_x;
+        size_t net_2 = part.start_y;
+        size_t count = 0;
+
+        for (; count < part.len; ++net_1)
+        {
+            player_t* p1 = player_create_net (set->nets[net_1]);
+            for (; net_2 < set->size && count < part.len; ++net_2)
+            {
+                ++count;
+
+                if (net_1 == net_2)
+                    continue;
+
+                player_t* p2 = player_create_net (set->nets[net_2]);
+                game_t* game = game_create (p1, p2, opts->board_size, 1024);
+
+                /* play */
+                while (!game->finished)
+                    game_step (game);
+
+                /* update fitness */
+                int64_t score = game_score (game);
+                if (score > 0)
+                    ++wins[net_1];
+                else if (score < 0)
+                    ++wins[net_2];
+
+                /* update generation stats */
+                stats->play_cnt += game->play_cnt;
+                stats->pass_cnt += game->pass_cnt;
+
+                game_destroy (game);
+                player_destroy (p2);
+            }
+            net_2 = 0;
+
+            player_destroy (p1);
+        }
+
+        MPI_Send (NULL, 0, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        MPI_Recv (&part, 3, MPI_UINT64_T, 0, MPI_ANY_TAG, MPI_COMM_WORLD,
+                  MPI_STATUS_IGNORE);
+    } while (part.len != 0);
+
+    return 0;
+}
+
 
 int unsupervised (options_t* opts, int argc, char** argv)
 {
@@ -224,97 +319,10 @@ int unsupervised (options_t* opts, int argc, char** argv)
         if (gen)
             the_next_generation (pop);
 
-#if 1
-        size_t net_1 = part.start_x;
-        size_t net_2 = part.start_y;
-        size_t count = 0;
-
-        for (; count < part.len; net_1 = (net_1 + 1) % set->size)
-        {
-            player_t* p1 = player_create_net (set->nets[net_1]);
-
-            for (; net_2 < set->size && count < part.len; ++net_2)
-            {
-                ++count;
-
-                if (net_1 == net_2)
-                    continue;
-
-                player_t* p2 = player_create_net (set->nets[net_2]);
-                game_t* game = game_create (p1, p2, opts->board_size, 1024);
-
-                /* play */
-                while (!game->finished)
-                    game_step (game);
-
-                /* update fitness */
-                int64_t score = game_score (game);
-                if (score > 0)
-                    ++wins[net_1];
-                else if (score < 0)
-                    ++wins[net_2];
-
-                /* update generation stats */
-                stats.play_cnt += game->play_cnt;
-                stats.pass_cnt += game->pass_cnt;
-
-                game_destroy (game);
-                player_destroy (p2);
-            }
-            net_2 = 0;
-
-            player_destroy (p1);
-        }
-#endif
-#if 0
-        // Create queue
-        game_queue_t* queue = init_queue (set->size * (set->size - 1));
-
-        // Queues all games
-        for (size_t net_1 = 0; net_1 < set->size; ++net_1)
-        {
-            for (size_t net_2 = 0; net_2 < set->size; ++net_2)
-            {
-                if (net_1 == net_2)
-                    continue;
-
-                queued_game_t* element = init_queue_element (net_1, net_2);
-                add_game (queue, element);
-            }
-        }
-
-        // Grab one queue element at a time and play the game
-        while (!queue->empty)
-        {
-            // Sensitive
-            queued_game_t* element = select_next (queue);
-            // Sensitive over
-
-            player_t* player1 = player_create_net (set->nets[element->p1]);
-            player_t* player2 = player_create_net (set->nets[element->p2]);
-
-            game_t* game =
-                game_create (player1, player2, opts->board_size, 1024);
-
-            while (!game->finished)
-                game_step (game);
-
-            /* update fitness */
-            int64_t score = game_score (game);
-            if (score > 0)
-                ++wins[element->p1];
-            else if (score < 0)
-                ++wins[element->p2];
-
-            /* update generation stats */
-            stats.play_cnt += game->play_cnt;
-            stats.pass_cnt += game->pass_cnt;
-
-            game_destroy (game);
-            player_destroy (player1);
-            player_destroy (player2);
-        }
-#endif
+        if (pinfo.mpi_rank == 0)
+            master (&pinfo, set);
+        else
+            worker (opts, &pinfo, set, wins, &stats);
 
         MPI_Allreduce (MPI_IN_PLACE, wins, (int) set->size, MPI_UINT64_T,
                        MPI_SUM, MPI_COMM_WORLD);
