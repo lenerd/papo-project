@@ -55,7 +55,6 @@ void board_print (const board_t* board, FILE* file)
         fputc (' ', file);
         fputc ((int)(x + '0'), file);
         fputc ('\n', file);
-        fputc ('\n', file);
     }
 
     fputc (' ', file);
