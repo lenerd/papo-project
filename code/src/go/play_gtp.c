@@ -2,13 +2,12 @@
 #include "play_gtp.h"
 #include "neuralnet/neuralnet.h"
 #include "board.h"
-#include "game_controller.c"
+#include "game.h"
+#include "player.h"
 
 //State of the game/engine
-float komi_value;
-board_t* board;
-//TODO: Fix initialisation, needs a trained net
-neuralnet_t* net = create_neural_net_random(5, 4, 4, 2);
+static float komi_value;
+static game_t* game;
 
 #define DECLARE(func) static int func(char* s, int id)
 
@@ -42,6 +41,13 @@ static struct gtp_command commands[]=
 	{NULL, NULL}
 };
 
+static int start_game()
+{
+	player_t* p1 = 
+	player_t* p2 =
+	game = game_create(p1, p2, gtp_boardsize, 0)
+}
+
 static int gtp_protocol_version(char* s, int id)
 {
 	gtp_success(id, "1 or 2, not quite sure");
@@ -62,8 +68,16 @@ static int gtp_version(char* s, int id)
 
 static int gtp_known_commands(char* s, int id)
 {	
+	for(int i = 0; commands[i].name != NULL; ++i)
+	{
+		if(strcmp(s, commands[i].name) == 0)	
+			gtp_printf("Yup, I know that.\n");
+	}
+
+	gtp_printf("Sorry, command is unknown. \n");
 	return gtp_succcess();
-}
+
+}	
 
 static int gtp_list_commands(char* s, int id)
 {
@@ -93,13 +107,13 @@ static int gtp_boardsize(char* s, int id)
 		return gtp_failure(id, "size is not acceptable");	
 
 	gtp_internal_set_boardsize(board_size);
-	board = board_create(board_size);
+	game->board = board_create(board_size);
 	return gtp_success(id, " ");
 }
 
 static int gtp_clear_board(char* s, int id)
 {
-	board_t* board = board_create(gtp_boardsize);
+	game->board = board_create(gtp_boardsize);
 	return GTP_OK; 
 }
 
@@ -120,7 +134,7 @@ static int gtp_play(char* s, int id)
 
 	if(strncmp(s, "pass") == 0)
 	{
-		board_pass(board);
+		board_pass(game->board);
 		return gtp_success(id, " ");
 	}	
 
@@ -132,43 +146,41 @@ static int gtp_play(char* s, int id)
 	else
 		color = c_black;
 
-	if(!board_legal_placement(board, x, y, color))
+	if(!board_legal_placement(game->board, x, y, color))
 		return gtp_failure(id, "move is illegal");
 
-	board_place_color(board, x, y, board->turn);
+	board_place_color(game->board, x, y, board->turn);
 	return gtp_success(id, " ");
 }
 
 static int gtp_genmove(char* s, int id)
 {
-	int* output = calculate_output(net, board->grid, UINT8);
+	if(game->board->turn == c_black)
+		player_t* player = game->black;
+	else
+		player_t* player = game->white;
 	
-	int c = 0;
-	while(c < board->size * board->size)
-	{	
-		int max = -500;
-		int max_p = -1;
+	position_t pos;
+	pos = player_move (p, game->board);
+        if (board_legal_placement (game->board, pos.x, pos.y, game->turn))
+        {
+                board_place (game->board, pos.x, pos.y);
+                game->passed = false;
+                ++game->play_cnt;
+		gtp_printid(id, GTP_SUCCESS);
+  		gtp_print_vertex(pos.x, pos.y);
+        }
+        else
+        {
+            board_pass (game->board);
+            ++game->pass_cnt;
+	    gtp_printf("PASS \n");
+            if (game->passed)
+                game->finished = true;
+            game->passed = true;
+        }
 
-		for(int i = 0; i < board->size * board->size; ++i)
-		{
-			if(output[i] > max)
-				max_p = i;			
-		}
-
-		if(!board_legal_placement(board, max_p / board->size, max_p % board->size, board->turn))
-			++c;
-		else
-		{
-			if((max_p / board->size) == 10)
-				board_pass(board);
-			else
-				board_place_color(board, max_p / board->size, max_p % board->size, board->turn);
-
-			return gtp_success(id, " ");
-		}	
-	}
-
-	return gtp_failure(id, "no valid move left");		
+	return gtp_finish_response();
 }
 
 static int gtp_is_legal(char* s, int id)
@@ -184,5 +196,5 @@ static int gtp_is_legal(char* s, int id)
 	else
 		color = c_black;
 
-	return gtp_success(id, "d", board_legal_placement(board, x, y, color));	
+	return gtp_success(id, "d", board_legal_placement(game->board, x, y, color));	
 }
