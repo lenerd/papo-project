@@ -45,6 +45,13 @@ Damit die Netze zumindest die Regeln von vornherein erlernen, gibt es eine Metho
 
 \subsubsection{Go}
 %Welche Komponenten? Wie spielt es zusammen?
+
+Die Implementation des Go Spiels besteht aus mehreren Komponenten. Zunächst sind die Spielregeln und grundlegenden Aktionen im Spiel, wie etwa zu passen oder einen Stein zu legen, in board.h, also dem Go Brett, implementiert. Das Brett ist darin ein eigener Datentyp, der unter anderem den aktuellen Stand des Spieles, etwa welcher Spieler an der Reihe ist oder ob ein Ko vorliegt, und alle existierenden Gruppen von Steinen inklusive deren Freiheiten speichert. Die Gruppen sind deshalb wichtig, weil sie beim Schlagen eines Steins berücksichtigt werden müssen; wären sie nicht gespeichert, müssten sie in jedem Zug in dem Gebiet um den neuen Stein berechnet werden, was relativ zeitaufwändig wäre. Es ist also, vor allem da wir unseren Fokus auf kleinere Netze gelegt haben, sinnvoll die Steingruppen zu speichern. 
+\\
+Während im Brett die meisten Regeln implementiert sind, kann es nicht selbstständig den Spielablauf regeln. Dafür wird game.h benutzt, worin ein Spiel für eine bestimmte Brettgröße und zwei Spieler erstellt wird und Schritt für Schritt gespielt werden kann. Die Spieler sind in player.h definiert und können sowohl Menschen als auch neuronale Netze sein. So muss im eigentlichen Spiel nicht mehr auf die Funktionen des neuronalen Netz zurückgegriffen werden, da die Züge über den erstellten Spieler abgefragt werden. Im Spiel kann außerdem ein Zuglimit gesetzt werden, für den Fall dass etwa eine Endlosschleife auftritt oder die Spiele besonders kurz gehalten werden sollen. 
+\\
+Um die Spiele nachträglich zu analysieren, gibt es die Möglichkeit sie aufzuzeichnen. Dabei können zwei Formate benutzt werden: zum einen ASCII-Art, zum anderen SGF. ASCII-Art kann natürlich ohne zusätzliche Software sofort genutzt werden, um die SGF Dateien sinnvoll zu nutzen wird aber ein geeignetes Programm benötigt. Viele Go Programme etwa sind in der Lage SGF Dateien einzulesen und dann Zug für Zug darzustellen. 
+
 \subsubsection{Der genetische Algorithmus}
 %Wie funktioniert er?
 
@@ -54,7 +61,10 @@ Jedes Netz hat einen bestimmten Fitnesswert, der der Anzahl der gewonnen Spiele 
 
 \subsection{Die Tools}
 %Welche gibt es? Wie setzt man sie ein? Warum macht das so Sinn?
-
+Wie funktioniert nun Nugengo? Es besteht aus zwei Command Line Tools, das erste erlaubt es neuronale Netze zu erstellen, Trainingsdaten für Supervised Learning zu generieren und Netze mit Backpropagation zu trainieren. Es leistet also die Vorbereitungsarbeit für die Netze. Das zweite Tool ist für die Spiele zuständig, es erlaubt sowohl Unsupervised Learning der neuronalen Netze durch den genetischen Algorithmus als auch Spiele von Menschen gegen die Netze. 
+\\
+Im Allgemeinen sieht die vorgesehene Nutzung also so aus: zuerst werden Netze erstellt und mit Trainingsdaten trainiert. Nun hat man eine Grundlage, von der aus man die Netze beliebig oft und lange durch den genetischen Algorithmus trainieren kann. Dazwischen kann durch Spiele gegen den Nutzer eine Art Zwischenstand abgefragt werden. Am Ende kann so auch die Spielstärke des Netzes ermittelt werden und die Netze gespeichert werden. Das Ergebnis ist das eine Datei, von der aus man ein sehr gut trainiertes Netz immer wieder aufrufen kann, etwa um Spiele durchzuführen oder es noch weiter zu verbessern.
+ 
 \subsection{Parallelisierung und Optimierung}
 %Wie wurde paralellisiert? Was wurde schneller? Wo wird am meisten Zeit verbraucht?
 
