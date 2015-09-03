@@ -40,9 +40,9 @@ if (CHECK_FOUND)
     add_test (check_genetic ${CMAKE_CURRENT_BINARY_DIR}/check_genetic)
 
     # mpi util
-    add_executable (check_util_mpi check_util_mpi.c)
-    target_link_libraries (check_util_mpi ${LIBS})
-    add_test (check_util_mpi ${CMAKE_CURRENT_BINARY_DIR}/check_util_mpi)
+    #add_executable (check_util_mpi check_util_mpi.c)
+    #target_link_libraries (check_util_mpi ${LIBS})
+    #add_test (check_util_mpi ${CMAKE_CURRENT_BINARY_DIR}/check_util_mpi)
 
     # feel free to add more tests :)
 

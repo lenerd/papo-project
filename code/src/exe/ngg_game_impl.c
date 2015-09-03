@@ -44,6 +44,10 @@ int unsupervised_check_options (options_t* opts)
         fprintf (stderr, "error: specify size of go board with -s\n");
         ret = EXIT_FAILURE;
     }
+    if (!opts->set_sched_chunksize)
+            opts->sched_chunksize = 1;
+    if (!opts->set_sched_initial)
+            opts->sched_initial = 0;
     return ret;
 }
 
@@ -101,7 +105,8 @@ void human_output (generation_stats_t* stats, FILE* file)
     fputc ('\n', file);
     fprintf (file, "games: %" PRIu64 "\n", stats->game_cnt);
     fprintf (file, "games/s: %f\n",
-             (double) stats->game_cnt / timespec_to_double (stats->generation_time));
+             (double) stats->game_cnt /
+                 timespec_to_double (stats->generation_time));
     fprintf (file, "moves: %" PRIu64 "\n", move_cnt);
     fprintf (file, "moves/s: %f\n",
              (double) move_cnt / timespec_to_double (stats->generation_time));
@@ -110,7 +115,8 @@ void human_output (generation_stats_t* stats, FILE* file)
     fprintf (file, "plays: %" PRIu64 "\n", stats->play_cnt);
     fprintf (file, "passes: %" PRIu64 "\n", stats->pass_cnt);
     fprintf (file, "passes/s: %f\n",
-             (double) stats->pass_cnt / timespec_to_double (stats->generation_time));
+             (double) stats->pass_cnt /
+                 timespec_to_double (stats->generation_time));
     fprintf (file, "passes/game: %f\n",
              (double) stats->pass_cnt / (double) stats->game_cnt);
     fprintf (file, "passes/moves: %f\n",
@@ -138,11 +144,11 @@ void csv_line (generation_stats_t* stats, FILE* file)
     putchar ('\n');
 }
 
-int master (process_info_t* pinfo, nnet_set_t* set)
+int master (options_t* opts, process_info_t* pinfo, nnet_set_t* set)
 {
     size_t games = set->size * set->size;
-    size_t start = set->size * set->size / 2;
-    size_t chunk_size = 50;
+    size_t start = set->size * set->size * opts->sched_initial;
+    size_t chunk_size = opts->sched_chunksize;
     int sent_done = 0;
     MPI_Status status;
     partition_t part;
@@ -174,7 +180,7 @@ int worker (options_t* opts, process_info_t* pinfo, nnet_set_t* set,
             size_t* wins, generation_stats_t* stats)
 {
     partition_t part;
-    create_partition (&part, pinfo, set->size);
+    create_partition (&part, pinfo, set->size, opts->sched_initial);
 
     do
     {
@@ -288,7 +294,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
 
     /* statistic */
     generation_stats_t stats;
-    generation_stats_t total_stats = { 0, 0, 0, 0, {0, 0} };
+    generation_stats_t total_stats = {0, 0, 0, 0, {0, 0}};
     uint64_t game_cnt = set->size * (set->size - 1);
     struct timespec start, end;
     struct timespec diff;
@@ -297,7 +303,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
     if (pinfo.mpi_rank == 0 && !opts->human_readable)
         csv_header (stdout);
 
-    create_partition (&part, &pinfo, set->size);
+    // create_partition (&part, &pinfo, set->size);
     for (size_t gen = 0; gen < opts->n; ++gen)
     {
         /* reset stats */
@@ -313,7 +319,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
             the_next_generation (pop);
 
         if (pinfo.mpi_rank == 0)
-            master (&pinfo, set);
+            master (opts, &pinfo, set);
         else
             worker (opts, &pinfo, set, wins, &stats);
 

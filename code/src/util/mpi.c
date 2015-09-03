@@ -3,12 +3,12 @@
 #include <mpi.h>
 
 
-void create_partition (partition_t* part, const process_info_t* pinfo, size_t n)
+void create_partition (partition_t* part, const process_info_t* pinfo, size_t n, double initial)
 {
     size_t mpi_size = (size_t) pinfo->mpi_size - 1;
     size_t mpi_rank = (size_t) pinfo->mpi_rank - 1;
 
-    size_t problem_size = n * n / 2;
+    size_t problem_size = n * n * initial;
     size_t q = problem_size / mpi_size;
     size_t r = problem_size % mpi_size;
     size_t start = mpi_rank * q;

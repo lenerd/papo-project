@@ -38,6 +38,11 @@ typedef struct
 
     bool verbose;
     bool human_readable;
+
+    bool set_sched_chunksize;
+    bool set_sched_initial;
+    size_t sched_chunksize;
+    double sched_initial;
 } options_t;
 
 

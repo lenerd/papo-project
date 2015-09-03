@@ -23,7 +23,7 @@ typedef struct
 }
 partition_t;
 
-void create_partition (partition_t* part, const process_info_t* pinfo, size_t n);
+void create_partition (partition_t* part, const process_info_t* pinfo, size_t n, double initial);
 
 int broadcast_neuralnet (neuralnet_t** net, int root);
 int broadcast_nnet_set (nnet_set_t** setp, int root);

@@ -78,6 +78,18 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
         opts->seed = (unsigned int) strtoul (arg, NULL, 10);
         opts->set_seed = true;
         break;
+
+    case 400:
+        opts->sched_chunksize = strtoul (arg, NULL, 10);
+        opts->set_sched_chunksize = true;
+        break;
+
+    case 401:
+        opts->sched_initial = strtod (arg, NULL);
+        opts->set_sched_initial = true;
+        if (opts->sched_initial < 0 || opts->sched_initial > 1)
+            argp_error (state, "value in [0,1] required");
+        break;
     }
     return 0;
 }
@@ -106,6 +118,8 @@ int main (int argc, char** argv)
         {"verbose", 'v', 0, 0, "more prints more information", 0},
         {"human-readable", 'h', 0, 0, "human readable output, no csv", 0},
         {"seed", 300, "decimal", 0, "seed for the random number generator", 0},
+        {"sched-chunksize", 400, "int", 0, "", 0},
+        {"sched-initial", 401, "double", 0, "", 0},
         {0, 0, 0, 0, 0, 0}};
     struct argp argp = {options, &parse_opt, 0, 0, 0, 0, 0};
     argp_parse (&argp, argc, argv, 0, 0, &opts);
