@@ -29,7 +29,7 @@ target_link_libraries (${PROJECT_NAME}_lib ${MPI_C_LIBRARIES})
 add_executable (ngg_tool exe/ngg_tool.c exe/ngg_tool_impl.c)
 target_link_libraries (ngg_tool ${PROJECT_NAME}_lib)
 
-add_executable (ngg_game exe/ngg_game.c exe/ngg_game_impl.c)
+add_executable (ngg_game exe/ngg_game.c exe/ngg_game_impl.c exe/ngg_game_helper.c)
 target_link_libraries (ngg_game ${PROJECT_NAME}_lib)
 
 add_executable(learning_success exe/learning_success.c)
