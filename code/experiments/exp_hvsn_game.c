@@ -28,15 +28,14 @@ int main (void)
     while (!game->finished)
     {
         game_step(game);
-        printf("\n");
         board_print (game->board, stdout);
-        printf("\nScore: %" PRId64 "\n", game_score (game));
-        printf("Moves: %" PRId64 "\n", game->move_cnt);
+        printf("\nScore: %" PRId64 "", game_score (game));
+        printf("\nMoves: %" PRId64 "\n", game->move_cnt);
         usleep(200000);
     }
 
-    printf("\nScore: %" PRId64 "\n", game_score (game));
-    printf("Moves: %" PRId64 "\n", game->move_cnt);
+    printf("\nScore: %" PRId64 "", game_score (game));
+    printf("\nMoves: %" PRId64 "\n", game->move_cnt);
 
     game_destroy (game);
     nnet_destroy (net);

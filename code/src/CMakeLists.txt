@@ -32,5 +32,8 @@ target_link_libraries (ngg_tool ${PROJECT_NAME}_lib)
 add_executable (ngg_game exe/ngg_game.c exe/ngg_game_impl.c exe/ngg_game_helper.c)
 target_link_libraries (ngg_game ${PROJECT_NAME}_lib)
 
+add_executable (ngg_hvsai exe/ngg_hvsai.c)
+target_link_libraries (ngg_hvsai ${PROJECT_NAME}_lib)
+
 add_executable(learning_success exe/learning_success.c)
 target_link_libraries (learning_success ${PROJECT_NAME}_lib)

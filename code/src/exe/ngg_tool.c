@@ -162,8 +162,8 @@ int main (int argc, char** argv)
          "learning                                          "
          "calc: calculates output of a neural network given input",
          0},
-        {"in", 'i', "FILE", 0, "load neuralnet from file", 0},
-        {"out", 'o', "FILE", 0, "output neuralnet to file", 0},
+        {"in", 'i', "FILE", 0, "load neuralnet(s) from file", 0},
+        {"out", 'o', "FILE", 0, "output neuralnet(s) to file", 0},
         {"binary", 'b', 0, 0, "use binary files", 0},
         {"binary-in", 200, 0, 0, "use binary input file", 0},
         {"binary-out", 201, 0, 0, "use binary output file", 0},
@@ -174,7 +174,7 @@ int main (int argc, char** argv)
         {"layer", 'l', "NUMS", 0, "number of neurons in each layer\n"
                                   "e.g. \"2 3 3 2\"",
          0},
-        {"verbose", 'v', 0, 0, "more prints more information", 0},
+        {"verbose", 'v', 0, 0, "prints more information", 0},
         {0, 0, 0, 0, 0, 0}};
     struct argp argp = {options, &parse_opt, 0, 0, 0, 0, 0};
     argp_parse (&argp, argc, argv, 0, 0, &opts);
