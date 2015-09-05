@@ -44,10 +44,16 @@ float random_value_mm (float min, float max)
     return min + (max - min) * (float) rand () / (float) RAND_MAX;
 }
 
+float sigmoid(float x){
+    return 0.5f * tanhf(x * 0.5f) + 0.5f;
+}
+
+#if 0
 float sigmoid (float x)
 {
     return 1.0f / (1.0f + expf (-x));
 }
+#endif
 
 float inverse_sigmoid (float y)
 {
