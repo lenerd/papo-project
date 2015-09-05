@@ -4,6 +4,7 @@
 #include "go/player.h"
 #include "genetic/genetic_algorithm.h"
 #include "util/util.h"
+#include "util/misc.h"
 
 #include <stdint.h>
 #include <inttypes.h>
@@ -43,23 +44,6 @@ int unsupervised_check_options (options_t* opts)
     }
     return ret;
 }
-
-int check_board_size (nnet_set_t* set, size_t board_size)
-{
-    for (size_t i = 0; i < set->size; ++i)
-    {
-        if (set->nets[i]->neurons_per_layer[0] != board_size * board_size ||
-            set->nets[i]->neurons_per_layer[set->nets[i]->layer_count - 1] !=
-                board_size * board_size + 1)
-        {
-            fprintf (stderr, "net #%zu has an illegal number of i/o neurons\n",
-                     i);
-            return EXIT_FAILURE;
-        }
-    }
-    return EXIT_SUCCESS;
-}
-
 
 typedef struct
 {
@@ -150,7 +134,7 @@ int unsupervised (options_t* opts)
 
     /* load neural networks */
     nnet_set_t* set = nnet_set_from_file (opts->in_path, opts->b_in);
-    ret = check_board_size (set, opts->board_size);
+    ret = check_board_size (set, opts->board_size, ver1);
     if (ret)
     {
         nnet_set_destroy (set);
