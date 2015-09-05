@@ -88,13 +88,6 @@ int main (int argc, char** argv)
     init_opts (&opts);
 
     struct argp_option options[] = {
-        {"action", 'a', "STRING", 0,
-         "create: creates a new neural network              "
-         "gen-data: generates training data                 "
-         "train: trains a neural network with supervised    "
-         "learning                                          "
-         "calc: calculates output of a neural network given input",
-         0},
         {"in", 'i', "FILE", 0, "load neuralnet from file", 0},
         {"out", 'o', "FILE", 0, "output neuralnet to file", 0},
         {"binary", 'b', 0, 0, "use binary files", 0},

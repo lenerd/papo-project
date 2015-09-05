@@ -134,7 +134,7 @@ int unsupervised (options_t* opts)
 
     /* load neural networks */
     nnet_set_t* set = nnet_set_from_file (opts->in_path, opts->b_in);
-    ret = check_board_size (set, opts->board_size, ver1);
+    ret = check_board_size (set, opts->board_size, opts->ver);
     if (ret)
     {
         nnet_set_destroy (set);
@@ -176,13 +176,13 @@ int unsupervised (options_t* opts)
 
         for (size_t net_1 = 0; net_1 < set->size; ++net_1)
         {
-            player_t* p1 = player_create_net (set->nets[net_1], ver1);
+            player_t* p1 = player_create_net (set->nets[net_1], ver0);
 
             for (size_t net_2 = 0; net_2 < set->size; ++net_2)
             {
                 if (net_1 == net_2)
                     continue;
-                player_t* p2 = player_create_net (set->nets[net_2], ver1);
+                player_t* p2 = player_create_net (set->nets[net_2], ver0);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
 
                 /* play */

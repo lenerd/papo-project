@@ -14,8 +14,8 @@
 
 typedef enum
 {
-    ver1 = 0,
-    ver2,
+    ver0 = 0,
+    ver1,
 } netver_t;
 
 

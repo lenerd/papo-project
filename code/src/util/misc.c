@@ -3,7 +3,7 @@
 
 int check_board_size (nnet_set_t* set, size_t board_size, netver_t ver)
 {
-    if (ver == ver1)
+    if (ver == ver0)
     {
         size_t in_cnt = board_size * board_size;
         size_t out_cnt = board_size * board_size + 1;
@@ -19,7 +19,7 @@ int check_board_size (nnet_set_t* set, size_t board_size, netver_t ver)
             }
         }
     }
-    else if (ver == ver2)
+    else if (ver == ver1)
     {
         size_t in_cnt = 2 * board_size * board_size;
         size_t out_cnt = board_size * board_size + 1;
