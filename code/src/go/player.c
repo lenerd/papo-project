@@ -92,6 +92,20 @@ typedef struct
     netver_t ver;
 } netplayer_context_t;
 
+static size_t get_maximum_and_replace(float* array, size_t size)
+{
+    size_t result = -1;
+    float max = 0.0f;
+    for(size_t i = 0; i < size; ++i){
+        if(array[i] > max){
+            max = array[i];
+            result = i;
+        }
+    }
+    array[i] = 0.0f
+    return i;
+}
+
 static position_t net_move (const player_t* player, const board_t* board)
 {
     assert (player != NULL);
@@ -116,19 +130,24 @@ static position_t net_move (const player_t* player, const board_t* board)
     for (size_t i = 0; i < board->buf_size + 1; ++i)
         idx[i] = i;
 
-    qsort_r (idx, board->buf_size + 1, sizeof (size_t), &cmp, out);
+
+    //qsort_r (idx, board->buf_size + 1, sizeof (size_t), &cmp, out);
 
     position_t pos;
     for (size_t i = board->buf_size; i <= board->buf_size; --i)
     {
-        if (idx[i] == board->buf_size)
+
+        size_t idx = get_maximum_and_replace(out, board->buf_size + 1);
+
+        if (idx == board->buf_size)
         {
             pos.x = board->size;
             pos.y = board->size;
         }
         else
-            pos = board_1d_to_2d (board, idx[i]);
-        if (idx[i] == board->buf_size ||
+            pos = board_1d_to_2d (board, idx);
+
+        if (idx == board->buf_size ||
             board_legal_placement (board, pos.x, pos.y, player->color))
             break;
     }
