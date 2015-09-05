@@ -73,6 +73,7 @@ static float* board_to_nnet (const board_t* board, color_t color, netver_t ver)
     }
 }
 
+#if 0
 static int cmp (const void* a, const void* b, void* context)
 {
     size_t pa = *(size_t*) a;
@@ -85,6 +86,7 @@ static int cmp (const void* a, const void* b, void* context)
     else
         return 0;
 }
+#endif
 
 typedef struct
 {
@@ -94,7 +96,7 @@ typedef struct
 
 static size_t get_maximum_and_replace(float* array, size_t size)
 {
-    size_t result = -1;
+    size_t result = 0;
     float max = 0.0f;
     for(size_t i = 0; i < size; ++i){
         if(array[i] > max){
@@ -102,8 +104,8 @@ static size_t get_maximum_and_replace(float* array, size_t size)
             result = i;
         }
     }
-    array[i] = 0.0f
-    return i;
+    array[result] = 0.0f;
+    return result;
 }
 
 static position_t net_move (const player_t* player, const board_t* board)
