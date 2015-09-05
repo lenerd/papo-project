@@ -62,7 +62,7 @@ static int parse_opt (int key, char* arg, struct argp_state* state){
 static int play(neuralnet_t* net){
 
 	player_t* p1 = player_create_human ();
-    player_t* p2 = player_create_net (net);
+    player_t* p2 = player_create_net (net, ver1);
 
     game_t* game = game_create (p1, p2, 5, 100);
     FILE* file = fopen ("record", "w");

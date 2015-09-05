@@ -64,7 +64,7 @@ int worker (options_t* opts, process_info_t* pinfo, nnet_set_t* set,
 
         for (; count < part.len; ++net_1)
         {
-            player_t* p1 = player_create_net (set->nets[net_1]);
+            player_t* p1 = player_create_net (set->nets[net_1], ver1);
             for (; net_2 < set->size && count < part.len; ++net_2)
             {
                 ++count;
@@ -72,7 +72,7 @@ int worker (options_t* opts, process_info_t* pinfo, nnet_set_t* set,
                 if (net_1 == net_2)
                     continue;
 
-                player_t* p2 = player_create_net (set->nets[net_2]);
+                player_t* p2 = player_create_net (set->nets[net_2], ver1);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
 
                 /* play */
@@ -209,6 +209,9 @@ int unsupervised (options_t* opts, int argc, char** argv)
                        MPI_SUM, MPI_COMM_WORLD);
         for (size_t net = 0; net < set->size; ++net)
             pop->individuals[net]->fitness = (float) wins[net];
+
+        // Make it so!
+        the_next_generation (pop);
 
         // Make it so!
         the_next_generation (pop);

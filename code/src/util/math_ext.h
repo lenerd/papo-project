@@ -16,31 +16,6 @@
 
 
 /**
- * \brief Flag, whether the random number generator has been seeded yet.
- */
-bool seed_set;
-
-/**
- * \brief Sets the seed for the random number generator.
- * \param seed Seed to be used.
- * \post seed_set == true
- */
-void set_seed (unsigned int seed);
-/**
- * \brief Seeds the random number generator with the system time.
- * timestamp.
- * \post seed_set == true
- */
-void set_seed_time (void);
-
-/**
- * \brief Seeds the random number generator with the system time, if not already
- * done.
- * \post seed_set == true
- */
-void set_seed_ifn ();
-
-/**
  * \brief Returns a random float between 0 and 1.
  * \return Random value.
  * \post 0 <= return <= 1

@@ -103,6 +103,7 @@ void td_destroy (training_data_t* data);
  * \return training data
  */
 training_data_t* td_generate_nxn_nxnp1 (size_t n);
+training_data_t* td_generate_2nxn_nxnp1 (size_t n);
 
 #if 0
 /**

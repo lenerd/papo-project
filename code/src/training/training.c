@@ -215,7 +215,6 @@ training_data_t* td_generate_nxn_nxnp1 (size_t n)
     training_data_t* data = td_create (n * n, n * n + 1);
     board_t* board = board_create (n);
 
-    // TODO: seeding ?
     uint64_t max_tries = (uint64_t) random () % 256;
     size_t x, y;
 
@@ -242,6 +241,50 @@ training_data_t* td_generate_nxn_nxnp1 (size_t n)
         case ps_empty:
         default:
             data->input[i] = 0.0f;
+            data->expected[i] = 1.0f;
+            break;
+        }
+    }
+    data->expected[n * n] = 1.0f;
+
+    board_destroy (board);
+    return data;
+}
+
+training_data_t* td_generate_2nxn_nxnp1 (size_t n)
+{
+    training_data_t* data = td_create (2 * n * n, n * n + 1);
+    board_t* board = board_create (n);
+
+    uint64_t max_tries = (uint64_t) random () % 256;
+    size_t x, y;
+
+    for (uint64_t i = 0; i < max_tries; ++i)
+    {
+        x = (size_t)(random ()) % n;
+        y = (size_t)(random ()) % n;
+        if (board_legal_placement (board, x, y, board->turn))
+            board_place (board, x, y);
+    }
+
+    for (size_t i = 0, i_end = n * n; i < i_end; ++i)
+    {
+        switch (board->buffer[i])
+        {
+        case ps_black:
+            data->input[2*i] = 1.0f;
+            data->input[2*i+1] = 0.0f;
+            data->expected[i] = 0.0f;
+            break;
+        case ps_white:
+            data->input[2*i] = 0.0f;
+            data->input[2*i+1] = 1.0f;
+            data->expected[i] = 0.0f;
+            break;
+        case ps_empty:
+        default:
+            data->input[2*i] = 0.0f;
+            data->input[2*i+1] = 0.0f;
             data->expected[i] = 1.0f;
             break;
         }
