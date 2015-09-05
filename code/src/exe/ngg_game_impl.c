@@ -190,11 +190,6 @@ int unsupervised (options_t* opts)
         /* start generation time */
         clock_gettime (CLOCK_MONOTONIC, &start);
 
-        if (gen)
-        {
-            the_next_generation (pop);
-        }
-
         for (size_t net_1 = 0; net_1 < set->size; ++net_1)
         {
             player_t* p1 = player_create_net (set->nets[net_1]);
@@ -227,6 +222,9 @@ int unsupervised (options_t* opts)
 
             player_destroy (p1);
         }
+
+        // Make it so!
+        the_next_generation (pop);
 
         /* end generation time */
         clock_gettime (CLOCK_MONOTONIC, &end);
