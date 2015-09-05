@@ -6,12 +6,28 @@
 #include "util/util.h"
 #include "util/misc.h"
 
+#include <assert.h>
+#include <inttypes.h>
+#include <signal.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+nnet_set_t* networks;
+char* output_path;
+
+void signal_handler (int sig)
+{
+    if (sig == SIGUSR1)
+    {
+        fprintf (stderr, "received SIGUSR1: start saving networks\n");
+        nnet_set_to_file (networks, output_path, false);
+        fprintf (stderr, "received SIGUSR1: done saving networks\n");
+    }
+}
 
 
 void init_opts (options_t* opts)
