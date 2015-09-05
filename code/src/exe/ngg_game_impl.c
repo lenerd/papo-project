@@ -198,10 +198,6 @@ int unsupervised (options_t* opts, int argc, char** argv)
         clock_gettime (CLOCK_MONOTONIC, &start);
         memset (wins, 0x00, set->size * sizeof (uint64_t));
 
-        // TODO: move to bottom
-        if (gen)
-            the_next_generation (pop);
-
         /* do the work */
         if (pinfo.mpi_rank == 0)
             master (opts, &pinfo, set);
@@ -213,6 +209,9 @@ int unsupervised (options_t* opts, int argc, char** argv)
                        MPI_SUM, MPI_COMM_WORLD);
         for (size_t net = 0; net < set->size; ++net)
             pop->individuals[net]->fitness = (float) wins[net];
+
+        // Make it so!
+        the_next_generation (pop);
 
         /* end generation time */
         clock_gettime (CLOCK_MONOTONIC, &end);
