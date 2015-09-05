@@ -10,11 +10,25 @@
 #include <assert.h>
 #include <inttypes.h>
 #include <mpi.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+nnet_set_t* networks;
+char* output_path;
+
+void signal_handler (int sig)
+{
+    if (sig == SIGUSR1)
+    {
+        fprintf (stderr, "received SIGUSR1: start saving networks\n");
+        nnet_set_to_file (networks, output_path, false);
+        fprintf (stderr, "received SIGUSR1: done saving networks\n");
+    }
+}
 
 
 int master (options_t* opts, process_info_t* pinfo, nnet_set_t* set)
@@ -185,6 +199,26 @@ int unsupervised (options_t* opts, int argc, char** argv)
     /* csv header */
     if (pinfo.mpi_rank == 0 && !opts->human_readable)
         csv_header (stdout);
+
+    /* register signal handling for timelimit */
+    if (pinfo.mpi_rank == 0)
+    {
+        networks = set;
+        output_path = opts->out_path;
+        if (signal (SIGUSR1, &signal_handler) == SIG_ERR)
+        {
+            fprintf (stderr, "setting signal handler failed\n");
+            return EXIT_FAILURE;
+        }
+    }
+    else
+    {
+        if (signal (SIGUSR1, SIG_IGN) == SIG_ERR)
+        {
+            fprintf (stderr, "setting signal handler failed\n");
+            return EXIT_FAILURE;
+        }
+    }
 
     /* main loop */
     for (size_t gen = 0; gen < opts->n; ++gen)
