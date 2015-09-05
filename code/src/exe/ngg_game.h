@@ -8,6 +8,7 @@
  */
 
 #include "neuralnet/neuralnet.h"
+#include "go/player.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -26,6 +27,8 @@ typedef struct
     bool b_out;
 
     size_t board_size;
+
+    netver_t ver;
 
     size_t n;
 
@@ -81,16 +84,6 @@ void init_opts (options_t* opts);
  * \pre opts != NULL
  */
 int unsupervised_check_options (options_t* opts);
-
-/**
- * \brief Checks whether the networks in a set have the right layout.
- * \param set Set of neural networks.
- * \param board_size Size of the board to play with.
- * \return 0 if everything is ok, else != 0.
- * \pre set != NULL
- * \pre board_size > 1
- */
-int check_board_size (nnet_set_t* set, size_t board_size);
 
 /**
  * \brief Does unsupervised learning on a set of neural networks.
