@@ -192,13 +192,13 @@ int unsupervised (options_t* opts)
 
         for (size_t net_1 = 0; net_1 < set->size; ++net_1)
         {
-            player_t* p1 = player_create_net (set->nets[net_1]);
+            player_t* p1 = player_create_net (set->nets[net_1], ver1);
 
             for (size_t net_2 = 0; net_2 < set->size; ++net_2)
             {
                 if (net_1 == net_2)
                     continue;
-                player_t* p2 = player_create_net (set->nets[net_2]);
+                player_t* p2 = player_create_net (set->nets[net_2], ver1);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
 
                 /* play */
