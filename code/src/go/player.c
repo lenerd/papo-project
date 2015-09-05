@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 
-static float* board_to_nnet (const board_t* board, color_t color)
+static float* board_to_nnet_v1 (const board_t* board, color_t color)
 {
     assert (board != NULL);
 
@@ -34,6 +34,45 @@ static float* board_to_nnet (const board_t* board, color_t color)
     return in;
 }
 
+static float* board_to_nnet_v2 (const board_t* board, color_t color)
+{
+    assert (board != NULL);
+
+    float* in = SAFE_CALLOC (2 * board->buf_size, sizeof (float));
+
+    pos_state_t friend = (pos_state_t) color;
+    pos_state_t enemy = friend == ps_black ? ps_white : ps_black;
+
+    for (size_t i = 0; i < 2 * board->buf_size; ++i)
+    {
+        if (board->buffer[i] == friend)
+        {
+            in[i] = 1.0f;
+            ++i;
+        }
+        else if (board->buffer[i] == enemy)
+        {
+            ++i;
+            in[i] = 1.0f;
+        }
+    }
+
+    return in;
+}
+
+static float* board_to_nnet (const board_t* board, color_t color, netver_t ver)
+{
+    switch (ver)
+    {
+        case ver2:
+            return board_to_nnet_v2 (board, color);
+        case ver1:
+        default:
+            return board_to_nnet_v1 (board, color);
+
+    }
+}
+
 static int cmp (const void* a, const void* b, void* context)
 {
     size_t pa = *(size_t*) a;
@@ -47,18 +86,30 @@ static int cmp (const void* a, const void* b, void* context)
         return 0;
 }
 
+typedef struct
+{
+    const neuralnet_t* net;
+    netver_t ver;
+} netplayer_context_t;
+
 static position_t net_move (const player_t* player, const board_t* board)
 {
     assert (player != NULL);
     assert (board != NULL);
 
-    neuralnet_t* net = (neuralnet_t*) player->move_context;
+    const netplayer_context_t* ctx = player->move_context;
 
-    assert (net->neurons_per_layer[0] == board->buf_size);
+    const neuralnet_t* net = ctx->net;
+    netver_t ver = ctx->ver;
+
+    if (ver == ver1)
+        assert (net->neurons_per_layer[0] == board->buf_size);
+    else if (ver == ver2)
+        assert (net->neurons_per_layer[0] == 2 * board->buf_size);
     assert (net->neurons_per_layer[net->layer_count - 1] ==
             board->buf_size + 1);
 
-    float* in = board_to_nnet (board, player->color);
+    float* in = board_to_nnet (board, player->color, ver);
     float* out = nnet_calculate_output (net, in);
     size_t* idx = SAFE_MALLOC ((board->buf_size + 1) * sizeof (size_t));
 
@@ -149,33 +200,46 @@ static position_t human_move (const player_t* player, const board_t* board)
 }
 
 
-player_t* player_create (move_func move, const void* context)
+player_t* player_create (move_func move, void* context, player_destruct destructor)
 {
     player_t* p = SAFE_MALLOC (sizeof (player_t));
 
     p->color = c_black;
     p->move = move;
     p->move_context = context;
+    p->destructor = destructor;
 
     return p;
 }
 
-player_t* player_create_net (const neuralnet_t* net)
+void player_destroy_net (player_t* player)
+{
+    free (player->move_context);
+}
+
+player_t* player_create_net (const neuralnet_t* net, netver_t ver)
 {
     assert (net != NULL);
 
-    return player_create (&net_move, net);
+    netplayer_context_t* ctx = SAFE_MALLOC (sizeof(netplayer_context_t));
+    ctx->net = net;
+    ctx->ver = ver;
+
+    return player_create (&net_move, ctx, player_destroy_net);
 }
 
 
 player_t* player_create_human (void)
 {
-    return player_create (&human_move, NULL);
+    return player_create (&human_move, NULL, NULL);
 }
 
 void player_destroy (player_t* player)
 {
     assert (player != NULL);
+
+    if (player->destructor != NULL)
+        player->destructor(player);
 
     free (player);
 }

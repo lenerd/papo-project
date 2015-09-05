@@ -17,7 +17,7 @@ int main (void)
     //size_t neurons[] = {81, 81, 81, 81, 81};
     size_t neurons[] = {25, 25, 25, 25, 26};
     neuralnet_t* net = nnet_create_random(5, neurons);
-    player_t* p2 = player_create_net (net);
+    player_t* p2 = player_create_net (net, ver1);
 
     game_t* game = game_create (p1, p2, 5, 10);
     FILE* file = fopen ("record", "w");

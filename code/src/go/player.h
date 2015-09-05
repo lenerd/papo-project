@@ -12,6 +12,13 @@
 #include "neuralnet/neuralnet.h"
 
 
+typedef enum
+{
+    ver1,
+    ver2,
+} netver_t;
+
+
 /**
  * \brief Represents a player in a game.
  */
@@ -25,6 +32,8 @@ typedef struct player player_t;
  */
 typedef position_t (*move_func)(const player_t* player, const board_t* board);
 
+typedef void (*player_destruct)(player_t* player);
+
 /**
  * \brief Represents a player in a game.
  */
@@ -35,7 +44,9 @@ struct player
     /** \brief Function pointer for the decision making. */
     move_func move;
     /** \brief Can provide some extra context for above function. */
-    const void* move_context;
+    void* move_context;
+    
+    player_destruct destructor;
 };
 
 
@@ -45,7 +56,7 @@ struct player
  * \return player instance
  * \pre net != NULL
  */
-player_t* player_create_net (const neuralnet_t* net);
+player_t* player_create_net (const neuralnet_t* net, netver_t ver);
 
 /**
  * \brief Creates a player controlled via stdin.

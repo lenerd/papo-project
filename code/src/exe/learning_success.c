@@ -108,11 +108,11 @@ int main()
 	{
 		for(size_t j = 0; j < nets_per_party; ++j)
 		{
-			player_t* player1 = player_create_net(trained_nets->nets[j]);
+			player_t* player1 = player_create_net(trained_nets->nets[j], ver1);
 
 			for(size_t k = j; k < nets_per_party; ++k)
 			{
-				player_t* player2 = player_create_net(trained_nets->nets[k]);	
+				player_t* player2 = player_create_net(trained_nets->nets[k], ver1);	
 			
 				game_t* game = game_create(player1, player2, board_size, 5000);
 			
@@ -137,11 +137,11 @@ int main()
 	//Play and count victories
 	for(size_t j = 0; j < nets_per_party; ++j)
 	{
-		player_t* trained = player_create_net(trained_nets->nets[j]);
+		player_t* trained = player_create_net(trained_nets->nets[j], ver1);
 
 		for(size_t k = 0; k < nets_per_party; ++k)
 		{
-			player_t* untrained = player_create_net(untrained_nets->nets[k]);
+			player_t* untrained = player_create_net(untrained_nets->nets[k], ver1);
 			
 			game_t* game = game_create(trained, untrained, board_size, 5000);
 			while(!game->finished)
