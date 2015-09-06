@@ -18,7 +18,10 @@
 % \usetikzlibrary{positioning}
 % \usetikzlibrary{shapes}
 
+\usepackage{ulem}
+\usepackage{cancel}
 \usepackage{multicol}
+
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
@@ -34,6 +37,10 @@
 \algrenewtext{EndParDo}{\algorithmicendparfor}
 \algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen}
 \algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
+
+\newcommand\pro{\item[\boldmath$+$\unboldmath]}
+\newcommand\con{\item[\boldmath$-$\unboldmath]}
+\newcommand\unknown{\item[\boldmath$?\,$\unboldmath]}
 
 %%%Einige Einstellungen
 \mode<presentation>
