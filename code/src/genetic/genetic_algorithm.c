@@ -92,6 +92,69 @@ void mutate_genome (genome_t* genome, float mutation_chance)
 //
 // }
 
+static void top4 (population_t* pop, size_t* top_i)
+{
+    float top_v[4] = {-1.0f, -1.0f, -1.0f, -1.0f};
+
+    for (size_t i = 0; i < pop->size; ++i)
+    {
+        float f = pop->individuals[i]->fitness;
+        if (f <= top_v[3])
+            continue;
+
+        if (f <= top_v[1])
+        {
+            if (f <= top_v[2])
+            {
+                top_v[3] = f;
+                top_i[3] = i;
+            }
+            else
+            {
+                top_v[3] = top_v[2];
+                top_i[3] = top_i[2];
+                top_v[2] = f;
+                top_i[2] = i;
+            }
+        }
+        else
+        {
+            top_v[3] = top_v[2];
+            top_i[3] = top_i[2];
+            top_v[2] = top_v[1];
+            top_i[2] = top_i[1];
+            if (f <= top_v[0])
+            {
+                top_v[1] = f;
+                top_i[1] = i;
+            }
+            else
+            {
+                top_v[1] = top_v[0];
+                top_i[1] = top_i[0];
+                top_v[0] = f;
+                top_i[0] = i;
+            }
+        }
+    }
+}
+
+genome_t* select_individual_new (population_t* pop, float total_fitness)
+{
+
+
+    float r = random_value_01 () *
+              (total_fitness + (float) pop->size * pop->base_fitness);
+    float f = 0.0f;
+    for (size_t i = 0; i < pop->size; ++i)
+    {
+        f += pop->individuals[i]->fitness + pop->base_fitness;
+        if (f > r)
+            return pop->individuals[i];
+    }
+    return pop->individuals[pop->size - 1];
+}
+
 genome_t* select_individual (population_t* pop, float total_fitness)
 {
     float r = random_value_01 () *
@@ -122,10 +185,18 @@ void the_next_generation (population_t* pop)
     new_genes = SAFE_CALLOC (pop->size, sizeof (float*));
 
     float total = total_fitness (pop);
+    size_t top_i[4];
+    top4(pop, top_i);
 
-    for (size_t i = 0; i < pop->size; ++i)
+    size_t buf_len = pop->individuals[0]->genes_count * sizeof(float);
+
+    for (size_t i = 0; i < 4; ++i)
     {
-        size_t buf_len = pop->individuals[i]->genes_count * sizeof (float);
+        new_genes[i] = SAFE_MALLOC (buf_len);
+        memcpy (new_genes[i], pop->individuals[top_i[i]]->genes, buf_len);
+    }
+    for (size_t i = 4; i < pop->size; ++i)
+    {
         new_genes[i] = SAFE_MALLOC (buf_len);
         memcpy (new_genes[i], *(select_individual (pop, total)->genes), buf_len);
     }
