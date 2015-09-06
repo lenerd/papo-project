@@ -147,7 +147,7 @@ int unsupervised (options_t* opts)
         genomes[i] =
             genome_create (set->nets[i]->edge_count, &set->nets[i]->edge_buf,
                            &update_neuralnet, set->nets[i]);
-    population_t* pop = population_create (set->size, genomes, 1.0f, 0.01f);
+    population_t* pop = population_create (set->size, genomes, 1.0f, 0.005f);
 
     /* fitness values */
     uint64_t* wins = SAFE_MALLOC (set->size * sizeof (uint64_t));
