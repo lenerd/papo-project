@@ -142,8 +142,12 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
         }
         break;
 
-    case 'v':  // verbose
-        opts->verbose = true;
+    case 'v':  // netver
+        {
+            unsigned long ver = strtoul (arg, NULL, 10);
+            if (ver < 2)
+                opts->ver = ver;
+        }
     }
     return 0;
 }
@@ -174,7 +178,7 @@ int main (int argc, char** argv)
         {"layer", 'l', "NUMS", 0, "number of neurons in each layer\n"
                                   "e.g. \"2 3 3 2\"",
          0},
-        {"verbose", 'v', 0, 0, "prints more information", 0},
+        {"netver", 'v', "0", 0, "nnet player version", 0},
         {0, 0, 0, 0, 0, 0}};
     struct argp argp = {options, &parse_opt, 0, 0, 0, 0, 0};
     argp_parse (&argp, argc, argv, 0, 0, &opts);

@@ -1,29 +1,21 @@
 #ifndef NGG_GAME_H
 #define NGG_GAME_H
 
+#include "go/player.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-enum action
-{
-    none,
-    calc,
-    create,
-    gen_data,
-    train,
-};
-
 typedef struct
 {
-    // enum action action;
-
     char* in_path;
     char* out_path;
     bool b_in;
     bool b_out;
 
     size_t board_size;
+
+    netver_t ver;
 
     size_t n;
 

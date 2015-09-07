@@ -4,6 +4,7 @@
 #include "go/player.h"
 #include "genetic/genetic_algorithm.h"
 #include "util/util.h"
+#include "util/misc.h"
 
 #include <stdint.h>
 #include <inttypes.h>
@@ -43,23 +44,6 @@ int unsupervised_check_options (options_t* opts)
     }
     return ret;
 }
-
-int check_board_size (nnet_set_t* set, size_t board_size)
-{
-    for (size_t i = 0; i < set->size; ++i)
-    {
-        if (set->nets[i]->neurons_per_layer[0] != board_size * board_size ||
-            set->nets[i]->neurons_per_layer[set->nets[i]->layer_count - 1] !=
-                board_size * board_size + 1)
-        {
-            fprintf (stderr, "net #%zu has an illegal number of i/o neurons\n",
-                     i);
-            return EXIT_FAILURE;
-        }
-    }
-    return EXIT_SUCCESS;
-}
-
 
 typedef struct
 {
@@ -150,7 +134,7 @@ int unsupervised (options_t* opts)
 
     /* load neural networks */
     nnet_set_t* set = nnet_set_from_file (opts->in_path, opts->b_in);
-    ret = check_board_size (set, opts->board_size);
+    ret = check_board_size (set, opts->board_size, opts->ver);
     if (ret)
     {
         nnet_set_destroy (set);
@@ -163,7 +147,7 @@ int unsupervised (options_t* opts)
         genomes[i] =
             genome_create (set->nets[i]->edge_count, &set->nets[i]->edge_buf,
                            &update_neuralnet, set->nets[i]);
-    population_t* pop = population_create (set->size, genomes, 1.0f, 0.01f);
+    population_t* pop = population_create (set->size, genomes, 1.0f, 0.005f);
 
     /* fitness values */
     uint64_t* wins = SAFE_MALLOC (set->size * sizeof (uint64_t));
@@ -192,13 +176,13 @@ int unsupervised (options_t* opts)
 
         for (size_t net_1 = 0; net_1 < set->size; ++net_1)
         {
-            player_t* p1 = player_create_net (set->nets[net_1], ver1);
+            player_t* p1 = player_create_net (set->nets[net_1], ver0);
 
             for (size_t net_2 = 0; net_2 < set->size; ++net_2)
             {
                 if (net_1 == net_2)
                     continue;
-                player_t* p2 = player_create_net (set->nets[net_2], ver1);
+                player_t* p2 = player_create_net (set->nets[net_2], ver0);
                 game_t* game = game_create (p1, p2, opts->board_size, 1024);
 
                 /* play */

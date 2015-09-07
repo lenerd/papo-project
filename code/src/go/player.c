@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 
-static float* board_to_nnet_v1 (const board_t* board, color_t color)
+static float* board_to_nnet_v0 (const board_t* board, color_t color)
 {
     assert (board != NULL);
 
@@ -34,7 +34,7 @@ static float* board_to_nnet_v1 (const board_t* board, color_t color)
     return in;
 }
 
-static float* board_to_nnet_v2 (const board_t* board, color_t color)
+static float* board_to_nnet_v1 (const board_t* board, color_t color)
 {
     assert (board != NULL);
 
@@ -64,11 +64,11 @@ static float* board_to_nnet (const board_t* board, color_t color, netver_t ver)
 {
     switch (ver)
     {
-        case ver2:
-            return board_to_nnet_v2 (board, color);
         case ver1:
-        default:
             return board_to_nnet_v1 (board, color);
+        case ver0:
+        default:
+            return board_to_nnet_v0 (board, color);
 
     }
 }
@@ -118,9 +118,9 @@ static position_t net_move (const player_t* player, const board_t* board)
     const neuralnet_t* net = ctx->net;
     netver_t ver = ctx->ver;
 
-    if (ver == ver1)
+    if (ver == ver0)
         assert (net->neurons_per_layer[0] == board->buf_size);
-    else if (ver == ver2)
+    else if (ver == ver1)
         assert (net->neurons_per_layer[0] == 2 * board->buf_size);
     assert (net->neurons_per_layer[net->layer_count - 1] ==
             board->buf_size + 1);

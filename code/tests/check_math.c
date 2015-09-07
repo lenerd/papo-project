@@ -9,9 +9,6 @@ const unsigned int seed = 0xDEADBEEF;
 START_TEST (test_random)
 {
     float val;
-    ck_assert (seed_set == false);
-    set_seed (seed);
-    ck_assert (seed_set == true);
     for (int i = 0; i < 10; ++i)
     {
         val = random_value_01 ();

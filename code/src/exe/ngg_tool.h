@@ -1,6 +1,7 @@
 #ifndef NGG_TOOL_H
 #define NGG_TOOL_H
 
+#include "go/player.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -28,6 +29,7 @@ typedef struct
     size_t* number_neurons;
 
     size_t board_size;
+    netver_t ver;
 
     size_t n;
 
