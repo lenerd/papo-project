@@ -135,27 +135,21 @@ static position_t net_move (const player_t* player, const board_t* board)
 
     //qsort_r (idx, board->buf_size + 1, sizeof (size_t), &cmp, out);
 
-    for (size_t i = 0; i < board->buf_size + 1; ++i){
-        idx[i] = get_maximum_and_replace(out, board->buf_size + 1);
-        printf("%u, ", idx[i]);
-    }
-    printf("\n");
-
     position_t pos;
     for (size_t i = board->buf_size; i <= board->buf_size; --i)
     {
 
-        //size_t idx = get_maximum_and_replace(out, board->buf_size + 1);
+        size_t idx = get_maximum_and_replace(out, board->buf_size + 1);
 
-        if (idx[i] == board->buf_size)
+        if (idx == board->buf_size)
         {
             pos.x = board->size;
             pos.y = board->size;
         }
         else
-            pos = board_1d_to_2d (board, idx[i]);
+            pos = board_1d_to_2d (board, idx);
 
-        if (idx[i] == board->buf_size ||
+        if (idx == board->buf_size ||
             board_legal_placement (board, pos.x, pos.y, player->color))
             break;
     }
