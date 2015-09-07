@@ -156,7 +156,7 @@ static position_t net_move (const player_t* player, const board_t* board)
 
     free (in);
     free (out);
-    free (idx);
+    //free (idx);
 
     return pos;
 }
