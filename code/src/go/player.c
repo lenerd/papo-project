@@ -97,14 +97,14 @@ typedef struct
 static size_t get_maximum_and_replace(float* array, size_t size)
 {
     size_t result = 0;
-    float max = 0.0f;
+    float max = -1000.0f;
     for(size_t i = 0; i < size; ++i){
         if(array[i] > max){
             max = array[i];
             result = i;
         }
     }
-    array[result] = 0.0f;
+    array[result] = -1000.0f;
     return result;
 }
 
@@ -134,19 +134,18 @@ static position_t net_move (const player_t* player, const board_t* board)
     //    idx[i] = i;
 
     //qsort_r (idx, board->buf_size + 1, sizeof (size_t), &cmp, out);
-#if 0
+
     for (size_t i = 0; i < board->buf_size + 1; ++i){
         idx[i] = get_maximum_and_replace(out, board->buf_size + 1);
         printf("%u, ", idx[i]);
     }
     printf("\n");
-#endif
-    
+
     position_t pos;
     for (size_t i = board->buf_size; i <= board->buf_size; --i)
     {
 
-        //size_t idx[i] = get_maximum_and_replace(out, board->buf_size + 1);
+        //size_t idx = get_maximum_and_replace(out, board->buf_size + 1);
 
         if (idx[i] == board->buf_size)
         {
