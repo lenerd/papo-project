@@ -163,7 +163,17 @@ int unsupervised (options_t* opts)
     if (!opts->human_readable)
         csv_header (stdout);
 
-    for (size_t gen = 0; gen < opts->n; ++gen)
+    /* register signal handling for timelimit */
+    networks = set;
+    output_path = opts->out_path;
+    if (signal (SIGUSR1, &signal_handler) == SIG_ERR)
+    {
+        fprintf (stderr, "setting signal handler failed\n");
+        return EXIT_FAILURE;
+    }
+
+    /* main loop */
+    for (size_t gen = 0; gen < opts->n || opts->n == 0; ++gen)
     {
         /* reset stats */
         memset (wins, 0x00, set->size * sizeof (uint64_t));
