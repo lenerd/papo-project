@@ -27,12 +27,12 @@ static int ascii_recorder (recorder_t* rec, position_t pos, bool passed, bool en
         if (passed)
         {
             fprintf (rec->file, "%s: passed\n",
-                     board->turn == c_black ? "black" : "white");
+                     board->turn == c_white ? "black" : "white");
         }
         else
         {
             fprintf (rec->file, "%s: %zu-%zu:\n",
-                     board->turn == c_black ? "black" : "white", pos.x, pos.y);
+                     board->turn == c_white ? "black" : "white", pos.x, pos.y);
             board_print (board, rec->file);
         }
 
@@ -57,7 +57,7 @@ static int sgf_recorder (recorder_t* rec, position_t pos, bool passed, bool end)
         if (passed)
             fprintf (rec->file, ";%s[]", board->turn == c_black ? "B" : "W");
         else
-            fprintf (rec->file, "; %s[%c%c]", board->turn == c_black ? "B" : "W",
+            fprintf (rec->file, ";%s[%c%c]", board->turn == c_black ? "B" : "W",
                      'a' + (int) pos.y, 'a' + (int) pos.x);
     }
 

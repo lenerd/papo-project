@@ -59,12 +59,12 @@ static int parse_opt (int key, char* arg, struct argp_state* state){
 
 }
 
-static int play(neuralnet_t* net){
+static int play(neuralnet_t* net, size_t board_size){
 
 	player_t* p1 = player_create_human ();
-    player_t* p2 = player_create_net (net, ver1);
+    player_t* p2 = player_create_net (net, ver0);
 
-    game_t* game = game_create (p1, p2, 5, 100);
+    game_t* game = game_create (p1, p2, board_size, 100);
     FILE* file = fopen ("record", "w");
     FILE* file2 = fopen ("game.sgf", "w");
     game_add_recorder (game, recorder_ascii_create(game->board, file));
@@ -125,7 +125,7 @@ int main(int argc, char** argv){
     while(true){
 
     	printf("\nYou are now playing against neural net %u of the current set...", i);
-    	play(nets->nets[i % nets->size]);
+    	play(nets->nets[i % nets->size], opts.board_size);
 
     	int8_t answered = -1;
     	while(answered == -1){
