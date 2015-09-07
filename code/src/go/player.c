@@ -73,7 +73,6 @@ static float* board_to_nnet (const board_t* board, color_t color, netver_t ver)
     }
 }
 
-#if 0
 static int cmp (const void* a, const void* b, void* context)
 {
     size_t pa = *(size_t*) a;
@@ -86,7 +85,6 @@ static int cmp (const void* a, const void* b, void* context)
     else
         return 0;
 }
-#endif
 
 typedef struct
 {
