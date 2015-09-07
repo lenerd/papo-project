@@ -221,7 +221,7 @@ int unsupervised (options_t* opts, int argc, char** argv)
     }
 
     /* main loop */
-    for (size_t gen = 0; gen < opts->n; ++gen)
+    for (size_t gen = 0; gen < opts->n || opts->n == 0; ++gen)
     {
         /* reset stats */
         memset (&stats, 0x00, sizeof (generation_stats_t));
