@@ -193,7 +193,7 @@ void the_next_generation (population_t* pop)
     for (size_t i = 0; i < 4; ++i)
     {
         new_genes[i] = SAFE_MALLOC (buf_len);
-        memcpy (new_genes[i], pop->individuals[top_i[i]]->genes, buf_len);
+        memcpy (new_genes[i], *(pop->individuals[top_i[i]]->genes), buf_len);
     }
     for (size_t i = 4; i < pop->size; ++i)
     {
