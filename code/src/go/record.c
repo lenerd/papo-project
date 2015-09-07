@@ -57,7 +57,7 @@ static int sgf_recorder (recorder_t* rec, position_t pos, bool passed, bool end)
         if (passed)
             fprintf (rec->file, ";%s[]", board->turn == c_black ? "B" : "W");
         else
-            fprintf (rec->file, "; %s[%c%c]", board->turn == c_black ? "B" : "W",
+            fprintf (rec->file, ";%s[%c%c]", board->turn == c_black ? "B" : "W",
                      'a' + (int) pos.y, 'a' + (int) pos.x);
     }
 
