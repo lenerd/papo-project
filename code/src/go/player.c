@@ -134,13 +134,14 @@ static position_t net_move (const player_t* player, const board_t* board)
     //    idx[i] = i;
 
     //qsort_r (idx, board->buf_size + 1, sizeof (size_t), &cmp, out);
-
+#if 0
     for (size_t i = 0; i < board->buf_size + 1; ++i){
         idx[i] = get_maximum_and_replace(out, board->buf_size + 1);
         printf("%u, ", idx[i]);
     }
     printf("\n");
-
+#endif
+    
     position_t pos;
     for (size_t i = board->buf_size; i <= board->buf_size; --i)
     {
