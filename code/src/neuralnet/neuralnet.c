@@ -466,8 +466,7 @@ float* nnet_calculate_output (const neuralnet_t* net, const float* input)
     }
     free (current_result_2);
 
-    return desigmoidize_inplace (current_result_1,
-                                 net->neurons_per_layer[net->layer_count - 1]);
+    return current_result_1;
 }
 
 void nnet_print (const neuralnet_t* net)

@@ -147,6 +147,7 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
             unsigned long ver = strtoul (arg, NULL, 10);
             if (ver < 2)
                 opts->ver = ver;
+            break;
         }
     }
     return 0;

@@ -92,6 +92,20 @@ typedef struct
     netver_t ver;
 } netplayer_context_t;
 
+static size_t get_maximum_and_replace(float* array, size_t size)
+{
+    size_t result = 0;
+    float max = -1000.0f;
+    for(size_t i = 0; i < size; ++i){
+        if(array[i] > max){
+            max = array[i];
+            result = i;
+        }
+    }
+    array[result] = -1000.0f;
+    return result;
+}
+
 static position_t net_move (const player_t* player, const board_t* board)
 {
     assert (player != NULL);
@@ -111,6 +125,7 @@ static position_t net_move (const player_t* player, const board_t* board)
 
     float* in = board_to_nnet (board, player->color, ver);
     float* out = nnet_calculate_output (net, in);
+
     size_t* idx = SAFE_MALLOC ((board->buf_size + 1) * sizeof (size_t));
 
     for (size_t i = 0; i < board->buf_size + 1; ++i)
@@ -128,6 +143,7 @@ static position_t net_move (const player_t* player, const board_t* board)
         }
         else
             pos = board_1d_to_2d (board, idx[i]);
+
         if (idx[i] == board->buf_size ||
             board_legal_placement (board, pos.x, pos.y, player->color))
             break;
