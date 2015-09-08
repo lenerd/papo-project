@@ -1,64 +1,119 @@
 #!/usr/bin/env python3
 
 import sys
-import os
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.interpolate import spline
 
 
-def load_data(filename):
-    if os.path.exists(filename + '.csmooth'):
-        return np.loadtxt(filename + '.csmooth', delimiter=',')
-    data = np.loadtxt(filename, delimiter=',')
-    data_smooth = smooth_data(data)
-    np.savetxt(filename + '.csmooth', data_smooth, delimiter=',')
-    return data_smooth
+def smooth_(x, window_len=10, window='hanning'):
+    """smooth the data using a window with requested size.
+
+    from: http://scipy.org/Cookbook/SignalSmooth
+
+    This method is based on the convolution of a scaled window with the signal.
+    The signal is prepared by introducing reflected copies of the signal
+    (with the window size) in both ends so that transient parts are minimized
+    in the begining and end part of the output signal.
+
+    input:
+        x: the input signal
+        window_len: the dimension of the smoothing window
+        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            flat window will produce a moving average smoothing.
+
+    output:
+        the smoothed signal
+
+    example:
+
+    import numpy as np
+    t = np.linspace(-2,2,0.1)
+    x = np.sin(t)+np.random.randn(len(t))*0.1
+    y = smooth(x)
+
+    see also:
+
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
+    scipy.signal.lfilter
+
+    TODO: the window parameter could be the window itself if an array instead of a string
+    """
+
+    if x.ndim != 1:
+        raise ValueError("smooth only accepts 1 dimension arrays.")
+
+    if x.size < window_len:
+        raise ValueError("Input vector needs to be bigger than window size.")
+
+    if window_len < 3:
+        return x
+
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+        raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
+
+    s=np.r_[2*x[0]-x[window_len:1:-1], x, 2*x[-1]-x[-1:-window_len:-1]]
+    #print(len(s))
+
+    if window == 'flat': #moving average
+        w = np.ones(window_len,'d')
+    else:
+        w = getattr(np, window)(window_len)
+    y = np.convolve(w/w.sum(), s, mode='same')
+    return y[window_len-1:-window_len+1]
 
 
-def smooth_data(data):
-    xnew = np.linspace(0, 999, 250)
-    return spline(range(1000), data, xnew)
+def plot(inp, outp):
+    # 0: generation
+    # 1: time
+    # 2: games
+    # 3: plays
+    # 4: passes
+    data = np.loadtxt(inp, delimiter=',')
+    generations = data[:, 0]
+    time = data[:, 1]
+    games = 992
+    plays = data[:, 3]
+    passes = data[:, 4]
+    moves = plays + passes
+    fig = plt.figure()
+    ax1 = fig.add_subplot(2, 1, 1)
+    ax1.set_xlim([0, data[0, -1]])
+    ax1.plot(generations, moves / games, label='moves')
+    ax1.plot(generations, plays / games, label='plays')
+    ax1.plot(generations, passes / games, label='passes')
+    ax2 = fig.add_subplot(2, 1, 2)
+    ax2.set_xlim([0, data[0, -1]])
+    ax2.plot(generations, passes / moves, label='passes / moves')
+    ax2.legend(loc='best')
+    fig.savefig(outp)
 
+
+def smooth(inp, outp):
+    data = np.loadtxt(inp, delimiter=',')
+    smoothed = np.empty_like(data)
+    smoothed[:, 0] = smooth_(data[:, 0], window_len=10000)
+    smoothed[:, 1] = smooth_(data[:, 1], window_len=10000)
+    smoothed[:, 2] = smooth_(data[:, 2], window_len=10000)
+    smoothed[:, 3] = smooth_(data[:, 3], window_len=10000)
+    smoothed[:, 4] = smooth_(data[:, 4], window_len=10000)
+    np.savetxt(outp, smoothed, delimiter=',')
+
+
+def usage():
+    print("usage: plot.py [plot|smooth] input output")
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("csv file as argument", file=sys.stderr)
+    if len(sys.argv) < 4:
+        usage()
         sys.exit(1)
 
-    # 0: generation
-    # 1: time
-    # 2: plays
-    # 3: passes
-    data = load_data(sys.argv[1])
-    #csd = np.cumsum(data, axis=0)
-
-    #xnew = np.linspace(0, 999, 250)
-    #data_smooth = spline(range(1000), data, xnew)
-    data_smooth = data
-
-    x_smooth = data_smooth[:,0]
-    plays_per_game = data_smooth[:,2] / 240
-    passes_per_game = data_smooth[:,3] / 240
-    passes_per_move = data_smooth[:,3] / (data_smooth[:,2] + data_smooth[:,3])
-    moves_per_second = (data_smooth[:,2] + data_smooth[:,3]) / data_smooth[:,1]
-
-    plt.subplot(2, 1, 1)
-    # plt.stackplot(data[:,0], data[:,3], data[:,2], colors=('red', 'yellow'))
-    # plt.stackplot(data[:,0], csd[:,3], csd[:,2], colors=('red', 'yellow'))
-    plt.stackplot(x_smooth, passes_per_game, plays_per_game, colors=('red', 'yellow'))
-    # plt.set_ylabel('count')
-    plt.twinx()
-    plt.plot(x_smooth, passes_per_move)
-    # plt.set_ylabel('% pass')
-    plt.xlim((0, 1000))
-
-    plt.subplot(2, 1, 2)
-    # y = 240 * data[:,0] / csd[:,1]
-    plt.plot(moves_per_second)
-
-    plt.show()
+    if sys.argv[1] == 'plot':
+        plot(*sys.argv[2:4])
+    elif sys.argv[1] == 'smooth':
+        smooth(*sys.argv[2:4])
+    else:
+        usage()
 
 
 if __name__ == '__main__':
