@@ -186,7 +186,7 @@
                 \Require initial, chunksize, number of games
                 \State $start, chunksize \gets \Call{partition}{n \cdot initial}$
                 \While {$chunksize \neq 0$}
-                    \For {$g \in [start, start + length)$}
+                    \For {$g \in [start, start + chunksize)$}
                         \State rechne Game $\#g$
                         \State zähle die Siege ($wins$)
                     \EndFor
