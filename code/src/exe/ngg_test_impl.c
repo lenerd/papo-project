@@ -46,10 +46,8 @@ int test (options_t* opts)
 
     /* load neural networks */
     nnet_set_t* set1 = nnet_set_from_file (opts->in_path1, opts->b_in);
-    size_t neurons[] = {81, 82, 82, 82, 82};
-    nnet_set_t* set2 = nnet_set_create (32);
-    for (size_t i = 0; i < 32; ++i)
-        set2->nets[i] = nnet_create_random(5, neurons);
+    nnet_set_t* set2 = nnet_set_from_file (opts->in_path2, opts->b_in);
+
     ret = check_board_size (set1, opts->board_size, opts->ver1);
     ret = ret || check_board_size (set2, opts->board_size, opts->ver1);
     if (ret)
