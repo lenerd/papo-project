@@ -133,7 +133,6 @@ int train_networks (options_t* opts)
     nnet_set_t* nets = nnet_set_from_file (opts->in_path, opts->b_in);
     dataset_t* data = dataset_from_file (opts->training_data_path);
 
-    #pragma omp parallel for
     for (size_t i = 0; i < nets->size; ++i)
     {
         if (opts->verbose)
