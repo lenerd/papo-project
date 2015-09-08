@@ -56,68 +56,42 @@ def plot_moves(data, out):
 
 def main():
     data = list()
-    data.append({
+    static = {
         'label': 'static',
         'color': 'blue',
         'data': np.loadtxt('strong_scaling.csv', delimiter=','),
-    })
-    plot_time(data, 'strong_scaling_time_static.pdf')
-    data.append({
-        'label': '1-0.5',
-        'color': 'red',
-        'data': np.loadtxt('strong_scaling_dynsched-1-05.csv', delimiter=','),
-    })
-    data.append({
-        'label': '5-0.5',
-        'color': 'orange',
-        'data': np.loadtxt('strong_scaling_dynsched-5-05.csv', delimiter=','),
-    })
-    data.append({
+    }
+    d10_05 = {
         'label': '10-0.5',
         'color': 'green',
         'data': np.loadtxt('strong_scaling_dynsched-10-05.csv', delimiter=','),
-    })
-    # data.append(('2-0.25', np.loadtxt('strong_scaling_dynsched-2-025.csv',
-    #                                  delimiter=',')))
-
-    data2 = list()
-    data2.append({
-        'label': 'static',
-        'color': 'blue',
-        'data': np.loadtxt('strong_scaling.csv', delimiter=','),
-    })
-    data2.append({
+    }
+    d5_05 = {
+        'label': '5-0.5',
+        'color': 'red',
+        'data': np.loadtxt('strong_scaling_dynsched-5-05.csv', delimiter=','),
+    }
+    d1_05 = {
+        'label': '1-0.50',
+        'color': 'purple',
+        'data': np.loadtxt('strong_scaling_dynsched-1-05.csv', delimiter=','),
+    }
+    d1_025 = {
         'label': '1-0.25',
         'color': 'red',
         'data': np.loadtxt('strong_scaling_dynsched-1-025.csv', delimiter=','),
-    })
-    plot_time(data2, 'strong_scaling_time_final.pdf')
-    data2.append({
-        'label': '1-0.50',
-        'color': 'orange',
-        'data': np.loadtxt('strong_scaling_dynsched-1-05.csv', delimiter=','),
-    })
-    data2.append({
+    }
+    d1_075 = {
         'label': '1-0.75',
         'color': 'green',
         'data': np.loadtxt('strong_scaling_dynsched-1-075.csv', delimiter=','),
-    })
-    # data2.append(('1-0.00', np.loadtxt('strong_scaling_dynsched-1-00.csv',
-    #                                    delimiter=','), 'grey'))
-    # data2.append(('1-0.375',
-    #               np.loadtxt('strong_scaling_dynsched-1-0375.csv', delimiter=',')))
-    # data2.append(('1-0.125',
-    #               np.loadtxt('strong_scaling_dynsched-1-0125.csv', delimiter=',')))
-    # data2.append(('1-0.33',
-    #               np.loadtxt('strong_scaling_dynsched-1-033.csv', delimiter=',')))
+    }
 
-    plot_time(data, 'strong_scaling_time_chunksize.pdf')
-    plot_time(data2, 'strong_scaling_time_initial.pdf')
-    # plot_moves(data, 'strong_scaling_moves.pdf')
-    # plot_time(data2, 'strong_scaling_time_dynsched-10-05.pdf', '10-0.5')
-    # plot_moves(data2, 'strong_scaling_moves_dynsched-10-05.pdf')
-    # plot_time(data3, 'strong_scaling_time_dynsched-5-05.pdf', '5-0.5')
-    # plot_moves(data3, 'strong_scaling_moves_dynsched-5-05.pdf')
+    plot_time([static], 'strong_scaling_time_static.pdf')
+    plot_time([static, d10_05], 'strong_scaling_time_first.pdf')
+    plot_time([static, d10_05, d5_05, d1_05], 'strong_scaling_time_chunksize.pdf')
+    plot_time([static, d1_05], 'strong_scaling_time_second.pdf')
+    plot_time([static, d1_025, d1_05, d1_075], 'strong_scaling_time_initial.pdf')
 
 
 if __name__ == '__main__':

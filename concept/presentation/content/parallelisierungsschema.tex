@@ -19,7 +19,7 @@
 %----------------------------------------------------------------------%SLIDE -
 
 %----------------------------------------------------------------------%SLIDE -
-\begin{frame}
+\begin{frame}[t]
     \frametitle{Parallelisierung der Spielphase}
 
     \begin{columns}[t]
@@ -52,6 +52,7 @@
             \item Master sendet $N_{i+1}$ an alle.
             \item Gleichmäßige Verteilung der inneren Schleifen (Zeilen 3,4).
         \end{itemize}
+        \pause
         Probleme:
         \begin{itemize}
             \item $\approx \SI{100}{\kibi\byte}$ pro Netzwerk
@@ -62,7 +63,7 @@
 %----------------------------------------------------------------------%SLIDE -
 
 %----------------------------------------------------------------------%SLIDE -
-\begin{frame}
+\begin{frame}[t]
     \frametitle{Parallelisierung der Spielphase}
 
     \begin{columns}[t]
@@ -140,7 +141,7 @@
         \item[$\Rightarrow$] Lastungleichheit zwischen den Prozessen
     \end{itemize}
 
-    %\pause
+    \pause
     \hfill
 
     Lösung: Dynamisches Scheduling
@@ -180,6 +181,7 @@
 
         \column{0.5\textwidth}
         \vspace{-0.7cm}
+        \pause
         \begin{algorithm}[H]
             \caption{Worker}
             \begin{algorithmic}[1]
@@ -202,10 +204,23 @@
 %----------------------------------------------------------------------%SLIDE -
 \begin{frame}
     \frametitle{Stronger Scaling}
-    \framesubtitle{Chunksize}
+    \framesubtitle{Dynamic Scheduling}
 
     \begin{figure}
         \centering
+        \includegraphics[width=\textwidth]{content/img/strong_scaling_time_first}
+        %\caption{}
+    \end{figure}
+
+\end{frame}
+%----------------------------------------------------------------------%SLIDE -
+
+%----------------------------------------------------------------------%SLIDE -
+\begin{frame}
+    \frametitle{Stronger Scaling}
+    \framesubtitle{Chunksize}
+
+    \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{content/img/strong_scaling_time_chunksize}
         %\caption{}
@@ -221,9 +236,20 @@
 
     \begin{figure}
         \centering
+        \includegraphics[width=\textwidth]{content/img/strong_scaling_time_second}
+    \end{figure}
+
+\end{frame}
+%----------------------------------------------------------------------%SLIDE -
+
+%----------------------------------------------------------------------%SLIDE -
+\begin{frame}
+    \frametitle{Stronger Scaling}
+    \framesubtitle{Initial}
+
+    \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{content/img/strong_scaling_time_initial}
-        %\caption{}
     \end{figure}
 
 \end{frame}
@@ -236,9 +262,7 @@
 
     \begin{figure}
         \centering
-        \centering
         \includegraphics[width=\textwidth]{content/img/strong_scaling_time_final}
-        %\caption{}
     \end{figure}
 
 \end{frame}
@@ -283,6 +307,7 @@
         \end{algorithm}
         \column{0.4\textwidth}
         \vspace{-0.5cm}
+        \pause
         \begin{itemize}
             \item Ist langsam.
             \item Je mehr Prozesse desto langsamer.
