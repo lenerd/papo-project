@@ -5,17 +5,16 @@
     \frametitle{Problemstellung}
     \begin{itemize}
         \item
-            Unser Ziel ist es, neuronale Netzwerke zu trainieren, so dass diese
+            Unser Ziel ist es, neuronale Netzwerke zu trainieren, sodass diese
             uns im Go schlagen können.
 
         \item Zwischenziel / Alternative:
-            Können wir neuronale Netze so trainieren, so dass sie besser als
+            Können wir neuronale Netze so trainieren, sodass sie besser als
             zufällig erzeugte Netze spielen?
     \end{itemize}
 
     \hfill \\
     \hfill \\
-    TODO: Ziele besser verkaufen
 \end{frame}
 %----------------------------------------------------------------------%SLIDE -
 
@@ -46,7 +45,9 @@
     \begin{itemize}
         \item Besteht aus mehreren Schichten (layer)
         \item Layer bestehen aus Neuronen
-        \item Neuronen benachbarter layer sind alle untereinander verbunden
+        \item Neuronen benachbarter layer sind alle durch Kanten untereinander verbunden
+        \item Neuronen berechnen ihre Werte durch Aufsummieren aller eingehenden Kantengewichte multipliziert mit den Werten an den ausgehenden Neuronen
+        \item Sigmoid funktion wird auf das Ergebnis angewandt, sodass alle Werte zwischen 0 und 1 sind.
     \end{itemize}
     \begin{figure}
         TODO: Graphik (möglichst unter CC / selbst erstellt)
