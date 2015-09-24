@@ -175,7 +175,7 @@ backpropagate(input, target)</panel_attributes>
     <panel_attributes>Recorder
 --
 -file: FILE
--game: Game
+-board: Board
 --
 write_move (x, y, color)</panel_attributes>
     <additional_attributes/>

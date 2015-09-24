@@ -95,7 +95,7 @@
         \end{itemize}
         Probleme:
         \begin{itemize}
-            \item \sout{$\approx \SI{27}{\kibi\byte}$ pro Netzwerk}
+            \item \sout{$\approx \SI{100}{\kibi\byte}$ pro Netzwerk}
             \item \sout{viele kollektive Operationen}
             \item ?
         \end{itemize}
@@ -295,8 +295,8 @@
                 \Ensure out
                 \For {each $gap$}
                     \State \Call{init}{out}
-                    \ParDo {$from \gets 0$ to $neurons\_per\_layer[gap]$}
-                        \For {$to \gets 0$ to $neurons\_per\_layer[gap+1]$}
+                    \ParDo {$to \gets 0$ to $neurons\_per\_layer[gap+1]$}
+                        \For {$from \gets 0$ to $neurons\_per\_layer[gap]$}
                         \State $out[to] \gets out[to] +{}$
                         \State $\qquad\qquad\;\; in[from] * edges[gap][from][to]$
                         \EndFor
@@ -310,7 +310,7 @@
         \pause
         \begin{itemize}
             \item Ist langsam.
-            \item Je mehr Prozesse desto langsamer.
+            \item Je mehr Threads desto langsamer.
             \item Vermutlich zu hoher Overhead durch Fork/Join bei wenig Iterationen.
         \end{itemize}
     \end{columns}
