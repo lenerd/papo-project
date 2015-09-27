@@ -59,15 +59,54 @@ Spiel zwischen zwei bestimmten Netzen dauernd wird.
 Gelöst wurde das oben beschriebene Problem der Lastungleichheit durch eine
 dynamische Verteilung der Spiele auf die Prozesse.  Ein Masterprozess übernimmt
 die Aufgabenverteilung, während die restlichen Workerprozesse, die Berechnungen
-durchführen.  Zunächst wird ein Anteil aller Spiele gleichmäßig auf alle
-Workerprozesse verteilt.  Anschließend verteilt der Masterprozess die
-restlichen Spiele in Paketen an diejenigen Worker, die mit ihrer bisherigen
-Arbeit fertig sind.  Dieser Ansatz wurde mit zwei Parametern untersucht. Zum
+durchführen.  Zunächst wird ein Teil aller Spiele gleichmäßig auf alle
+Workerprozesse verteilt. Ist ein Worker mit seinem Anteil fertig, schickt er
+eine Anfrage an den Master. Falls noch Spiele zu berechnen sind, antwortet
+dieser mit einem Auftrag zu bearbeitender Spiele, andernfalls wird mit einem
+leeren Auftrag geantwortet.  Der Worker bearbeitet den Auftrag oder wartet
+darauf, dass die anderen ebenfalls fertig werden.  Siehe Algorithmen
+\ref{alg:master} und \ref{alg:worker}.
+
+Dieser Ansatz wurde mit zwei Parametern untersucht. Zum
 einen wurde der Anteil der initial verteilten Spiele (\emph{initial}) variiert,
 zum anderen die Paketgröße (\emph{chunksize}). In der Legende der Diagramme
 werden diese Konfigurationen in der Form $c-i$ dargestellt, wobei $i \in
 \mathbb{N} \setminus \{0\}$ die Paketgröße und $i \in [0, 1]$ den Anteil
 statisch verteilter Spiele angibt.
+
+\begin{algorithm}
+    \caption{Master}
+    \label{alg:master}
+    \begin{algorithmic}[1]
+        \Require $initial, chunksize, n$ (number of games)
+        \State $start \gets n \cdot initial$
+        \While {$start < n$}
+            \State $msg, worker \gets $\Call{Recv}{$anyone$}
+            \State \Call{Send}{$worker, (start, \min(chunksize, n - start))$}
+            \State $start \gets start + chunksize$
+        \EndWhile
+        \For {each process $p$}
+            \State $msg, worker \gets $\Call{Recv}{$anyone$}
+            \State \Call{Send}{$worker, (0, 0,$ "finished")}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+\begin{algorithm}
+    \caption{Worker}
+    \label{alg:worker}
+    \begin{algorithmic}[1]
+        \Require $initial, chunksize, n$ (number of games)
+        \State $start, chunksize \gets \Call{partition}{n \cdot initial}$
+        \While {$chunksize \neq 0$}
+            \For {$g \in [start, start + chunksize)$}
+                \State calculate game $\#g$
+                \State count the ($wins$)
+            \EndFor
+            \State \Call{Send}{$master$, "request work"}
+            \State $start, chunksize \gets $\Call{Recv}{$master$}
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
 
 \subsubsection{Paketgröße}
 Da die Anzahl an Anfragen mit sinkender Paketgröße steigt, wurde vermutet, dass
