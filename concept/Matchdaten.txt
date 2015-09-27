@@ -81,3 +81,16 @@ sum 07: 1851
 sum 08: 3071
 sum 09: 2663
 sum 10: 1451
+
+
+Versus untrained nets:
+01 vs un: 315 : 183
+02 vs un: 292 : 185
+03 vs un: 384 : 108
+04 vs un: 271 : 213
+05 vs un: 390 : 119
+06 vs un: 388 : 110
+07 vs un: 281 : 170
+08 vs un: 326 : 137
+09 vs un: 374 : 134
+10 vs un: 214 : 242
