@@ -31,7 +31,7 @@ static int parse_opt (int key, char* arg, struct argp_state* state)
         }
         break;
 
-    case 'j':  // input 1
+    case 'j':  // input 2
         if (strlen (arg) > 0)
         {
             opts->in_path2 = arg;
