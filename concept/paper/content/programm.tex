@@ -89,34 +89,35 @@ Generation voran gebracht werden, wird zunächst ausgewählt, welche Individuen 
 die nächste Generation übernommen werden. Sie werden zufällig ausgesucht,
 allerdings ist die Wahrscheinlichkeit ein Netz zu wählen proportional zu seinem
 Fitnesswert. Ist ein Netz also besonders fit, wird es wahrscheinlicher in der
-nächsten Generation auftauchen. Danach werden die Netze mutiert, ebenfalls
-zufällig. Es gibt eine bestimmte Mutationswahrscheinlichkeit, mit deren Hilfe
-überprüft wird, ob ein bestimmtes Kantengewicht mutiert, also um einen
+nächsten Generation auftauchen. Um keine guten Netze durch "Pech" bei der 
+zufälligen Selektion zu verlieren, werden zusätzlich (in unserem Fall 4) Plätze 
+in der nächsten Generation reserviert, die mit den unabgeänderten besten Netzen 
+der letzten Generation gefüllt werden. Danach werden die Netze mutiert, 
+ebenfalls zufällig. Es gibt eine bestimmte Mutationswahrscheinlichkeit, mit 
+deren Hilfeüberprüft wird, ob ein bestimmtes Kantengewicht mutiert, also um einen
 zufälligen Wert verändert werden soll, oder nicht. Für jedes Element des Genoms
 wird eine Zufallszahl zwischen 0 und 1 erzeugt, ist sie kleiner als die
-Mutationswahrscheinlichkeit, dann wird mutiert. Ist dieser Schritt
-abgeschlossen, ist die Population eine Generation fortgeschritten. Jetzt muss
-für jedes Netz wieder die Fitness durch Spiele gegen andere aktualisiert werden
-und der Algorithmus fängt wieder von vorne an.
+Mutationswahrscheinlichkeit, dann wird mutiert. Ist dieser Schritt abgeschlossen, 
+ist die Population eine Generation fortgeschritten. Jetzt muss für jedes Netz 
+wieder die Fitness durch Spiele gegen andere aktualisiert werden und der 
+Algorithmus fängt wieder von vorne an.
 
 \subsection{Die Tools}
 %Welche gibt es? Wie setzt man sie ein? Warum macht das so Sinn?
-Wie funktioniert nun Nugengo? Es besteht aus zwei Command Line Tools, das erste
-erlaubt es neuronale Netze zu erstellen, Trainingsdaten für Supervised Learning
-zu generieren und Netze mit Backpropagation zu trainieren. Es leistet also die
-Vorbereitungsarbeit für die Netze. Das zweite Tool ist für die Spiele zuständig,
-es erlaubt sowohl Unsupervised Learning der neuronalen Netze durch den
-genetischen Algorithmus als auch Spiele von Menschen gegen die Netze. 
-
+Wie funktioniert nun Nugengo? Es besteht aus mehreren Command Line Tools, die
+folgende Funktionen abdecken:
+\begin{itemize}
+\item Erstellung und Regeltraining (backpropagation) von Netzen
+\item Training von Netzen (genetischer Algorithmus)
+\item Auswertung von Netzen gegeneinander
+\item Ausführung von Mensch-gegen-Netz-Spielen
+\end{itemize}
 Im Allgemeinen sieht die vorgesehene Nutzung also so aus: zuerst werden Netze
 erstellt und mit Trainingsdaten trainiert. Nun hat man eine Grundlage, von der
 aus man die Netze beliebig oft und lange durch den genetischen Algorithmus
-trainieren kann. Dazwischen kann durch Spiele gegen den Nutzer eine Art
-Zwischenstand abgefragt werden. Am Ende kann so auch die Spielstärke des Netzes
-ermittelt werden und die Netze gespeichert werden. Das Ergebnis ist das eine
-Datei, von der aus man ein sehr gut trainiertes Netz immer wieder aufrufen kann,
-etwa um Spiele durchzuführen oder es noch weiter zu verbessern.
- 
-\subsection{Parallelisierung und Optimierung}
-%Wie wurde paralellisiert? Was wurde schneller? Wo wird am meisten Zeit
-%verbraucht?
+trainieren kann. Dazwischen kann durch Spiele gegen den Nutzer oder andere, 
+eventuell schon trainierte Netze, eine Art Zwischenstand abgefragt werden. Am Ende 
+kann so auch die Spielstärke des Netzes ermittelt werden und die Netze gespeichert 
+werden. Das Ergebnis ist das eine Datei, von der aus man ein sehr gut trainiertes 
+Netz immer wieder aufrufen kann, etwa um Spiele durchzuführen oder es noch weiter 
+zu verbessern.
