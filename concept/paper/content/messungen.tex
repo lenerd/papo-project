@@ -1,0 +1,45 @@
+\section{Messungen}
+
+Die Messung der Rechenzeit erfolgt innerhalb des Programms in der Main Loop.
+Dadurch wird ausschließlich die Zeit erfasst, in der an dem Ergebnis der
+Berechnung gearbeitet wird.  Die Sammlung der aufgezeichneten Statistiken
+(z.~B. die Anzahl der Züge) durch kollektive MPI-Operationen zählt damit nicht
+zur Rechenzeit.
+
+Für die Bestimmung der Güte der erreichten Parallelisierung wurde das Strong
+Scaling untersucht, d.~h. ein Problem mit gleichbleibender Größe wird mit
+unterschiedlichen Anzahlen an Prozessen berechnet. Anschließend wurde der
+Speedup $S_p$ und die Effizienz  $E_p$ wie folgt berechnet, wobei $p$ die
+Anzahl der Prozesse und $t_p$ die mit benötigte Laufzeit ist. $t_{seq}$
+entspricht der Laufzeit des sequentiellen Programms.
+\begin{equation*}
+    S_p = \frac{t_{seq}}{t_p} \qquad\qquad E_p = \frac{S_p}{p}
+\end{equation*}
+
+Die Laufzeit ist stark abhängig von zufällig generierten Werten: Zum einen
+werden die neuronalen Netzwerke zufällig generiert, zum anderen werden diese im
+Verlauf des Trainings zufällig mutiert.  Um vergleichbare Messergebnisse zu
+erhalten, wurden Vorkehrungen getroffen.  In jeder Messung wird das Programm
+mit den gleichen Netzwerken als Eingabe aufgerufen, zudem wird der
+Zufallszahlengenerator auf einen bestimmten Wert initialisiert. So kann bei
+einer gleichbleibenden Anzahl an Iterationen sichergestellt werden, dass bei
+mehreren Aufrufen jeweils die gleiche Menge an Berechnungen durchgeführt wird.
+Listing \ref{lst:batch_ss} zeigt ein entsprechendes Batchskript.
+
+\lstset{ %
+    captionpos=b,
+    frame=single,
+    showspaces=false,
+    showstringspaces=false,
+    numbers=left,
+    commentstyle=\color{Gray},
+    %stringstyle=\color{PineGreen},
+    otherkeywords=mpirun,
+    keywordstyle=\color{blue},
+}
+\lstinputlisting[%
+    float,
+    language=bash,
+    caption=Batchskript zur Messung des Strong Scaling,
+    label=lst:batch_ss,
+]{content/code/strong_scaling.batch}
