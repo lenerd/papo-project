@@ -1,8 +1,18 @@
-\section{Unser Programm}
+\section{Implementation}
 
-\subsection{Die einzelnen Bereiche}
+Zur Bearbeitung der Problemstellung, wurde die Programmiersprache C und
+überwiegend ein objektorientiertes Paradigma verwendet.  Die Implementation
+besteht aus drei nahezu unabhängige Bereichen, dem Go, den neuronalen Netzen
+und dem Genetischen Algorithmus. Die benötigte Funktionalität wurde jeweils als
+Modul einer Bibliothek implementiert.  Diese wurde mit dem Test Framework Check
+\cite{check} während der Entwicklung regelmäßig auf Fehler untersucht.
 
-\subsubsection{Das neuronale Netz}
+Als Schnittstelle für den Benutzer wurden kleine Anwendungen geschrieben, die
+Algorithmen und Datenstrukturen aus der Bibliothek verwenden, um einzelne
+Aufgaben zu erfüllen.
+
+
+\subsection{Das neuronale Netz}
 %Der Aufbau des Netzes, Funktionsweise von Backpropagtion
 
 Ein neuronales Netz besteht aus Neuronen, ähnlich einem menschlichen Gehirn. Die
@@ -41,7 +51,7 @@ Fehlersignale der vorhergehenden Schicht mal dem dazugehörigen Kantengewicht au
 und multipliziert es mit der Ausgabe des Neurons. So wird nur der Teil des
 Fehlers, der tatsächlich von diesem Neuron verursacht wurde, korrigiert. 
 
-\subsubsection{Go}
+\subsection{Go}
 %Welche Komponenten? Wie spielt es zusammen?
 
 Die Implementation des Go Spiels besteht aus mehreren Komponenten. Zunächst sind
@@ -73,7 +83,7 @@ genutzt werden, um die SGF Dateien sinnvoll zu nutzen wird aber ein geeignetes
 Programm benötigt. Viele Go Programme etwa sind in der Lage SGF Dateien
 einzulesen und dann Zug für Zug darzustellen. 
 
-\subsubsection{Der genetische Algorithmus}
+\subsection{Der genetische Algorithmus}
 %Wie funktioniert er?
 
 Der genetische Algorithmus imitiert die Evolution um die Spielstärke der
@@ -107,17 +117,17 @@ Algorithmus fängt wieder von vorne an.
 Wie funktioniert nun Nugengo? Es besteht aus mehreren Command Line Tools, die
 folgende Funktionen abdecken:
 \begin{itemize}
-\item Erstellung und Regeltraining (Backpropagation) von Netzen
-\item Training von Netzen (genetischer Algorithmus)
-\item Auswertung von Netzen gegeneinander
-\item Ausführung von Mensch-gegen-Netz-Spielen
+    \item Erstellung und Regeltraining (Backpropagation) von Netzen
+    \item Training von Netzen (genetischer Algorithmus)
+    \item Auswertung von Netzen gegeneinander
+    \item Ausführung von Mensch-gegen-Netz-Spielen
 \end{itemize}
 Im Allgemeinen sieht die vorgesehene Nutzung also so aus: zuerst werden Netze
 erstellt und mit Trainingsdaten trainiert. Nun hat man eine Grundlage, von der
 aus man die Netze beliebig oft und lange durch den genetischen Algorithmus
-trainieren kann. Dazwischen kann durch Spiele gegen den Nutzer oder andere, 
-eventuell schon trainierte Netze, eine Art Zwischenstand abgefragt werden. Am Ende 
-kann so auch die Spielstärke des Netzes ermittelt werden und die Netze gespeichert 
-werden. Das Ergebnis ist das eine Datei, von der aus man ein sehr gut trainiertes 
-Netz immer wieder aufrufen kann, etwa um Spiele durchzuführen oder es noch weiter 
-zu verbessern.
+trainieren kann. Dazwischen kann durch Spiele gegen den Nutzer oder andere,
+eventuell schon trainierte Netze, eine Art Zwischenstand abgefragt werden. Am
+Ende kann so auch die Spielstärke des Netzes ermittelt werden und die Netze
+gespeichert werden. Das Ergebnis ist das eine Datei, von der aus man ein sehr
+gut trainiertes Netz immer wieder aufrufen kann, etwa um Spiele durchzuführen
+oder es noch weiter zu verbessern.

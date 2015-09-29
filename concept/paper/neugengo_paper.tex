@@ -12,7 +12,10 @@
 
 \usepackage{csquotes}
 \usepackage{scrhack}
-\usepackage[backend=biber]{biblatex}
+\usepackage[%
+    backend=biber,
+    style=numeric,
+]{biblatex}
 \bibliography{literature.bib}
 \usepackage[toc,page]{appendix}
 \renewcommand{\appendixtocname}{Anhänge}
@@ -90,7 +93,7 @@
 
 \clearpage
 
-\printbibliography
+\printbibliography[heading=bibintoc]
 
 \listoffigures
 \lstlistoflistings
