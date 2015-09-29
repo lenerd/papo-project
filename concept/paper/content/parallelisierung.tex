@@ -27,7 +27,7 @@ zuständig ist.
     \centering
     \includegraphics[width=\textwidth]
         {content/img/strong_scaling_time_static.pdf}
-    \caption{Speedup für statische Lastverteilung}
+    \caption{Speedup bei statischer Lastverteilung}
     \label{fig:speedup_static}
 \end{figure}
 
@@ -35,14 +35,14 @@ zuständig ist.
     \centering
     \includegraphics[width=\textwidth]
         {content/img/vampir_static.png}
-        \caption{Prozess Timeline bei statischer Lastverteilung (Vampir)}
+        \caption{Prozess Timeline bei statischer Lastverteilung}
     \label{fig:vampir_static}
 \end{figure}
 
 In Abbildung \ref{fig:speedup_static} ist zu erkennen, dass die erreichte
 Effizienz bei 96 Prozessen nur einen Wert von ungefähr \num{0,4} erreicht.
-Dies liegt deutlich unter den erwarteten Werten. Eine Analyse mit Vampir
-(\ref{fig:vampir_static}) zeigt, dass eine Lastungleichheit zwischen den
+Dies liegt deutlich unter den erwarteten Werten. Eine Analyse mit Vampir \cite{vampir}
+(Abbildung \ref{fig:vampir_static}) zeigt, dass eine Lastungleichheit zwischen den
 Prozessen herrscht. Diese ist dadurch zu erklären, dass Spiele unterschiedlich
 lange dauern. Die Länge eines Spiels wurde nach oben beschränkt: Nach 1024
 Zügen wird es abgebrochen und die Punkte werden ausgezählt. Mindestens zwei
@@ -170,7 +170,7 @@ Request und die dazugehörige Response.
     \centering
     \includegraphics[width=\textwidth]
         {content/img/vampir_dynamic.png}
-        \caption{Prozess Timeline bei dynamischer Lastverteilung (Vampir)}
+        \caption{Prozess Timeline bei dynamischer Lastverteilung}
     \label{fig:vampir_dynamic}
 \end{figure}
 

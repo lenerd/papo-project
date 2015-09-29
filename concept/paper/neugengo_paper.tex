@@ -1,14 +1,25 @@
-\documentclass[12pt,a4paper]{article}
+%\documentclass[12pt,a4paper]{article}
+\documentclass[12pt]{scrartcl}
+
+\KOMAoptions{draft=true}
+\KOMAoptions{titlepage=false}
+\KOMAoptions{abstract=true}
+\KOMAoptions{listof=totoc}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[english,ngerman]{babel}
 
+\usepackage{biblatex}
+\bibliography{literature.bib}
+\usepackage[toc,page]{appendix}
+\renewcommand{\appendixtocname}{Anhänge}
+\renewcommand{\appendixpagename}{Anhänge}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage[locale=DE,binary-units]{siunitx}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -19,20 +30,49 @@
 \usepackage[usenames,dvipsnames]{xcolor}
 
 
-\author{Lennart Braun, Armin Schaare, Theresa Eimer 
-		\\ Praktikum parallele Programmierung
-		\\ Universität Hamburg
-		\\ Betreuer: Julian Kunkel}
-\title{Neugengo - \\ Kann unser neuronales Netz besser Go spielen als wir?}
-\date{30. September 2015}
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+    \begin{center}
+        {\titlefont\huge Neugengo\par}
 
-\renewcommand{\contentsname}{Inhalt}
+        \bigskip
+        \bigskip
+
+        {\titlefont\Large --- Praktikumsbericht ---\par}
+
+        \bigskip
+        \bigskip
+
+        {\large Arbeitsbereich Wissenschaftliches Rechnen\\
+        Fachbereich Informatik\\
+        Fakultät für Mathematik, Informatik und Naturwissenschaften\\
+        Universität Hamburg\par}
+    \end{center}
+
+    \bigskip
+    %platz für bild
+    \bigskip
+
+    \vfill
+
+    {\large \begin{tabular}{ll}
+        Vorgelegt von: & Lennart Braun, Armin Schaare, \\
+                       & Theresa Eimer \\
+        Betreuer: & Julian Kunkel \\
+        \\
+        Hamburg, den 30.09.2015
+    \end{tabular}\par}
+\end{titlepage}
+
+\input{content/abstract}
+
+\clearpage
+
+%\renewcommand{\contentsname}{Inhalt}
 \tableofcontents
 
-\newpage
+\clearpage
 
 \input{content/einleitung}
 \input{content/go}
@@ -41,5 +81,17 @@
 \input{content/parallelisierung}
 \input{content/ergebnis}
 \input{content/fazit}
+
+\clearpage
+
+\input{content/anhang}
+
+\clearpage
+
+\printbibliography
+
+\listoffigures
+\lstlistoflistings
+
 
 \end{document}
