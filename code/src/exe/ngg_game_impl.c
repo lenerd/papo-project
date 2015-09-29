@@ -247,9 +247,6 @@ int unsupervised (options_t* opts, int argc, char** argv)
         // Make it so!
         the_next_generation (pop);
 
-        // Make it so!
-        the_next_generation (pop);
-
         /* end generation time */
         clock_gettime (CLOCK_MONOTONIC, &end);
         diff = diff_timespec (start, end);
