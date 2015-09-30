@@ -3,7 +3,7 @@
 Zunächst wurde untersucht, welche Teile der Anwendung für die Parallelisierung
 in Frage kommen. Profiling ergab, dass ein Großteil der Zeit, wie erwartet, in
 der Methode \texttt{player.move} deren verbracht wird. Dort berechnet das
-neuronale Netzwerk mit dem momentanen Zustand der Spielfeldes als Eingabe den
+neuronale Netz mit dem momentanen Zustand der Spielfeldes als Eingabe den
 auszuführenden Spielzug.
 
 Natürlich sind die einzelnen Generationen inherent sequentiell -- jede hängt von
@@ -196,7 +196,7 @@ im Vergleich zu der vorherigen Situation deutlich besser.
 \subsection{Hybride Parallelisierung}
 Zusätzlich zu obigem Parallelisierungsschema wurde hybride Parallelisierung mit
 MPI und OpenMP ausprobiert.  Dabei wurde untersucht, wie sich die Aufteilung
-der Schleifen in der Ausgabeberechnung der neuronalen Netzwerke auf
+der Schleifen in der Ausgabeberechnung der neuronalen Netz auf
 verschiedene Threads verhält.
 
 In der Testkonfiguration wurde ein rechnender MPI-Prozess mit OpenMP-Threads
