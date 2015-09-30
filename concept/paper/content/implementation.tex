@@ -39,7 +39,7 @@ Die Ausgabe sind die Präferenzen der Netze, der Schnittpunkt mit dem höchsten
 Wert wird besetzt. 
 
 Damit die Netze zumindest die Regeln von vornherein erlernen, gibt es eine
-Methode für Supervised Learning, überwachtes Lernen, den Backpropagation
+Methode für Supervised Learning; den Backpropagation
 Algorithmus. Für ihn muss bekannt sein, was das erwartete Ergebnis ist, weswegen
 die Netze so nur auf die Go Regeln und nicht auf die Taktik trainiert werden
 können. Der Algorithmus basiert darauf, dass der tatsächliche Ausgabewert mit
@@ -95,14 +95,14 @@ einzulesen und dann Zug für Zug darzustellen.
 
 Der genetische Algorithmus (Algorithmus \ref{alg:genetic}) imitiert die
 Evolution um die Spielstärke der neuronalen Netze zu verbessern. Entsprechend
-wird auch Terminologie aus der Biologie übernommen: Population, Genom,
+wird auch Terminologie aus der Biologie übernommen: Population, Genom
 Mutation, Generation, Fitness. Eine Generation bezeichnet dabei eine Abfolge
 von Spielen und die Selektion und Mutation der Population. Die Anzahl dieser
 Generationen wird anfangs festgelegt.
 
-Jedes Netz hat einen bestimmten Fitnesswert, der der Anzahl der gewonnen Spiele
-entspricht. Sein Genom bilden alle seine Kantengewichte. Alle gegeneinander
-spielenden Netze zusammen sind eine Population. Soll diese Population eine
+Jedes Netz stellt hierbei ein Individuum einer Population dar, wobei
+dessen Fitnesswert davon abhängt, wie viele Spiele dieses Individuum
+in einer Generation gewonnen hat. Soll die Population eine
 Generation voran gebracht werden, wird zunächst ausgewählt, welche Individuen in
 die nächste Generation übernommen werden. Sie werden zufällig ausgesucht,
 allerdings ist die Wahrscheinlichkeit ein Netz zu wählen proportional zu seinem
@@ -112,13 +112,13 @@ zufälligen Selektion zu verlieren, werden zusätzlich (in unserem Fall 4) Plät
 in der nächsten Generation reserviert, die mit den unabgeänderten besten Netzen 
 der letzten Generation gefüllt werden. Danach werden die Netze mutiert, 
 ebenfalls zufällig. Es gibt eine bestimmte Mutationswahrscheinlichkeit, mit 
-deren Hilfeüberprüft wird, ob ein bestimmtes Kantengewicht mutiert, also um einen
+deren Hilfe überprüft wird, ob ein bestimmtes Kantengewicht mutiert, also um einen
 zufälligen Wert verändert werden soll, oder nicht. Für jedes Element des Genoms
 wird eine Zufallszahl zwischen 0 und 1 erzeugt, ist sie kleiner als die
 Mutationswahrscheinlichkeit, dann wird mutiert. Ist dieser Schritt abgeschlossen, 
-ist die Population eine Generation fortgeschritten. Jetzt muss für jedes Netz 
-wieder die Fitness durch Spiele gegen andere aktualisiert werden und der 
-Algorithmus fängt wieder von vorne an.
+ist die Population eine Generation fortgeschritten. Nun muss die Fitness jedes Netzes
+durch Spiele gegen andere aktualisiert werden, sodass der Algorithmus 
+wieder von vorne anfangen kann.
 
 \begin{algorithm}
     \caption{Genetischer Algorithmus}
