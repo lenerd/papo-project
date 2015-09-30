@@ -58,37 +58,79 @@ entweder in menschenlesbarer Textform (Beispiel in Listing
 \ref{lst:fileformat}, Seite \pageref{lst:fileformat}) oder in Binärform
 abspeichern.
 
-\subsection{Go}
+\subsection{Das Go-Modul}
 %Welche Komponenten? Wie spielt es zusammen?
 
-Die Implementation des Go Spiels besteht aus mehreren Komponenten. Zunächst sind
-die Spielregeln und grundlegenden Aktionen im Spiel, wie etwa zu passen oder
-einen Stein zu legen, in board.h, also dem Go Brett, implementiert. Das Brett
-ist darin ein eigener Datentyp, der unter anderem den aktuellen Stand des
-Spieles, etwa welcher Spieler an der Reihe ist oder ob ein Ko vorliegt, und alle
-existierenden Gruppen von Steinen inklusive deren Freiheiten speichert. Die
-Gruppen sind deshalb wichtig, weil sie beim Schlagen eines Steins berücksichtigt
-werden müssen; wären sie nicht gespeichert, müssten sie in jedem Zug in dem
-Gebiet um den neuen Stein berechnet werden, was relativ zeitaufwändig wäre. Es
-ist also, vor allem da wir unseren Fokus auf kleinere Netze gelegt haben,
-sinnvoll die Steingruppen zu speichern. 
+Die Regeln von Go sind hauptsächlich in dem Board Modul implementiert. Dieses
+stellt einen entsprechenden Datentypen (\texttt{board\_t}) zur Verfügung,
+welcher das Spielfeld repräsentiert und die momentane Stellung in seinem
+Zustand speichert.  Auf das Board können Steine platziert werden. Dabei wird
+überprüft, dass die Züge auch legal sind.  Das Board legt die Gruppen in einer
+internen Datenstruktur ab und verbindet einen platzierten Stein mit den
+benachbarten Gruppen der selben Farbe. Mit den Gruppen ist jeweils die Anzahl
+der verbleibenden Freiheiten gespeichert.  Nach dem Platzieren eines Steins
+wird überprüft, ob die benachbarten Gruppen des anderen Spielers ihre letzte
+Freiheit durch den Zug verloren haben und geschlagen werden müssen.  Das
+Speichern der Gruppen ist wichtig, da die Freiheiten sonst bei jedem Zug neu
+berechnet werden müssten.
+Die Berechnung des Gebiets erfolgt mit einem Flood-Fill Algorithmus.
 
-Während im Brett die meisten Regeln implementiert sind, kann es nicht
-selbstständig den Spielablauf regeln. Dafür wird game.h benutzt, worin ein Spiel
-für eine bestimmte Brettgröße und zwei Spieler erstellt wird und Schritt für
-Schritt gespielt werden kann. Die Spieler sind in player.h definiert und können
-sowohl Menschen als auch neuronale Netze sein. So muss im eigentlichen Spiel
-nicht mehr auf die Funktionen des neuronalen Netz zurückgegriffen werden, da die
-Züge über den erstellten Spieler abgefragt werden. Im Spiel kann außerdem ein
-Zuglimit gesetzt werden, für den Fall dass etwa eine Endlosschleife auftritt
-oder die Spiele besonders kurz gehalten werden sollen. 
+Das Klassendiagramm (Abbildung \ref{fig:class_diagram}) gibt einen Überblick
+über den Zusammenhang der erstellten Datenstrukturen. Um die neuronalen Netze
+Go spielen zu lassen und dabei mit dem genetischen Algorithmus zu trainieren,
+sind weitere Datenstrukturen notwendig.
 
-Um die Spiele nachträglich zu analysieren, gibt es die Möglichkeit sie
-aufzuzeichnen. Dabei können zwei Formate benutzt werden: zum einen ASCII-Art,
-zum anderen SGF. ASCII-Art kann natürlich ohne zusätzliche Software sofort
-genutzt werden, um die SGF Dateien sinnvoll zu nutzen wird aber ein geeignetes
-Programm benötigt. Viele Go Programme etwa sind in der Lage SGF Dateien
-einzulesen und dann Zug für Zug darzustellen. 
+Der Spielablauf einer Partie Go wird durch das Game (\texttt{game\_t})
+modelliert. Dieses lässt zwei Player (\texttt{player\_t}) auf einem Board
+gegeneinander spielen. Das Interface eines Player definiert eine Funktion, die,
+gegeben der Zustand eines Boards, den zu spielenden Zug zurückgibt. Es werden
+zwei Implementationen zur Verfügung gestellt, um entweder den Zug durch ein
+neuronales Netz berechnen oder durch einen menschlichen Spieler auf der
+Kommandozeile eingeben zu lassen. Während des Spielablaufes fragt das Game
+abwechselnd die Player nach ihren Zügen und setzt die Steine entsprechend auf
+das Board. Nach zweimaligem Passen oder bei erreichen des Zuglimits, wird das
+Spiel beendet und die Punkte gezählt.
+Zur weiteren Analyse eines Spiels, können Recorder (\texttt{recorder\_t}) beim
+Game registriert werden. Diese können den Spielverlauf wahlweise in ASCII-Art
+oder dem Smart Game Format (SGF)\cite{sgf} aufzeichnen. Letzteres wird
+üblicherweise von Go-Software unterstützt, so dass sich Spiele Zug für Zug
+nachverfolgen lassen.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{content/img/class_diagram}
+    \caption{Klassendiagramm von Neugengo}
+    \label{fig:class_diagram}
+\end{figure}
+
+% Die Implementation des Go Spiels besteht aus mehreren Komponenten. Zunächst
+% sind die Spielregeln und grundlegenden Aktionen im Spiel, wie etwa zu passen
+% oder einen Stein zu legen, in board.h, also dem Go Brett, implementiert. Das
+% Brett ist darin ein eigener Datentyp, der unter anderem den aktuellen Stand
+% des Spieles, etwa welcher Spieler an der Reihe ist oder ob ein Ko vorliegt,
+% und alle existierenden Gruppen von Steinen inklusive deren Freiheiten
+% speichert. Die Gruppen sind deshalb wichtig, weil sie beim Schlagen eines
+% Steins berücksichtigt werden müssen; wären sie nicht gespeichert, müssten sie
+% in jedem Zug in dem Gebiet um den neuen Stein berechnet werden, was relativ
+% zeitaufwändig wäre. Es ist also, vor allem da wir unseren Fokus auf kleinere
+% Netze gelegt haben, sinnvoll die Steingruppen zu speichern. 
+%
+% Während im Brett die meisten Regeln implementiert sind, kann es nicht
+% selbstständig den Spielablauf regeln. Dafür wird game.h benutzt, worin ein Spiel
+% für eine bestimmte Brettgröße und zwei Spieler erstellt wird und Schritt für
+% Schritt gespielt werden kann. Die Spieler sind in player.h definiert und können
+% sowohl Menschen als auch neuronale Netze sein. So muss im eigentlichen Spiel
+% nicht mehr auf die Funktionen des neuronalen Netz zurückgegriffen werden, da die
+% Züge über den erstellten Spieler abgefragt werden. Im Spiel kann außerdem ein
+% Zuglimit gesetzt werden, für den Fall dass etwa eine Endlosschleife auftritt
+% oder die Spiele besonders kurz gehalten werden sollen. 
+% 
+% Um die Spiele nachträglich zu analysieren, gibt es die Möglichkeit sie
+% aufzuzeichnen. Dabei können zwei Formate benutzt werden: zum einen ASCII-Art,
+% zum anderen SGF. ASCII-Art kann natürlich ohne zusätzliche Software sofort
+% genutzt werden, um die SGF Dateien sinnvoll zu nutzen wird aber ein geeignetes
+% Programm benötigt. Viele Go Programme etwa sind in der Lage SGF Dateien
+% einzulesen und dann Zug für Zug darzustellen. 
 
 \subsection{Der genetische Algorithmus}
 %Wie funktioniert er?
@@ -143,8 +185,6 @@ wieder von vorne anfangen kann.
     \end{algorithmic}
 \end{algorithm}
 
-\subsection{Programmstruktur}
-
 \subsection{Die Benutzerschnittstelle}
 \begin{samepage}
 Die Benutzerschnittstelle von Neugengo besteht aus mehreren Command Line Tools,
@@ -173,7 +213,7 @@ Siehe Listing \ref{lst:ngg_game-help} (Seite \pageref{lst:ngg_game-help}).
 
 \texttt{ngg\_test} kann benutzt werden, um zwei Sets an Netzen gegeneinander
 spielen zu lassen, wobei jedes Netz zweimal gegen jedes aus dem gegnerischen
-Set (einmal als Weiß, einmal als Schwarz) spielt. Die Ausgabe enhält die Summe
+Set (einmal als Weiß, einmal als Schwarz) spielt. Die Ausgabe enthält die Summe
 aller Punkte, die beide Sets erzielt haben. Auf diese Weise lassen sich einzelne
 Netze oder ganze Populationen auf deren Stärke prüfen. 
 
