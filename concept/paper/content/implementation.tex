@@ -86,11 +86,12 @@ einzulesen und dann Zug für Zug darzustellen.
 \subsection{Der genetische Algorithmus}
 %Wie funktioniert er?
 
-Der genetische Algorithmus imitiert die Evolution um die Spielstärke der
-neuronalen Netze zu verbessern. Entsprechend wird auch Terminologie aus der
-Biologie übernommen: Population, Genom, Mutation, Generation, Fitness. Eine
-Generation bezeichnet dabei eine Abfolge von Spielen und die Selektion und
-Mutation der Population. Die Anzahl dieser Generationen wird anfangs festgelegt.
+Der genetische Algorithmus (Algorithmus \ref{alg:genetic}) imitiert die
+Evolution um die Spielstärke der neuronalen Netze zu verbessern. Entsprechend
+wird auch Terminologie aus der Biologie übernommen: Population, Genom,
+Mutation, Generation, Fitness. Eine Generation bezeichnet dabei eine Abfolge
+von Spielen und die Selektion und Mutation der Population. Die Anzahl dieser
+Generationen wird anfangs festgelegt.
 
 Jedes Netz hat einen bestimmten Fitnesswert, der der Anzahl der gewonnen Spiele
 entspricht. Sein Genom bilden alle seine Kantengewichte. Alle gegeneinander
@@ -111,6 +112,29 @@ Mutationswahrscheinlichkeit, dann wird mutiert. Ist dieser Schritt abgeschlossen
 ist die Population eine Generation fortgeschritten. Jetzt muss für jedes Netz 
 wieder die Fitness durch Spiele gegen andere aktualisiert werden und der 
 Algorithmus fängt wieder von vorne an.
+
+\begin{algorithm}
+    \caption{Genetischer Algorithmus}
+    \label{alg:genetic}
+    \begin{algorithmic}[1]
+        \Require Eingabedatei $in\_file$, Iterationen $n$
+        \Ensure Ausgabedatei $out\_file$
+        \State $N_0 \gets$ \Call{load\_nets}{$in\_file$}
+        \For {generation $i = 0$ to $n$}
+            \State $wins \gets (0, 0, \ldots, 0)$
+            \For {$\forall net_a \neq net_b \in N_i$}
+                \State \Call{play\_game}{$net_a, net_b$}
+                \If {$net_a$ won the game}
+                    \State $wins[net_a] \gets wins[net_a] + 1$
+                \Else
+                    \State $wins[net_b] \gets wins[net_b] + 1$
+                \EndIf
+            \EndFor
+            \State $N_{i+1} \gets$ \Call{the\_next\_generation}{$N_i, wins$}
+        \EndFor
+        \State \Call{save\_nets}{$out\_file$}
+    \end{algorithmic}
+\end{algorithm}
 
 \subsection{Die Benutzerschnittstelle}
 Die Benutzerschnittstelle von Neugengo besteht aus mehreren Command Line Tools,
