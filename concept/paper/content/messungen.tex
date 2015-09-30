@@ -43,3 +43,18 @@ Listing \ref{lst:batch_ss} zeigt ein entsprechendes Batchskript.
     caption=Batchskript zur Messung des Strong Scaling,
     label=lst:batch_ss,
 ]{content/code/strong_scaling.batch}
+
+Beim Weak Scaling wird die Last mit den proportional zu der Anzahl an Prozessen
+erhöht, so dass pro Prozess eine fixe Menge an Arbeit zu berechnen ist.  Das
+Weak Scaling zu bestimmen, würde sich schwierig gestalten. Es gibt mehrere
+Parameter, die die Menge der Berechnung bestimmen: Anzahl der Generationen,
+Anzahl und Layout der Netze. Durch die verwendeten Zufallszahlen, würde es sehr
+schwierig sein, anhand dieser Stellschrauben, die Arbeit um einen bestimmten
+Faktor zu verändern. Die Arbeit ist vor Allem abhängig von der Anzahl
+berechneter Züge.  Würde man mehr Iterationen berechnen, so kann es sein, dass
+in den Spielen dieser zusätzlicher Generationen im Schnitt weniger oder mehr
+Züge zu berechnen sind. Auch lässt sich bei geänderter Anzahl oder geändertem
+Layout (z.~B. Größe) der Netze nicht sagen, für wie viele Züge, die
+hinzugefügten bzw. entfernten oder geänderten Netze verantworlich sind.  Eine
+Messreihe zum Weak Scaling würde daher nur bedingt verwendbare Ergebnisse
+liefern.
