@@ -97,3 +97,17 @@ Versus untrained nets:
 08 vs un: 326 : 137
 09 vs un: 374 : 134
 10 vs un: 214 : 242
+
+
+Best nets of each set vs untrained:
+
+01 vs un: 19 : 12
+02 vs un: 17 : 12
+03 vs un: 26 :  4
+04 vs un: 19 : 11
+05 vs un: 24 :  8
+06 vs un: 26 :  6
+07 vs un: 18 : 11
+08 vs un: 18 :  9
+09 vs un: 22 : 10
+10 vs un: 13 : 16
