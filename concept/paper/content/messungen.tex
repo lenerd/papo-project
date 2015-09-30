@@ -1,4 +1,4 @@
-\section{Leistungsmessung}
+\section{Leistungsmessung und -analyse}
 
 Die Messung der Rechenzeit erfolgt innerhalb des Programms in der Main Loop.
 Dadurch wird ausschließlich die Zeit erfasst, in der an dem Ergebnis der
@@ -6,6 +6,7 @@ Berechnung gearbeitet wird.  Die Sammlung der aufgezeichneten Statistiken
 (z.~B. die Anzahl der Züge) durch kollektive MPI-Operationen zählt damit nicht
 zur Rechenzeit.
 
+\subsection{Strong Scaling}
 Für die Bestimmung der Güte der erreichten Parallelisierung wurde das Strong
 Scaling untersucht, d.~h. ein Problem mit gleichbleibender Größe wird mit
 unterschiedlichen Anzahlen an Prozessen berechnet. Anschließend wurde der
@@ -24,15 +25,10 @@ mit den gleichen Netzwerken als Eingabe aufgerufen, zudem wird der
 Zufallszahlengenerator auf einen bestimmten Wert initialisiert. So kann bei
 einer gleichbleibenden Anzahl an Iterationen sichergestellt werden, dass bei
 mehreren Aufrufen jeweils die gleiche Menge an Berechnungen durchgeführt wird.
-Listing \ref{lst:batch_ss} zeigt ein entsprechendes Batchskript.
+Listing \ref{lst:batch_ss} (Seite \pageref{lst:batch_ss}) zeigt ein
+entsprechendes Batchskript.
 
-\lstinputlisting[%
-    float,
-    language=bash,
-    caption=Batchskript zur Messung des Strong Scaling,
-    label=lst:batch_ss,
-]{content/code/strong_scaling.batch}
-
+\subsection{Weak Scaling}
 Beim Weak Scaling wird die Last mit den proportional zu der Anzahl an Prozessen
 erhöht, so dass pro Prozess eine fixe Menge an Arbeit zu berechnen ist.  Das
 Weak Scaling zu bestimmen, würde sich schwierig gestalten. Es gibt mehrere
