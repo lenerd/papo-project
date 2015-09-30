@@ -23,15 +23,12 @@ float random_value_mm (float min, float max)
 }
 
 float sigmoid(float x){
-    return 0.5f * tanhf(x * 0.5f) + 0.5f;
+    return 1.0f / (1.0f + expf(-x));
 }
 
-#if 0
-float sigmoid (float x)
-{
-    return 1.0f / (1.0f + expf (-x));
+float sigmoid_approx(float x){
+    return 0.5f * tanhf(x * 0.5f) + 0.5f;
 }
-#endif
 
 float inverse_sigmoid (float y)
 {
@@ -51,7 +48,7 @@ float* sigmoidize (const float* array, const size_t size)
 
     for (size_t i = 0; i < size; ++i)
     {
-        result[i] = sigmoid (array[i]);
+        result[i] = sigmoid_approx (array[i]);
     }
 
     return result;
@@ -77,7 +74,7 @@ float* sigmoidize_inplace (float* array, const size_t size)
 
     for (size_t i = 0; i < size; ++i)
     {
-        array[i] = sigmoid (array[i]);
+        array[i] = sigmoid_approx (array[i]);
     }
 
     return array;
