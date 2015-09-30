@@ -23,11 +23,10 @@ Diese Kanten haben Gewichte und pro Layer gibt es auch einen Bias, der zum
 Kantengewicht addiert wird. Ein Signal wird durch das Input Layer aufgenommen,
 durch die Layer weitergegeben und vom Output Layer wieder ausgegeben. Das
 Weiterleiten innerhalb des Netzes funktioniert über die Kanten. Der Output eines
-Neurons ist die Summe aller seiner Eingänge. Durch eine Sigmoidfunktion, hier
-aus Perfomance-Gründen angenähert durch $\num{0,5}\cdot (tanh(x\cdot\num{0,5}) + 1)$, 
-werden diese Summen auf den Wertebereich $[-1;1]$
-reduziert, wobei diese Funktion gleichzeitig die spätere Anwendung des
-Backpropagation Algorithmus ermöglicht, da sie differenzierbar ist. Der fertige Output des
+Neurons ist die Summe aller seiner Eingänge. Durch eine Sigmoidfunktion - hier
+$\frac{1}{1 + e^{-x}}$ - werden diese Summen auf den Wertebereich $[-1;1]$
+reduziert, wobei die Funktion gleichzeitig die spätere Anwendung des
+Backpropagation Algorithmus ermöglicht. Der fertige Output des
 Neurons wird dann mit den jeweiligen Kantengewichten multipliziert und an die
 Neuronen des nächsten Layers weitergeleitet. Vor allem hier ist also sehr viel
 zu Berechnen. 
@@ -172,7 +171,7 @@ Anzahl an Iterationen oder des Empfangens des Signals \texttt{SIGUSR1} werden
 die neuen bzw. geänderten Netze gespeichert.
 Siehe Listing \ref{lst:ngg_game-help} (Seite \pageref{lst:ngg_game-help}).
 
-\texttt{ngg\_test} kann benutzt werden, um zwei Sets an Netzen gegeneinander
+\texttt{ngg_test} kann benutzt werden, um zwei Sets an Netzen gegeneinander
 spielen zu lassen, wobei jedes Netz zweimal gegen jedes aus dem gegnerischen
 Set (einmal als Weiß, einmal als Schwarz) spielt. Die Ausgabe enhält die Summe
 aller Punkte, die beide Sets erzielt haben. Auf diese Weise lassen sich einzelne
