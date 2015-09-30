@@ -13,7 +13,7 @@ Aufgaben zu erfüllen.
 
 
 \subsection{Das neuronale Netz}
-%Der Aufbau des Netzes, Funktionsweise von Backpropagtion
+%Der Aufbau des Netzes, Funktionsweise von Backpropagation
 
 Ein neuronales Netz besteht aus Neuronen, ähnlich einem menschlichen Gehirn. Die
 Neuronen sind in Schichten angeordnet, den Layern des Netzes. Das erste Layer
@@ -112,22 +112,100 @@ ist die Population eine Generation fortgeschritten. Jetzt muss für jedes Netz
 wieder die Fitness durch Spiele gegen andere aktualisiert werden und der 
 Algorithmus fängt wieder von vorne an.
 
-\subsection{Die Tools}
-%Welche gibt es? Wie setzt man sie ein? Warum macht das so Sinn?
-Wie funktioniert nun Nugengo? Es besteht aus mehreren Command Line Tools, die
-folgende Funktionen abdecken:
+\subsection{Die Benutzerschnittstelle}
+Die Benutzerschnittstelle von Neugengo besteht aus mehreren Command Line Tools,
+die folgende Funktionen abdecken:
 \begin{itemize}
-    \item Erstellung und Regeltraining (Backpropagation) von Netzen
-    \item Training von Netzen (genetischer Algorithmus)
+    \item Erstellung von neuronalen Netzen
+    \item Training von neuronalen Netzen mittels Backpropagation
+    \item Training von neuronalen Netzen mittels genetischen Algorithmus
     \item Auswertung von Netzen gegeneinander
     \item Ausführung von Mensch-gegen-Netz-Spielen
 \end{itemize}
-Im Allgemeinen sieht die vorgesehene Nutzung also so aus: zuerst werden Netze
-erstellt und mit Trainingsdaten trainiert. Nun hat man eine Grundlage, von der
-aus man die Netze beliebig oft und lange durch den genetischen Algorithmus
-trainieren kann. Dazwischen kann durch Spiele gegen den Nutzer oder andere,
-eventuell schon trainierte Netze, eine Art Zwischenstand abgefragt werden. Am
-Ende kann so auch die Spielstärke des Netzes ermittelt werden und die Netze
-gespeichert werden. Das Ergebnis ist das eine Datei, von der aus man ein sehr
-gut trainiertes Netz immer wieder aufrufen kann, etwa um Spiele durchzuführen
-oder es noch weiter zu verbessern.
+
+Das \texttt{ngg\_tool} implementiert Funktionen zum zufälligen Erstellen von
+neuronalen Netzen eines gegebenen Layouts. Weiterhin lassen sich Trainingsdaten
+generieren, die einer Situation eines Go-Brettes entsprechen. Diese lassen sich
+verwenden, um die neuronalen Netze mit Backpropagation zu trainieren.
+Listing \ref{lst:ngg_tool-help} (Seite \pageref{lst:ngg_tool-help}) zeigt das
+Command Line Interface.
+
+\texttt{ngg\_game} unterzieht eine Menge von neuronalen Netzen einem
+unsupervised Training mit dem genetischen Algorithmus. Nach einer angegebenen
+Anzahl an Iterationen oder des Empfangens des Signals \texttt{SIGUSR1} werden
+die neuen bzw. geänderten Netze gespeichert.
+Siehe Listing \ref{lst:ngg_game-help} (Seite \pageref{lst:ngg_game-help}).
+
+TODO: testprogramme
+
+Mit \texttt{ngg\_hvsai} lassen sich interaktive Spiele gegen abgespeicherte
+neuronale Netze spielen. Das Spielfeld wird durch ASCII-Art repräsentiert
+(Abbildung \ref{fig:ngg_hvsai}). Über eine mit Readline \cite{readline}
+realisierte Eingabe wird eine Position abgefragt, auf diese, falls erlaubt,
+gesetzt wird. Anschließend wird durch das gewählte neuronale Netz der Zug des
+Gegners berechnet.
+
+\begin{figure}
+    \centering
+
+    \begin{subfigure}[t]{0.45\textwidth}
+        \begin{lstlisting}[%
+            numbers=none,
+        ]
+  0 1 2 3 4 5 6 7 8 
+0 + + + + + + + + + 0
+1 + + + + + + + + + 1
+2 + + + + + + + + + 2
+3 + + + B + + + + + 3
+4 + + + + + + + + + 4
+5 + + + + + + + + + 5
+6 + W + + + + + + B 6
+7 + + + + + B + B W 7
+8 + + + + + W + W + 8
+  0 1 2 3 4 5 6 7 8 
+
+You are black.
+
+Enter x-position (0-8,p): 8
+Enter y-position (0-8,p): 8
+        \end{lstlisting}
+        \caption{vor einem Zug}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}[t]{0.35\textwidth}
+        \begin{lstlisting}[%
+            numbers=none,
+            showlines,
+        ]
+  0 1 2 3 4 5 6 7 8 
+0 + + + + + + + + + 0
+1 + + + + + + + + + 1
+2 + + + + + + + + + 2
+3 + + + B + + + + + 3
+4 + + + + + + + + + 4
+5 + + + + + + + + + 5
+6 + W + + + + + + B 6
+7 + + + + + B + B + 7
+8 + + + + + W + W B 8
+  0 1 2 3 4 5 6 7 8 
+
+
+
+
+ 
+        \end{lstlisting}
+        \caption{nach einem Zug}
+    \end{subfigure}
+    \caption{Ausschnitt aus einem interaktivem Spiel mit \texttt{ngg\_hvsai}}
+    \label{fig:ngg_hvsai}
+ \end{figure}
+
+Im Allgemeinen sieht die vorgesehene Nutzung also wie folgt aus: Zuerst werden
+neuronale Netze und Trainingsdaten erstellt.  Dann wird Backpropagation
+angewandt, um die Netze mit Hilfe der Trainingsdaten zu trainieren.
+Anschließend können die resultierenden Netze beliebig oft und lange durch den
+genetischen Algorithmus trainiert werden. Die Ergebnisse werden zur weiteren
+Verwendung in Dateien abgespeichert.
+Zur Überprüfung wie erfolgreich das Training verlaufen ist, kann man Netze
+gegen andere gespeicherte oder zufällig generierte Netze antreten lassen.
+Weiterhin kann interaktiv gegen die trainierten Spieleauf gespielt werden.

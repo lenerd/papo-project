@@ -31,8 +31,21 @@
 \floatname{algorithm}{Algorithmus}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
-\usepackage{listings}
 \usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{listings}
+\lstset{ %
+    captionpos=b,
+    frame=single,
+    showspaces=false,
+    showstringspaces=false,
+    numbers=left,
+    commentstyle=\color{Gray},
+    %stringstyle=\color{PineGreen},
+    otherkeywords=mpirun,
+    keywordstyle=\color{blue},
+}
+\usepackage{multicol}
+\usepackage{subcaption}
 
 
 \begin{document}

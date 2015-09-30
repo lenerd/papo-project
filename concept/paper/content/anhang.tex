@@ -28,4 +28,65 @@ Tools
 Dieser Bericht wurde mit {\LaTeX} und {\KOMAScript} erstellt. Die Diagramme
 wurden mit matplotlib \cite{matplotlib} erstellt.
 
+\section{Command Line Interfaces}
+
+
+\begin{lstlisting}[%
+    basicstyle=\ttfamily,
+    columns=flexible,
+    keepspaces=true,
+    caption=Interface von \texttt{ngg\_tool},
+    label=lst:ngg_tool-help,
+]
+\$ ./ngg_tool --help
+Usage: ngg_tool [OPTION...]
+
+  -a, --action=STRING        create: creates a new neural network
+                             gen-data: generates training data
+                             train: trains a neural network with
+                             supervised learning
+                             calc: calculates output of a neural network
+                             given input
+  -b, --binary               use binary files
+      --binary-in            use binary input file
+      --binary-out           use binary output file
+  -i, --in=FILE              load neuralnet(s) from file
+  -l, --layer=NUMS           number of neurons in each layer
+                             e.g. "2 3 3 2"
+  -n, --number=NUM           number of networks to create or training
+                             iterations
+  -o, --out=FILE             output neuralnet(s) to file
+  -s, --board-size=NUM       size of the used go board
+  -t, --training-data=FILE   training data to use
+  -v, --netver=0             nnet player version
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+\end{lstlisting}
+
+\begin{lstlisting}[%
+    basicstyle=\ttfamily,
+    columns=flexible,
+    keepspaces=true,
+    caption=Interface von \texttt{ngg\_game},
+    label=lst:ngg_game-help,
+]
+\$ ./ngg_game --help
+Usage: ngg_game [OPTION...]
+
+  -b, --binary               use binary files
+      --binary-in            use binary input file
+      --binary-out           use binary output file
+  -h, --human-readable       human readable output, no csv
+  -i, --in=FILE              load neuralnet from file
+  -n, --number=NUM           number of generations
+  -o, --out=FILE             output neuralnet to file
+  -s, --board-size=NUM       size of the used go board
+      --sched-chunksize=int
+      --sched-initial=double
+      --seed=decimal         seed for the random number generator
+  -v, --verbose              more prints more information
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+\end{lstlisting}
+
 \end{appendices}
